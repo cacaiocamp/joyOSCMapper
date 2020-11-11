@@ -19,21 +19,25 @@ class Joycon {
 		inputValues currentInputValues;
 		IMU_STATE rawIMUData = IMU_STATE();
 		MOTION_STATE cookedIMUData = MOTION_STATE();
+		bool isVirtual = false; //_n3
+		int positionOnList;
+
+		ofColor joyconColor;
+		ofxToggle GUIToggle;
+		string nameOnGUI;
+		ofTrueTypeFont font; 
+		ofxOscSender oscSender;
+		string oscNetAddress = "localhost";
+		int oscSendPort = 12345;
+		string joyconOscAddress = "localhost";
+		inputOSCTags inputOSCTags;
+
+		int celPosX = 0;
+		int celPosY = 0;
 		bool useRawIMUData = true;
 		bool useCookedIMUData = true;
 		bool drawRawIMUData = true;
 		bool drawCookedIMUData = true;
-
-		int celPosX = 0;
-		int celPosY = 0;
-		ofColor joyconColor;
-		ofxToggle GUIToggle;
-		string nameOnGUI;
-		string oscAddress;
-		ofTrueTypeFont font;
-		int positionOnList;
-		bool isVirtual = false; //_n3
-
 		vector<float> gyroXValues;
 		vector<float> gyroYValues;
 		vector<float> gyroZValues;
@@ -53,6 +57,8 @@ class Joycon {
 		int IMUVectorsSize = 70;
 		int currentFirstPosGraphs = 0; //_n4
 
+		float minStickStep = 0.0025;
+
 		Joycon(int newDeviceId, int devicesConnectedNumber, int guiAlpha, ofTrueTypeFont loadedFont) {
 			deviceId = newDeviceId;
 			positionOnList = devicesConnectedNumber;
@@ -69,6 +75,7 @@ class Joycon {
 
 			defineJoyconColor(guiAlpha);
 			defineJoyconNameOnGUI(devicesConnectedNumber);
+			oscSenderSetup();
 
 			gyroXValues.resize(IMUVectorsSize, 0);
 			gyroYValues.resize(IMUVectorsSize, 0);
@@ -113,8 +120,113 @@ class Joycon {
 					break;
 			}
 
-			oscAddress = prefix + ofToString(devicesConnectedNumber);
+			joyconOscAddress = prefix + ofToString(devicesConnectedNumber);
 		}
+
+		void oscSenderSetup() {
+			oscSender.setup(oscNetAddress, oscSendPort);
+		}
+
+		void updateData(JOY_SHOCK_STATE newButtonsStickData, IMU_STATE newRawIMUData){
+			inputValues newInputValues = getEachInputValue(newButtonsStickData);
+			rawIMUData = newRawIMUData;
+			cookedIMUData = JslGetMotionState(deviceId);
+			sendNewInputsAsOSC(newInputValues);
+			currentInputValues = newInputValues;
+		}
+
+		inputValues getEachInputValue(JOY_SHOCK_STATE newButtonsStickData) {//_n5
+			int buttonsData = newButtonsStickData.buttons;
+			inputValues currentInputValues;
+
+			if (controllerType == JS_TYPE_JOYCON_LEFT) {
+				currentInputValues.upX = (buttonsData & JSMASK_UP) == JSMASK_UP;
+				currentInputValues.downB = (buttonsData & JSMASK_DOWN) == JSMASK_DOWN;
+				currentInputValues.leftY = (buttonsData & JSMASK_LEFT) == JSMASK_LEFT;
+				currentInputValues.rightA = (buttonsData & JSMASK_RIGHT) == JSMASK_RIGHT;
+				currentInputValues.minusPlus = (buttonsData & JSMASK_MINUS) == JSMASK_MINUS;
+				currentInputValues.stickClick = (buttonsData & JSMASK_LCLICK) == JSMASK_LCLICK;
+				currentInputValues.lr = (buttonsData & JSMASK_L) == JSMASK_L;
+				currentInputValues.zlzr = (buttonsData & JSMASK_ZL) == JSMASK_ZL;
+				currentInputValues.printHome = (buttonsData & JSMASK_CAPTURE) == JSMASK_CAPTURE;
+				currentInputValues.stickX = newButtonsStickData.stickLX;
+				currentInputValues.stickY = newButtonsStickData.stickLY;
+			}
+			else {
+				currentInputValues.upX = (buttonsData & JSMASK_N) == JSMASK_N;
+				currentInputValues.downB = (buttonsData & JSMASK_S) == JSMASK_S;
+				currentInputValues.leftY = (buttonsData & JSMASK_W) == JSMASK_W;
+				currentInputValues.rightA = (buttonsData & JSMASK_E) == JSMASK_E;
+				currentInputValues.minusPlus = (buttonsData & JSMASK_PLUS) == JSMASK_PLUS;
+				currentInputValues.stickClick = (buttonsData & JSMASK_RCLICK) == JSMASK_RCLICK;
+				currentInputValues.lr = (buttonsData & JSMASK_R) == JSMASK_R;
+				currentInputValues.zlzr = (buttonsData & JSMASK_ZR) == JSMASK_ZR;
+				currentInputValues.printHome = (buttonsData & JSMASK_HOME) == JSMASK_HOME;
+				currentInputValues.stickX = newButtonsStickData.stickRX;
+				currentInputValues.stickY = newButtonsStickData.stickRY;
+			}
+			currentInputValues.sl = (buttonsData & JSMASK_SL) == JSMASK_SL;
+			currentInputValues.sr = (buttonsData & JSMASK_SR) == JSMASK_SR;
+
+			return currentInputValues;
+		}
+
+		void sendNewInputsAsOSC(inputValues newInputValues) {
+			if (newInputValues.upX != currentInputValues.upX)
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.upX, newInputValues.upX));
+			if (newInputValues.downB != currentInputValues.downB)
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.downB, newInputValues.downB));
+			if (newInputValues.leftY != currentInputValues.leftY)
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.leftY, newInputValues.leftY));
+			if (newInputValues.rightA != currentInputValues.rightA)
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.rightA, newInputValues.rightA));
+			if (newInputValues.minusPlus != currentInputValues.minusPlus)
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.minusPlus, newInputValues.minusPlus));
+			if (newInputValues.stickClick != currentInputValues.stickClick)
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.stickClick, newInputValues.stickClick));
+			if (newInputValues.lr != currentInputValues.lr)
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.lr, newInputValues.lr));
+			if (newInputValues.zlzr != currentInputValues.zlzr)
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.zlzr, newInputValues.zlzr));
+			if (newInputValues.printHome != currentInputValues.printHome)
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.printHome, newInputValues.printHome));
+			if (newInputValues.sl != currentInputValues.sl)
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.sl, newInputValues.sl));
+			if (newInputValues.sr != currentInputValues.sr)
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.sr, newInputValues.sr));
+			if (abs(newInputValues.stickX - currentInputValues.stickX) >= minStickStep)
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.stickX, newInputValues.stickX));
+			if (abs(newInputValues.stickY - currentInputValues.stickY) >= minStickStep)
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.stickY, newInputValues.stickY));
+
+			if (useRawIMUData) {
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.gyroX, rawIMUData.gyroX));
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.gyroY, rawIMUData.gyroY));
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.gyroZ, rawIMUData.gyroZ));
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.raclX, rawIMUData.accelX));
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.raclY, rawIMUData.accelY));
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.raclZ, rawIMUData.accelZ));
+			}
+			if (useCookedIMUData) {
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.quatW, cookedIMUData.quatW));
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.quatX, cookedIMUData.quatX));
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.quatY, cookedIMUData.quatY));
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.quatZ, cookedIMUData.quatZ));
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.caclX, cookedIMUData.accelX));
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.caclY, cookedIMUData.accelY));
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.caclZ, cookedIMUData.accelZ));
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.gravX, cookedIMUData.gravX));
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.gravY, cookedIMUData.gravY));
+				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.gravZ, cookedIMUData.gravZ));
+			}
+		}
+
+		ofxOscMessage getInputOscMessage(string oscNetAddress, string inputAddress, float inputValue) {
+			ofxOscMessage inputMessage;
+			inputMessage.setAddress(oscNetAddress + inputAddress);
+			inputMessage.addFloatArg(inputValue);
+			return inputMessage;
+		};
 
 		void updateGraphsVisualizations() {
 			if (isVirtual) {
@@ -203,7 +315,7 @@ class Joycon {
 			float dataGraphPosX = 0;
 			float dataGraphWidth = 0;
 
-			if (controllerType == JS_TYPE_JOYCON_LEFT) { //_n5
+			if (controllerType == JS_TYPE_JOYCON_LEFT) { //_n6
 				joyconRightEdgeX = celPosX + celWidth - horizontalBorder;
 				joyconLeftEdgeX = celPosX + celWidth - (widthDivision + horizontalBorder);
 				joyconCurvesCenterX = joyconRightEdgeX;
@@ -378,9 +490,9 @@ class Joycon {
 				float dataGraphHeight = (celHeight - (2 * dataGraphPosY)) / 3 - border;
 				draw2DGraph(dataGraphPosX, celPosY + dataGraphPosY, dataGraphWidth, dataGraphHeight, quatIValues, quatJValues, quatKValues, 1, 4, quatWValues);
 				ofSetColor(joyconColor);
-				if (font.stringWidth("quartOrientation") < dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
-					ofDrawBitmapString("quartOrientation", dataGraphPosX, celPosY + dataGraphPosY + border * 2);
-				else if(font.stringWidth("quartOrientation") >= dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
+				if (font.stringWidth("quatOrientation") < dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
+					ofDrawBitmapString("quatOrientation", dataGraphPosX, celPosY + dataGraphPosY + border * 2);
+				else if(font.stringWidth("quatOrientation") >= dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
 					ofDrawBitmapString("qO", dataGraphPosX, celPosY + dataGraphPosY + border * 2);
 
 				dataGraphPosY = dataGraphPosY + dataGraphHeight + border;
@@ -434,7 +546,7 @@ class Joycon {
 
 			ofSetLineWidth(0.5);
 			posY = posY + (graphHeight / 2);
-			for (int index = currentFirstPosGraphs, indexGraph = 0; indexGraph < IMUVectorsSize; index++, indexGraph++) { //_n6
+			for (int index = currentFirstPosGraphs, indexGraph = 0; indexGraph < IMUVectorsSize; index++, indexGraph++) { //_n7
 				if (index > IMUVectorsSize - 1) {
 					index = 0;
 				}
@@ -492,9 +604,12 @@ class Joycon {
 		device is connected;
 	n4- these float vectors are used to store the last 'IMUVectorsSize' values of IMU data, raw and cooked.
 		This is used to draw the graphs with the data;
-	n5- this if-else section sets the variables used to draw the joycon, changing positions based on controller type
+	n5- the stats/values of all joycon buttons come in a single integer number, with each bit of the integer
+		corresponding to a button. The correct bits for each button are here JSMASK constants, defined
+		on JoyShockLibrary. If a button is pressed, the value should be 1, if not, 0;
+	n6- this if-else section sets the variables used to draw the joycon, changing positions based on controller type
 		(that's why some ofPaths have a composite name). Right after, all joycon components are drawn;
-	n6- the logic on the 2D graph construction is kind of diferent from a common 'for' loop. The ideia here is to make
+	n7- the logic on the 2D graph construction is kind of diferent from a common 'for' loop. The ideia here is to make
 		the new IMU value added each frame to the vectors always apear on the end of the 2D graph. For that, it reads
 		the vectors from position 'currentFirstPosGraphs' to 'currentFirstPosGraphs-1', changing 'currentFirstPosGraphs'
 		every frame to 'the index where was added the new IMU value in the vector' + 1.

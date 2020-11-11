@@ -8,6 +8,34 @@
 
 class ofApp : public ofBaseApp{
 	public:
+		void setup();
+		void update();
+		void draw();
+		void keyPressed(int key);
+		void keyReleased(int key);
+		void mouseMoved(int x, int y);
+		void mouseDragged(int x, int y, int button);
+		void mousePressed(int x, int y, int button);
+		void mouseReleased(int x, int y, int button);
+		void mouseEntered(int x, int y);
+		void mouseExited(int x, int y);
+		void windowResized(int w, int h);
+		void dragEvent(ofDragInfo dragInfo);
+		void gotMessage(ofMessage msg);
+		void exit();
+
+		void checkAllButtonStates();
+		void instantiateConnectedJoycons();
+		void disconnectAndDisposeAll();
+		void updateJoyconData(int deviceId, JOY_SHOCK_STATE newButtonsStickData, IMU_STATE newRawIMUData);
+		void setupGuiJoyconsList();
+		void setupGuiControl();
+		void setGuiWithMessage(ofxPanel& gui, string message);
+		void openGeneralConfigWindow();
+		void drawGeneralConfigWindow(ofEventArgs &args);
+		void openJoyconConfigWindow(Joycon& joyconToConfig);
+		void drawJoyconConfigWindow(ofEventArgs &args);
+
 		int winWidth = 0; int winHeight = 0; //dimensions of the window
 		int border = 5; //border size
 
@@ -19,11 +47,6 @@ class ofApp : public ofBaseApp{
 		float joyconCelsWidth = 0;
 		float joyconCelsHeight = 0;
 		ofTrueTypeFont font;
-		ofxOscSender oscSender;
-		string oscSendNetAddress = "localhost";
-		int oscSendPort = 12345;
-
-		float minStickStep = 0.0025;
 
 		ofGLFWWindowSettings generalConfigWindowSettings;
 		shared_ptr<ofAppBaseWindow> generalConfigWindow;
@@ -84,44 +107,13 @@ class ofApp : public ofBaseApp{
 		int framesWaited = framesToWait; //number of frames waited
 		ofxLabel messageLabel;
 		ofColor guiColor = ofColor(0, 0, 0, 120);
-
-		void setup();
-		void update();
-		void draw();
-		void keyPressed(int key);
-		void keyReleased(int key);
-		void mouseMoved(int x, int y );
-		void mouseDragged(int x, int y, int button);
-		void mousePressed(int x, int y, int button);
-		void mouseReleased(int x, int y, int button);
-		void mouseEntered(int x, int y);
-		void mouseExited(int x, int y);
-		void windowResized(int w, int h);
-		void dragEvent(ofDragInfo dragInfo);
-		void gotMessage(ofMessage msg);
-		void exit();
-
-		void checkAllButtonStates();
-		void instantiateConnectedJoycons();
-		void disconnectAndDisposeAll();
-		void updateJoyconData(int deviceId, JOY_SHOCK_STATE newButtonsStickData, IMU_STATE newRawIMUData);
-		inputValues getEachInputValue(JOY_SHOCK_STATE newButtonsStickData, int controllerType);
-		void sendNewInputsAsOSC(inputValues lastButtonValues, inputValues newButtonValues, Joycon updatedJoycon);
-		ofxOscMessage ofApp::getInputOscMessage(string oscAddress, string inputAddress, float inputValue);
-		void setupGuiJoyconsList();
-		void setupGuiControl();
-		void setGuiWithMessage(ofxPanel& gui, string message);
-		void openGeneralConfigWindow();
-		void drawGeneralConfigWindow(ofEventArgs &args);
-		void openJoyconConfigWindow(Joycon& joyconToConfig);
-		void drawJoyconConfigWindow(ofEventArgs &args);
 };
 
 /*
 	n1- JoyShockLibrary continues counting up the devices when you desconnect and reconnect them. As this 
 		happens with the 'updateConnected' GUI button, those 2 variables are used to control the deviceIds.
 		Therefore, 'numDevicesConnectedSum' is used as the first deviceId in 'ofApp::instatiateJoycons()',
-		with 'numConnectedDevices' being the size of 'joyconsVec';
+		with 'numConnectedDevices' being the number of real joycons connected;
 	n2- This boolean is used with 'updateConnected' button. The button sets a message to the GUI informing
 		that the update is running and sets the boolean to true, drawing the message on GUI on the current
 		frame and starting the update on the next one (cause the boolean is true). This is made just to allow

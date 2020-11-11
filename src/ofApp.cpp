@@ -90,8 +90,6 @@ void ofApp::setup(){
 	joyconConfigWindowSettings.setPosition(ofVec2f(hMargin / 2, vMargin / 2));
 	generalConfigWindowSettings.setSize(screenWidth - hMargin, screenHeight - vMargin);
 	generalConfigWindowSettings.setPosition(ofVec2f(hMargin / 2, vMargin / 2));
-
-	oscSender.setup(oscSendNetAddress, oscSendPort);
 }
 
 //--------------------------------------------------------------
@@ -392,105 +390,8 @@ void ofApp::disconnectAndDisposeAll() {
 void ofApp::updateJoyconData(int joyconId, JOY_SHOCK_STATE newButtonsStickData, IMU_STATE newRawIMUData) {
 	int firstPos = (numDevicesConnectedSum - numDevicesConnected);
 	int joyconPosVec = joyconId - firstPos;
-	inputValues currentInputValues = getEachInputValue(newButtonsStickData, joyconsVec[joyconPosVec].controllerType);
-	joyconsVec[joyconPosVec].rawIMUData = newRawIMUData;
-	joyconsVec[joyconPosVec].cookedIMUData = JslGetMotionState(joyconId);
-	sendNewInputsAsOSC(joyconsVec[joyconPosVec].currentInputValues, currentInputValues, joyconsVec[joyconPosVec]);
-	joyconsVec[joyconPosVec].currentInputValues = currentInputValues;
+	joyconsVec[joyconPosVec].updateData(newButtonsStickData, newRawIMUData);
 }
-
-inputValues ofApp::getEachInputValue(JOY_SHOCK_STATE newButtonsStickData, int controllerType){//_n4
-	int buttonsData = newButtonsStickData.buttons;
-	inputValues currentInputValues;
-
-	if (controllerType == JS_TYPE_JOYCON_LEFT) { 
-		currentInputValues.upX = (buttonsData & JSMASK_UP) == JSMASK_UP;
-		currentInputValues.downB = (buttonsData & JSMASK_DOWN) == JSMASK_DOWN;
-		currentInputValues.leftY = (buttonsData & JSMASK_LEFT) == JSMASK_LEFT;
-		currentInputValues.rightA = (buttonsData & JSMASK_RIGHT) == JSMASK_RIGHT;
-		currentInputValues.minusPlus = (buttonsData & JSMASK_MINUS) == JSMASK_MINUS;
-		currentInputValues.stickClick = (buttonsData & JSMASK_LCLICK) == JSMASK_LCLICK;
-		currentInputValues.lr = (buttonsData & JSMASK_L) == JSMASK_L;
-		currentInputValues.zlzr = (buttonsData & JSMASK_ZL) == JSMASK_ZL;
-		currentInputValues.printHome = (buttonsData & JSMASK_CAPTURE) == JSMASK_CAPTURE;
-		currentInputValues.stickX = newButtonsStickData.stickLX;
-		currentInputValues.stickY = newButtonsStickData.stickLY;
-	}
-	else {
-		currentInputValues.upX = (buttonsData & JSMASK_N) == JSMASK_N;
-		currentInputValues.downB = (buttonsData & JSMASK_S) == JSMASK_S;
-		currentInputValues.leftY = (buttonsData & JSMASK_W) == JSMASK_W;
-		currentInputValues.rightA = (buttonsData & JSMASK_E) == JSMASK_E;
-		currentInputValues.minusPlus = (buttonsData & JSMASK_PLUS) == JSMASK_PLUS;
-		currentInputValues.stickClick = (buttonsData & JSMASK_RCLICK) == JSMASK_RCLICK;
-		currentInputValues.lr = (buttonsData & JSMASK_R) == JSMASK_R;
-		currentInputValues.zlzr = (buttonsData & JSMASK_ZR) == JSMASK_ZR;
-		currentInputValues.printHome = (buttonsData & JSMASK_HOME) == JSMASK_HOME;
-		currentInputValues.stickX = newButtonsStickData.stickRX;
-		currentInputValues.stickY = newButtonsStickData.stickRY;
-	}
-	currentInputValues.sl = (buttonsData & JSMASK_SL) == JSMASK_SL;
-	currentInputValues.sr = (buttonsData & JSMASK_SR) == JSMASK_SR;
-
-	return currentInputValues;
-}
-
-void ofApp::sendNewInputsAsOSC(inputValues lastButtonValues, inputValues currentInputValues, Joycon updatedJoycon) {
-	if (currentInputValues.upX != lastButtonValues.upX)
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/upX", currentInputValues.upX));
-	if(currentInputValues.downB != lastButtonValues.downB)
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/downB", currentInputValues.downB));
-	if(currentInputValues.leftY != lastButtonValues.leftY)
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/leftY", currentInputValues.leftY));
-	if(currentInputValues.rightA != lastButtonValues.rightA)
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/rightA", currentInputValues.rightA));
-	if(currentInputValues.minusPlus != lastButtonValues.minusPlus)
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/minusPlus", currentInputValues.minusPlus));
-	if(currentInputValues.stickClick != lastButtonValues.stickClick)
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/stickClick", currentInputValues.stickClick));
-	if(currentInputValues.lr != lastButtonValues.lr)
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/lr", currentInputValues.lr));
-	if(currentInputValues.zlzr != lastButtonValues.zlzr)
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/zlzr", currentInputValues.zlzr));
-	if(currentInputValues.printHome != lastButtonValues.printHome)
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/printHome", currentInputValues.printHome));
-	if(currentInputValues.sl != lastButtonValues.sl)
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/sl", currentInputValues.sl));
-	if(currentInputValues.sr != lastButtonValues.sr)
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/sr", currentInputValues.sr));
-	if (abs(currentInputValues.stickX - lastButtonValues.stickX) >= minStickStep) 
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/stickX", currentInputValues.stickX));
-	if (abs(currentInputValues.stickY - lastButtonValues.stickY) >= minStickStep)
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/stickY", currentInputValues.stickY));
-
-	if (updatedJoycon.useRawIMUData) {
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/gyroX", updatedJoycon.rawIMUData.gyroX));
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/gyroY", updatedJoycon.rawIMUData.gyroY));
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/gyroZ", updatedJoycon.rawIMUData.gyroZ));
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/raclX", updatedJoycon.rawIMUData.accelX));
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/raclY", updatedJoycon.rawIMUData.accelY));
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/raclZ", updatedJoycon.rawIMUData.accelZ));
-	}
-	if (updatedJoycon.useCookedIMUData) {
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/quatW", updatedJoycon.cookedIMUData.quatW));
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/quatX", updatedJoycon.cookedIMUData.quatX));
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/quatY", updatedJoycon.cookedIMUData.quatY));
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/quatZ", updatedJoycon.cookedIMUData.quatZ));
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/caclX", updatedJoycon.cookedIMUData.accelX));
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/caclY", updatedJoycon.cookedIMUData.accelY));
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/caclZ", updatedJoycon.cookedIMUData.accelZ));
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/gravX", updatedJoycon.cookedIMUData.gravX));
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/gravY", updatedJoycon.cookedIMUData.gravY));
-		oscSender.sendMessage(getInputOscMessage(updatedJoycon.oscAddress, "/gravZ", updatedJoycon.cookedIMUData.gravZ));
-	}
-}
-
-ofxOscMessage ofApp::getInputOscMessage(string oscAddress, string inputAddress, float inputValue) {
-	ofxOscMessage inputMessage;
-	inputMessage.setAddress(oscAddress + inputAddress);
-	inputMessage.addFloatArg(inputValue);
-	return inputMessage;
-};
 
 void ofApp::setupGuiControl() {
 	guiControl.setup();
@@ -556,7 +457,6 @@ void ofApp::openJoyconConfigWindow(Joycon& joyconToConfig) {
 }
 
 void ofApp::drawJoyconConfigWindow(ofEventArgs &args) {
-
 }
 
 /*
@@ -568,7 +468,4 @@ void ofApp::drawJoyconConfigWindow(ofEventArgs &args) {
 	n3- puts the virtual joycons always on the end of joyconsVec. The ideia here is to open an easy access from the 
 		callback update function to the connected 'real' joycons, not needing any 'ifs' or 'fors' to find the 
 		correct joycon to update;
-	n4- the stats/values of all joycon buttons come in a single integer number, with each bit of the integer
-		corresponding to a button. The correct bits for each button are here JSMASK constants, defined
-		on JoyShockLibrary. If a button is pressed, the value should be 1, if not, 0;
 */
