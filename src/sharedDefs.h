@@ -19,3 +19,39 @@ typedef struct inputValues
 	float stickX = 0;
 	float stickY = 0;
 } inputValues;
+
+typedef struct inputOSCTags
+{
+	string upX = "/upX";
+	string downB = "/downB";
+	string leftY = "/leftY";
+	string rightA = "/rightA";
+	string minusPlus = "/minusPlus";
+	string zlzr = "/zlzr";
+	string lr = "/lr";
+	string printHome = "/printHome";
+	string stickClick = "/stickClick";
+	string sr = "/sr";
+	string sl = "/sl";
+
+	string stickX = "/stickX";
+	string stickY = "/stickY";
+
+	string gyroX = "/gyroX";
+	string gyroY = "/gyroY";
+	string gyroZ = "/gyroZ";
+	string raclX = "/raclX";
+	string raclY = "/raclY";
+	string raclZ = "/raclZ";
+
+	string quatW = "/quatW";
+	string quatX = "/quatX";
+	string quatY = "/quatY";
+	string quatZ = "/quatZ";
+	string caclX = "/caclX";
+	string caclY = "/caclY";
+	string caclZ = "/caclZ";
+	string gravX = "/gravX";
+	string gravY = "/gravY";
+	string gravZ = "/gravZ";
+} inputOSCTags;
