@@ -10,6 +10,8 @@
 #define BPRESSED 100//_n1
 #define BASE_BUTTON_COLOR 25
 #define MIN_WIDTH_GRAPH_TEXT 100
+#define MAX_GYRO_VALUE 4000
+#define MAX_ACCEL_VALUE 8
 
 class Joycon {
 	public:
@@ -19,9 +21,9 @@ class Joycon {
 		inputValues currentInputValues;
 		IMU_STATE rawIMUData = IMU_STATE();
 		MOTION_STATE cookedIMUData = MOTION_STATE();
+
 		bool isVirtual = false; //_n3
 		int positionOnList;
-
 		ofColor joyconColor;
 		ofxToggle GUIToggle;
 		string nameOnGUI;
@@ -29,15 +31,43 @@ class Joycon {
 		ofxOscSender oscSender;
 		string oscNetAddress = "localhost";
 		int oscSendPort = 12345;
-		string joyconOscAddress = "localhost";
+		string joyconOscAddress = "";
 		inputOSCTags inputOSCTags;
 
 		int celPosX = 0;
-		int celPosY = 0;
+		int celPosY = 0; 
+		int celWidth = 0;
+		int celHeight = 0;
+		float minStickStep = 0.0025;
 		bool useRawIMUData = true;
 		bool useCookedIMUData = true;
 		bool drawRawIMUData = true;
 		bool drawCookedIMUData = true;
+
+		ofPath joyconDrawing;
+		ofPath upXButton;
+		ofPath downBButton;
+		ofPath leftYButton;
+		ofPath rightAButton;
+		ofPath minusPlusButton;
+		ofPath zlzrButton;
+		ofPath lrButton;
+		ofPath homePrintButton;
+		ofPath stickBase;
+		ofPath stickButton;
+		ofPath srButton;
+		ofPath slButton;
+		ofPath stickTargetArc;
+		ofPath stickTargetLines;
+		float stickTargetRadius;
+		float stickPointerRadius;
+		float stickPointerCenterX;
+		float stickPointerCenterY;
+		float minWidthForStick;
+
+		float dataGraphPosX = 0;
+		float dataGraphPosY = 0;
+		float dataGraphWidth = 0;
 		vector<float> gyroXValues;
 		vector<float> gyroYValues;
 		vector<float> gyroZValues;
@@ -57,7 +87,6 @@ class Joycon {
 		int IMUVectorsSize = 70;
 		int currentFirstPosGraphs = 0; //_n4
 
-		float minStickStep = 0.0025;
 
 		Joycon(int newDeviceId, int devicesConnectedNumber, int guiAlpha, ofTrueTypeFont loadedFont) {
 			deviceId = newDeviceId;
@@ -275,21 +304,19 @@ class Joycon {
 			}
 		};
 
-		void drawJoycon(int celWidth, int celHeight, int border) {
-			ofFill();
-			ofSetColor(ofColor(joyconColor.r, joyconColor.g, joyconColor.b, 25));
-			ofDrawRectangle(celPosX, celPosY, celWidth, celHeight); //background rect
-			ofSetColor(ofColor(joyconColor.r, joyconColor.g, joyconColor.b, 50));
-			ofDrawRectangle(celPosX + (border / 2), celPosY + (border / 2), celWidth - border, celHeight - border); //cel rect
+		void updateDrawings(int newCelWidth, int newCelHeight, int newCelPosX, int newCelPosY, int border) {
+			celWidth = newCelWidth;
+			celHeight = newCelHeight;
+			celPosX = newCelPosX;
+			celPosY = newCelPosY;
 
 			float heightDivision = celHeight / 9;
 			float widthDivision = heightDivision * 2.25;
 			float fourButtonsRadius = heightDivision / 4;
 			float stickRadius = heightDivision / 2.5;
-			float horizontalBorder = (border*2) + (fourButtonsRadius / 3);
-			float textProportion = float(celWidth) / float(celHeight);
-			if (textProportion < 3)
-				textProportion = 3;
+			float horizontalBorder = (border * 2) + (fourButtonsRadius / 3); 
+			dataGraphPosY = (heightDivision / 2) + border;
+			minWidthForStick = 2 * widthDivision;
 
 			float joyconRightEdgeX = 0;
 			float joyconLeftEdgeX = 0;
@@ -302,18 +329,23 @@ class Joycon {
 			float lowerCurveAngleBegin = 0;
 			float fourButtonsCenterY = 0;
 			float stickCenterY = 0;
-			ofPath minusPlusButton;
-			ofPath homePrintButton;
-			ofPath srButton;
-			ofPath slButton;
-			ofPath lrButton;
-			ofPath zlzrButton;
-
-			ofPath stickVisualization;
 			float stickVisualizationCenterX = 0;
 
-			float dataGraphPosX = 0;
-			float dataGraphWidth = 0;
+			joyconDrawing.clear();
+			upXButton.clear();
+			downBButton.clear();
+			leftYButton.clear();
+			rightAButton.clear();
+			minusPlusButton.clear();
+			zlzrButton.clear();
+			lrButton.clear();
+			homePrintButton.clear();
+			stickBase.clear();
+			stickButton.clear();
+			srButton.clear();
+			slButton.clear();
+			stickTargetArc.clear();
+			stickTargetLines.clear();
 
 			if (controllerType == JS_TYPE_JOYCON_LEFT) { //_n6
 				joyconRightEdgeX = celPosX + celWidth - horizontalBorder;
@@ -328,17 +360,17 @@ class Joycon {
 				fourButtonsCenterY = celPosY + (celHeight / 2) + (heightDivision / 2);
 				stickCenterY = celPosY + (celHeight / 2) - (heightDivision*1.5);
 
-				minusPlusButton.moveTo(joyconRightEdgeX - (widthDivision / 4) , joyconRightEdgeUpperY + (heightDivision/2));
+				minusPlusButton.moveTo(joyconRightEdgeX - (widthDivision / 4), joyconRightEdgeUpperY + (heightDivision / 2));
 				minusPlusButton.lineTo(joyconRightEdgeX - (widthDivision / 4) + (1.25*fourButtonsRadius), joyconRightEdgeUpperY + (heightDivision / 2));
 				homePrintButton.rectangle(joyconRightEdgeX - (widthDivision / 2.5), joyconLeftEdgeLowerY - (heightDivision / 1.5), 1.5*fourButtonsRadius, 1.5 * fourButtonsRadius);
-				srButton.rectangle(joyconRightEdgeX + 1, fourButtonsCenterY + (2*fourButtonsRadius), (fourButtonsRadius / 3), 2.25*fourButtonsRadius);
+				srButton.rectangle(joyconRightEdgeX + 1, fourButtonsCenterY + (2 * fourButtonsRadius), (fourButtonsRadius / 3), 2.25*fourButtonsRadius);
 				slButton.rectangle(joyconRightEdgeX + 1, stickCenterY - fourButtonsRadius, (fourButtonsRadius / 3), 2.25*fourButtonsRadius);
 				lrButton.arc(joyconCurvesCenterX - (fourButtonsRadius / 1.5), celPosY + (heightDivision * 2) - (fourButtonsRadius / 1.5), widthDivision - (fourButtonsRadius / 1.5), heightDivision - (fourButtonsRadius / 2), upperCurveAngleBegin, upperCurveAngleBegin + 90);
-				zlzrButton.arc(joyconCurvesCenterX - (widthDivision / 2.325), celPosY + heightDivision + (heightDivision / 1.5), widthDivision/1.75, heightDivision/1.5, upperCurveAngleBegin, upperCurveAngleBegin + 90);
+				zlzrButton.arc(joyconCurvesCenterX - (widthDivision / 2.325), celPosY + heightDivision + (heightDivision / 1.5), widthDivision / 1.75, heightDivision / 1.5, upperCurveAngleBegin, upperCurveAngleBegin + 90);
 
 				stickVisualizationCenterX = joyconLeftEdgeX - horizontalBorder - (stickRadius * 1.75);
 				dataGraphPosX = celPosX + (2 * border);
-				dataGraphWidth = ((stickVisualizationCenterX - border - (stickRadius * 1.75) - horizontalBorder - celPosX)/2) - border;
+				dataGraphWidth = ((stickVisualizationCenterX - border - (stickRadius * 1.75) - horizontalBorder - celPosX) / 2) - border;
 			}
 			else {
 				joyconLeftEdgeX = celPosX + horizontalBorder;
@@ -355,18 +387,105 @@ class Joycon {
 
 				minusPlusButton.moveTo(joyconLeftEdgeX + (widthDivision / 4), joyconLeftEdgeUpperY + (heightDivision / 2));
 				minusPlusButton.lineTo(joyconLeftEdgeX + (widthDivision / 4) - (1.25*fourButtonsRadius), joyconLeftEdgeUpperY + (heightDivision / 2));
-				minusPlusButton.moveTo(joyconLeftEdgeX + (widthDivision / 4) - (0.625*fourButtonsRadius), joyconLeftEdgeUpperY + (heightDivision/2) + (0.625*fourButtonsRadius));
+				minusPlusButton.moveTo(joyconLeftEdgeX + (widthDivision / 4) - (0.625*fourButtonsRadius), joyconLeftEdgeUpperY + (heightDivision / 2) + (0.625*fourButtonsRadius));
 				minusPlusButton.lineTo(joyconLeftEdgeX + (widthDivision / 4) - (0.625*fourButtonsRadius), joyconLeftEdgeUpperY + (heightDivision / 2) - (0.625*fourButtonsRadius));
 				homePrintButton.circle(joyconLeftEdgeX + (widthDivision / 2.5), joyconRightEdgeLowerY - (heightDivision / 2), fourButtonsRadius);
-				srButton.rectangle(joyconLeftEdgeX - (fourButtonsRadius/3) - 1, fourButtonsCenterY - fourButtonsRadius, (fourButtonsRadius / 3), 2.25*fourButtonsRadius);
-				slButton.rectangle(joyconLeftEdgeX - (fourButtonsRadius/3) - 1, stickCenterY + (2 * fourButtonsRadius), (fourButtonsRadius / 3), 2.25*fourButtonsRadius);
+				srButton.rectangle(joyconLeftEdgeX - (fourButtonsRadius / 3) - 1, fourButtonsCenterY - fourButtonsRadius, (fourButtonsRadius / 3), 2.25*fourButtonsRadius);
+				slButton.rectangle(joyconLeftEdgeX - (fourButtonsRadius / 3) - 1, stickCenterY + (2 * fourButtonsRadius), (fourButtonsRadius / 3), 2.25*fourButtonsRadius);
 				lrButton.arc(joyconCurvesCenterX + (fourButtonsRadius / 1.5), celPosY + (heightDivision * 2) - (fourButtonsRadius / 1.5), widthDivision - (fourButtonsRadius / 1.5), heightDivision - (fourButtonsRadius / 2), upperCurveAngleBegin, upperCurveAngleBegin + 90);
 				zlzrButton.arc(joyconCurvesCenterX + (widthDivision / 2.325), celPosY + heightDivision + (heightDivision / 1.5), widthDivision / 1.75, heightDivision / 1.5, upperCurveAngleBegin, upperCurveAngleBegin + 90);
 
 				stickVisualizationCenterX = joyconRightEdgeX + horizontalBorder + (stickRadius * 1.75);
 				dataGraphPosX = stickVisualizationCenterX + (stickRadius * 1.75) + horizontalBorder;
-				dataGraphWidth = ((celWidth - (stickVisualizationCenterX + (stickRadius * 1.75) + border + horizontalBorder - celPosX))/2) - border;
+				dataGraphWidth = ((celWidth - (stickVisualizationCenterX + (stickRadius * 1.75) + border + horizontalBorder - celPosX)) / 2) - border;
 			}
+
+			zlzrButton.setStrokeColor(ofColor(150, 150, 150, 200));
+			zlzrButton.setStrokeWidth(1);
+			zlzrButton.setFillColor(getInputColor(currentInputValues.zlzr));
+			zlzrButton.setFilled(true);
+			zlzrButton.close();
+
+			lrButton.setStrokeColor(ofColor(150, 150, 150, 200));
+			lrButton.setStrokeWidth(1);
+			lrButton.setFillColor(getInputColor(currentInputValues.lr));
+			lrButton.setFilled(true);
+			lrButton.close();
+
+			joyconDrawing.arc(joyconCurvesCenterX, celPosY + (heightDivision * 2), widthDivision, heightDivision, upperCurveAngleBegin, upperCurveAngleBegin + 90);
+			joyconDrawing.arc(joyconCurvesCenterX, celPosY + (celHeight - (heightDivision * 2)), widthDivision, heightDivision, lowerCurveAngleBegin, lowerCurveAngleBegin + 90);
+			joyconDrawing.moveTo(joyconLeftEdgeX, joyconLeftEdgeUpperY);
+			joyconDrawing.lineTo(joyconLeftEdgeX, joyconLeftEdgeLowerY);
+			joyconDrawing.moveTo(joyconRightEdgeX, joyconRightEdgeUpperY);
+			joyconDrawing.lineTo(joyconRightEdgeX, joyconRightEdgeLowerY);
+			joyconDrawing.setStrokeColor(ofColor(255, 255, 255, 255));
+			joyconDrawing.setStrokeWidth(1);
+			joyconDrawing.setFillColor(joyconColor);
+			joyconDrawing.setFilled(true);
+			joyconDrawing.close();
+
+			upXButton.arc(joyconRightEdgeX - (widthDivision / 2), fourButtonsCenterY - (heightDivision / 2), fourButtonsRadius, fourButtonsRadius, 0, 360);
+			downBButton.arc(joyconRightEdgeX - (widthDivision / 2), fourButtonsCenterY + (heightDivision / 2), fourButtonsRadius, fourButtonsRadius, 0, 360);
+			leftYButton.arc(joyconRightEdgeX - (widthDivision / 2) - (fourButtonsRadius * 2), fourButtonsCenterY, fourButtonsRadius, fourButtonsRadius, 0, 360);
+			rightAButton.arc(joyconRightEdgeX - (widthDivision / 2) + (fourButtonsRadius * 2), fourButtonsCenterY, fourButtonsRadius, fourButtonsRadius, 0, 360);
+
+			stickBase.arc(joyconRightEdgeX - (widthDivision / 2), stickCenterY, stickRadius + (stickRadius / 3), stickRadius + (stickRadius / 3), 0, 360);
+			stickButton.setFillColor(getInputColor(currentInputValues.stickClick, 40));
+			stickButton.setFilled(true);
+			stickButton.arc(joyconRightEdgeX - (widthDivision / 2), stickCenterY, stickRadius, stickRadius, 0, 360);
+			stickButton.close();
+
+			minusPlusButton.setStrokeColor(getInputColor(currentInputValues.minusPlus));
+			minusPlusButton.setStrokeWidth(3);
+			minusPlusButton.close();
+
+			homePrintButton.setStrokeColor(ofColor(75, 75, 75));
+			homePrintButton.setStrokeWidth(2);
+			homePrintButton.setFillColor(getInputColor(currentInputValues.printHome));
+			homePrintButton.setFilled(true);
+			homePrintButton.close();
+
+			srButton.setStrokeColor(ofColor(150, 150, 150, 200));
+			srButton.setStrokeWidth(1);
+			srButton.setFillColor(getInputColor(currentInputValues.sr));
+			srButton.setFilled(true);
+			srButton.close();
+
+			slButton.setStrokeColor(ofColor(150, 150, 150, 200));
+			slButton.setStrokeWidth(1);
+			slButton.setFillColor(getInputColor(currentInputValues.sl));
+			slButton.setFilled(true);
+			slButton.close();
+
+			float visualizationRadius = stickRadius * 1.75;
+			float exceededLineWidth = (visualizationRadius + (fourButtonsRadius / 2));
+			stickTargetArc.arc(stickVisualizationCenterX, stickCenterY, visualizationRadius, visualizationRadius, 0, 360);
+			stickTargetArc.setStrokeColor(ofColor(150, 150, 150, 200));
+			stickTargetArc.setStrokeWidth(3);
+			stickTargetArc.setFilled(false);
+			stickTargetArc.close();
+
+			stickTargetLines.moveTo(stickVisualizationCenterX, stickCenterY - exceededLineWidth);
+			stickTargetLines.lineTo(stickVisualizationCenterX, stickCenterY + exceededLineWidth);
+			stickTargetLines.moveTo(stickVisualizationCenterX - exceededLineWidth, stickCenterY);
+			stickTargetLines.lineTo(stickVisualizationCenterX + exceededLineWidth, stickCenterY);
+			stickTargetLines.setStrokeColor(ofColor(150, 150, 150, 200));
+			stickTargetLines.setStrokeWidth(1);
+			stickTargetLines.setFilled(false);
+			stickTargetLines.close();
+
+			stickTargetRadius = visualizationRadius;
+			stickPointerRadius = stickTargetRadius / 6;
+			stickPointerCenterX = stickVisualizationCenterX;
+			stickPointerCenterY = stickCenterY;
+		};
+
+		void drawJoycon(int border) {
+			ofFill();
+			ofSetColor(ofColor(joyconColor.r, joyconColor.g, joyconColor.b, 25));
+			ofDrawRectangle(celPosX, celPosY, celWidth, celHeight); //background rect
+			ofSetColor(ofColor(joyconColor.r, joyconColor.g, joyconColor.b, 50));
+			ofDrawRectangle(celPosX + (border / 2), celPosY + (border / 2), celWidth - border, celHeight - border); //cel rect
 
 			zlzrButton.setStrokeColor(ofColor(150, 150, 150, 200));
 			zlzrButton.setStrokeWidth(1);
@@ -379,14 +498,7 @@ class Joycon {
 			lrButton.setFillColor(getInputColor(currentInputValues.lr));
 			lrButton.setFilled(true);
 			lrButton.draw();
-
-			ofPath joyconDrawing;
-			joyconDrawing.arc(joyconCurvesCenterX, celPosY + (heightDivision * 2), widthDivision, heightDivision, upperCurveAngleBegin, upperCurveAngleBegin + 90);
-			joyconDrawing.arc(joyconCurvesCenterX, celPosY + (celHeight - (heightDivision * 2)), widthDivision, heightDivision, lowerCurveAngleBegin, lowerCurveAngleBegin + 90);
-			joyconDrawing.moveTo(joyconLeftEdgeX, joyconLeftEdgeUpperY);
-			joyconDrawing.lineTo(joyconLeftEdgeX, joyconLeftEdgeLowerY);
-			joyconDrawing.moveTo(joyconRightEdgeX, joyconRightEdgeUpperY);
-			joyconDrawing.lineTo(joyconRightEdgeX, joyconRightEdgeLowerY);
+		
 			joyconDrawing.setStrokeColor(ofColor(255, 255, 255, 255));
 			joyconDrawing.setStrokeWidth(1);
 			joyconDrawing.setFillColor(joyconColor);
@@ -394,25 +506,31 @@ class Joycon {
 			joyconDrawing.draw();//joycon borders
 
 			ofSetColor(ofColor(255, 255, 255, 255));
-			float nameWidth = font.stringWidth(nameOnGUI);
+			/*float nameWidth = font.stringWidth(nameOnGUI);
 			if (nameWidth > celWidth / 2) 
 				font.drawString("J" + ofToString(positionOnList), joyconLeftEdgeX, celPosY + heightDivision / 2);
 			else
-				font.drawString(nameOnGUI, joyconLeftEdgeX + ((controllerType - 2) * (nameWidth - widthDivision)), celPosY + heightDivision/2);
+				font.drawString(nameOnGUI, joyconLeftEdgeX + ((controllerType - 2) * (nameWidth - widthDivision)), celPosY + heightDivision/2);*/
 
-			ofSetColor(getInputColor(currentInputValues.upX));
-			ofDrawCircle(joyconRightEdgeX - (widthDivision / 2), fourButtonsCenterY - (heightDivision / 2), fourButtonsRadius); //up button
-			ofSetColor(getInputColor(currentInputValues.downB));
-			ofDrawCircle(joyconRightEdgeX - (widthDivision / 2), fourButtonsCenterY + (heightDivision / 2), fourButtonsRadius); //down button
-			ofSetColor(getInputColor(currentInputValues.leftY));
-			ofDrawCircle(joyconRightEdgeX - (widthDivision / 2) - (fourButtonsRadius * 2), fourButtonsCenterY, fourButtonsRadius); //left button
-			ofSetColor(getInputColor(currentInputValues.rightA));
-			ofDrawCircle(joyconRightEdgeX - (widthDivision / 2) + (fourButtonsRadius * 2), fourButtonsCenterY, fourButtonsRadius); //right button
+			upXButton.setFillColor(getInputColor(currentInputValues.upX));
+			upXButton.setFilled(true);
+			upXButton.draw();
+			downBButton.setFillColor(getInputColor(currentInputValues.downB));
+			downBButton.setFilled(true);
+			downBButton.draw();
+			leftYButton.setFillColor(getInputColor(currentInputValues.leftY));
+			leftYButton.setFilled(true);
+			leftYButton.draw();
+			rightAButton.setFillColor(getInputColor(currentInputValues.rightA));
+			rightAButton.setFilled(true);
+			rightAButton.draw();
 
-			ofSetColor(ofColor(25, 25, 25));
-			ofDrawCircle(joyconRightEdgeX - (widthDivision / 2), stickCenterY, stickRadius + (stickRadius / 3)); //stick base
-			ofSetColor(getInputColor(currentInputValues.stickClick, 40));
-			ofDrawCircle(joyconRightEdgeX - (widthDivision / 2), stickCenterY, stickRadius); //stick
+			stickBase.setFillColor(getInputColor(0));
+			stickBase.setFilled(true);
+			stickBase.draw();
+			stickButton.setFillColor(getInputColor(currentInputValues.stickClick, 40));
+			stickButton.setFilled(true);
+			stickButton.draw();
 
 			minusPlusButton.setStrokeColor(getInputColor(currentInputValues.minusPlus));
 			minusPlusButton.setStrokeWidth(3);
@@ -436,27 +554,21 @@ class Joycon {
 			slButton.setFilled(true);
 			slButton.draw();
 
-			if (celWidth >= 2 * widthDivision) {
-				float visualizationRadius = stickRadius * 1.75;
-				float exceededLineWidth = (visualizationRadius + (fourButtonsRadius / 2));
-				stickVisualization.arc(stickVisualizationCenterX, stickCenterY, visualizationRadius, visualizationRadius, 0, 360);
-				stickVisualization.setStrokeColor(ofColor(150, 150, 150, 200));
-				stickVisualization.setStrokeWidth(3);
-				stickVisualization.setFilled(false);
-				stickVisualization.draw();
-				stickVisualization.moveTo(stickVisualizationCenterX, stickCenterY - exceededLineWidth);
-				stickVisualization.lineTo(stickVisualizationCenterX, stickCenterY + exceededLineWidth);
-				stickVisualization.moveTo(stickVisualizationCenterX - exceededLineWidth, stickCenterY);
-				stickVisualization.lineTo(stickVisualizationCenterX + exceededLineWidth, stickCenterY);
-				stickVisualization.setStrokeWidth(1);
-				stickVisualization.setFilled(false);
-				stickVisualization.draw();
+			if (celWidth >= minWidthForStick) {
+				stickTargetArc.setStrokeColor(ofColor(150, 150, 150, 200));
+				stickTargetArc.setStrokeWidth(3);
+				stickTargetArc.setFilled(false);
+				stickTargetArc.draw();
 
-				float posX = currentInputValues.stickX * visualizationRadius;
-				float posY = currentInputValues.stickY * visualizationRadius * -1;
+				stickTargetLines.setStrokeColor(ofColor(150, 150, 150, 200));
+				stickTargetLines.setStrokeWidth(1);
+				stickTargetLines.setFilled(false);
+				stickTargetLines.draw();
 
+				float posX = currentInputValues.stickX * stickTargetRadius;
+				float posY = currentInputValues.stickY * stickTargetRadius * -1;
 				ofSetColor(joyconColor);
-				ofDrawCircle(stickVisualizationCenterX + posX, stickCenterY + posY, fourButtonsRadius / 2); //stick position indicador
+				ofDrawCircle(stickPointerCenterX + posX, stickPointerCenterY + posY, stickPointerRadius); //stick pointer indicador
 			}
 
 			bool enoughSpaceForCookedGraph = true;
@@ -466,51 +578,55 @@ class Joycon {
 			}
 
 			if (drawRawIMUData && dataGraphWidth >= celWidth * 1 / 5) {
-				float dataGraphPosY = (heightDivision/2) + border;
-				float dataGraphHeight = (celHeight/2) - dataGraphPosY - border;
-				draw2DGraph(dataGraphPosX, celPosY + dataGraphPosY, dataGraphWidth, dataGraphHeight, gyroXValues, gyroYValues, gyroZValues, MAX_GYRO_VALUE, 3);
+				float localDataGraphPosY = dataGraphPosY;
+				float dataGraphHeight = (celHeight/2) - localDataGraphPosY - border;
+				draw2DGraph(dataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, gyroXValues, gyroYValues, gyroZValues, MAX_GYRO_VALUE, 3);
 				ofSetColor(joyconColor);
 				if (font.stringWidth("angularVelocity") < dataGraphWidth && font.stringHeight("V") < dataGraphHeight)
-					ofDrawBitmapString("angularVelocity", dataGraphPosX, celPosY + dataGraphPosY + border * 2);
+					ofDrawBitmapString("angularVelocity", dataGraphPosX, celPosY + localDataGraphPosY + border * 2);
 				else if (font.stringWidth("angularVelocity") >= dataGraphWidth && font.stringHeight("V") < dataGraphHeight)
-					ofDrawBitmapString("aV", dataGraphPosX, celPosY + dataGraphPosY + border * 2);
+					ofDrawBitmapString("aV", dataGraphPosX, celPosY + localDataGraphPosY + border * 2);
 
-				dataGraphPosY = dataGraphPosY + dataGraphHeight + border;
-				draw2DGraph(dataGraphPosX, celPosY + dataGraphPosY, dataGraphWidth, dataGraphHeight, rawAccelXValues, rawAccelYValues, rawAccelZValues, MAX_ACCEL_VALUE, 3);
+				localDataGraphPosY = localDataGraphPosY + dataGraphHeight + border;
+				draw2DGraph(dataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, rawAccelXValues, rawAccelYValues, rawAccelZValues, MAX_ACCEL_VALUE, 3);
 				ofSetColor(joyconColor);
 				if (font.stringWidth("rawAccelerometer") < dataGraphWidth && font.stringHeight("A") < dataGraphHeight)
-					ofDrawBitmapString("rawAccelerometer", dataGraphPosX, celPosY + dataGraphPosY + border * 2);
+					ofDrawBitmapString("rawAccelerometer", dataGraphPosX, celPosY + localDataGraphPosY + border * 2);
 				else if (font.stringWidth("rawAccelerometer") >= dataGraphWidth && font.stringHeight("A") < dataGraphHeight)
-					ofDrawBitmapString("rA", dataGraphPosX, celPosY + dataGraphPosY + border * 2);
+					ofDrawBitmapString("rA", dataGraphPosX, celPosY + localDataGraphPosY + border * 2);
 			}
 
 			if (drawCookedIMUData && enoughSpaceForCookedGraph) {
 				dataGraphPosX = dataGraphPosX + dataGraphWidth + border;
-				float dataGraphPosY = (heightDivision / 2) + border;
-				float dataGraphHeight = (celHeight - (2 * dataGraphPosY)) / 3 - border;
-				draw2DGraph(dataGraphPosX, celPosY + dataGraphPosY, dataGraphWidth, dataGraphHeight, quatIValues, quatJValues, quatKValues, 1, 4, quatWValues);
+				float localDataGraphPosY = dataGraphPosY;
+				float dataGraphHeight = (celHeight - (2 * localDataGraphPosY)) / 3 - border;
+				draw2DGraph(dataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, quatIValues, quatJValues, quatKValues, 1, 4, quatWValues);
 				ofSetColor(joyconColor);
 				if (font.stringWidth("quatOrientation") < dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
-					ofDrawBitmapString("quatOrientation", dataGraphPosX, celPosY + dataGraphPosY + border * 2);
+					ofDrawBitmapString("quatOrientation", dataGraphPosX, celPosY + localDataGraphPosY + border * 2);
 				else if(font.stringWidth("quatOrientation") >= dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
-					ofDrawBitmapString("qO", dataGraphPosX, celPosY + dataGraphPosY + border * 2);
+					ofDrawBitmapString("qO", dataGraphPosX, celPosY + localDataGraphPosY + border * 2);
 
-				dataGraphPosY = dataGraphPosY + dataGraphHeight + border;
-				draw2DGraph(dataGraphPosX, celPosY + dataGraphPosY, dataGraphWidth, dataGraphHeight, cookedAccelXValues, cookedAccelYValues, cookedAccelZValues, MAX_ACCEL_VALUE, 3);
+				localDataGraphPosY = localDataGraphPosY + dataGraphHeight + border;
+				draw2DGraph(dataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, cookedAccelXValues, cookedAccelYValues, cookedAccelZValues, MAX_ACCEL_VALUE, 3);
 				ofSetColor(joyconColor);
 				if (font.stringWidth("accel-gravity") < dataGraphWidth && font.stringHeight("A") < dataGraphHeight)
-					ofDrawBitmapString("accel-gravity", dataGraphPosX, celPosY + dataGraphPosY + border * 2);
+					ofDrawBitmapString("accel-gravity", dataGraphPosX, celPosY + localDataGraphPosY + border * 2);
 				else if (font.stringWidth("accel-gravity") >= dataGraphWidth && font.stringHeight("A") < dataGraphHeight)
-					ofDrawBitmapString("rA-g", dataGraphPosX, celPosY + dataGraphPosY + border * 2);
+					ofDrawBitmapString("rA-g", dataGraphPosX, celPosY + localDataGraphPosY + border * 2);
 
-				dataGraphPosY = dataGraphPosY + dataGraphHeight + border;
-				draw2DGraph(dataGraphPosX, celPosY + dataGraphPosY, dataGraphWidth, dataGraphHeight, gravityXValues, gravityYValues, gravityZValues, 1, 3);
+				localDataGraphPosY = localDataGraphPosY + dataGraphHeight + border;
+				draw2DGraph(dataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, gravityXValues, gravityYValues, gravityZValues, 1, 3);
 				ofSetColor(joyconColor);
 				if (font.stringWidth("gravity") < dataGraphWidth && font.stringHeight("G") < dataGraphHeight)
-					ofDrawBitmapString("gravity", dataGraphPosX, celPosY + dataGraphPosY + border * 2);
+					ofDrawBitmapString("gravity", dataGraphPosX, celPosY + localDataGraphPosY + border * 2);
 				else if (font.stringWidth("gravity") >= dataGraphWidth && font.stringHeight("G") < dataGraphHeight)
-					ofDrawBitmapString("grav", dataGraphPosX, celPosY + dataGraphPosY + border * 2);
+					ofDrawBitmapString("grav", dataGraphPosX, celPosY + localDataGraphPosY + border * 2);
 			}
+
+			ofSetColor(ofColor(255, 255, 255, 255));
+			float nameWidth = font.stringWidth(nameOnGUI);
+			font.drawString(nameOnGUI, (celPosX + (2*border)) + (abs(controllerType - 2) * (celWidth - (nameWidth + (4*border)))), dataGraphPosY - border);
 		}
 
 		void draw2DGraph(float posX, float posY, float graphWidth, float graphHeight, vector<float> graphValuesI, vector<float> graphValuesJ, vector<float> graphValuesK, float maxYValue = 1, int numLayers = 4, vector<float> graphValuesW = vector<float>()) {

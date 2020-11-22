@@ -1,9 +1,6 @@
 #pragma once
 
-#define MAX_GYRO_VALUE 4000
-#define MAX_ACCEL_VALUE 8
-
-typedef struct inputValues
+struct inputValues
 {
 	bool upX = 0;
 	bool downB = 0;
@@ -18,9 +15,9 @@ typedef struct inputValues
 	bool sl = 0;
 	float stickX = 0;
 	float stickY = 0;
-} inputValues;
+};
 
-typedef struct inputOSCTags
+struct inputOSCTags
 {
 	string upX = "/upX";
 	string downB = "/downB";
@@ -54,4 +51,4 @@ typedef struct inputOSCTags
 	string gravX = "/gravX";
 	string gravY = "/gravY";
 	string gravZ = "/gravZ";
-} inputOSCTags;
+};

@@ -86,10 +86,15 @@ void ofApp::setup(){
 	winHeightProportion = 3;
 	hMargin = screenWidth / winWidthProportion;
 	vMargin = screenHeight / winHeightProportion;
+
+	generalConfigWindowWidth = screenWidth - hMargin;
+	generalConfigWindowHeight = screenHeight - vMargin;
+	generalConfigWindowSettings.setSize(generalConfigWindowWidth, generalConfigWindowHeight);
+	generalConfigWindowSettings.setPosition(ofVec2f(hMargin / 2, vMargin / 2));
+	generalConfigWindowSettings.resizable = false;
+
 	joyconConfigWindowSettings.setSize(screenWidth - hMargin, screenHeight - vMargin);
 	joyconConfigWindowSettings.setPosition(ofVec2f(hMargin / 2, vMargin / 2));
-	generalConfigWindowSettings.setSize(screenWidth - hMargin, screenHeight - vMargin);
-	generalConfigWindowSettings.setPosition(ofVec2f(hMargin / 2, vMargin / 2));
 }
 
 //--------------------------------------------------------------
@@ -97,42 +102,17 @@ void ofApp::update(){
 	checkAllButtonStates();
 
 	if (joyconsVec.size() > 0) {
-		numSelectedJoycons = 0;
+		int selectedJoyconsCount = 0;
 		for (int index = 0; index < joyconsVec.size(); index++) {
-			if (joyconsVec[index].GUIToggle && (!joyconsVec[index].isVirtual || (joyconsVec[index].isVirtual && useVirtualJoycons)))
-				numSelectedJoycons++;
-		}
-
-		if (numSelectedJoycons > 0) {
-			int joyconCelLines = 1;
-			int joyconCelColumns = numSelectedJoycons;
-
-			if (numSelectedJoycons > 2) {
-				joyconCelColumns = (numSelectedJoycons / 2) + (numSelectedJoycons % 2);
-				joyconCelLines = 2;
-			}
-
-			joyconCelsWidth = winWidth / joyconCelColumns;
-			joyconCelsHeight = winHeight / joyconCelLines;
-
-			int curColumn = 0;
-			int curLine = 0;
-			for(int index = 0; index < joyconsVec.size(); index++){
-				if (joyconsVec[index].GUIToggle && (!joyconsVec[index].isVirtual || (joyconsVec[index].isVirtual && useVirtualJoycons))) {
-					if (curColumn == joyconCelColumns) {
-						curColumn = 0;
-						curLine++;
-					}
-					joyconsVec[index].celPosX = curColumn * joyconCelsWidth;
-					joyconsVec[index].celPosY = curLine * joyconCelsHeight;
-					joyconsVec[index].updateGraphsVisualizations();
-					curColumn++;
-				}
+			if (joyconsVec[index].GUIToggle && (!joyconsVec[index].isVirtual || (joyconsVec[index].isVirtual && useVirtualJoycons))) {
+				selectedJoyconsCount++;
+				joyconsVec[index].updateGraphsVisualizations();
 			}
 		}
-		else {
-			joyconCelsWidth = 0;
-			joyconCelsHeight = 0;
+
+		if (selectedJoyconsCount != numSelectedJoycons) {
+			numSelectedJoycons = selectedJoyconsCount;
+			updateJoyconVisualizations();
 		}
 	}
 }
@@ -142,7 +122,7 @@ void ofApp::draw() {
 	ofBackground(10);
 	for each (Joycon joycon in joyconsVec) {
 		if (joycon.GUIToggle && (!joycon.isVirtual || (joycon.isVirtual && useVirtualJoycons))) {
-			joycon.drawJoycon(joyconCelsWidth, joyconCelsHeight, border);
+			joycon.drawJoycon(border);
 		}
 	}
 
@@ -241,6 +221,7 @@ void ofApp::windowResized(int w, int h){
 	winWidth = w;
 	winHeight = h;
 
+	updateJoyconVisualizations();
 	guiControl.setPosition(w - guiWidth - border, border);
 	guiConfigVirtualJoycons.setPosition(guiControl.getPosition().x - guiWidth - border, border);
 	guiJoyconsList.setPosition(border, border);
@@ -274,6 +255,7 @@ void ofApp::checkAllButtonStates() {
 		}
 		setUpdateConnected = false;
 		framesWaited = 0;
+		updateJoyconVisualizations();
 	}
 
 	if (framesWaited == framesToWait) {
@@ -358,8 +340,7 @@ void ofApp::instantiateConnectedJoycons() {
 		int lastDeviceId = numDevicesConnected + numDevicesConnectedSum - 1;
 		int devicePosition = 0; //the position of the device on 'joyconsVec'
 		for (int deviceId = numDevicesConnectedSum; deviceId <= lastDeviceId; deviceId++, devicePosition++) {
-			Joycon newJoycon(deviceId, devicePosition, guiColor.a, font);
-			joyconsVec.push_back(newJoycon);
+			joyconsVec.push_back(Joycon(deviceId, devicePosition, guiColor.a, font));
 		}
 	}
 	numDevicesConnectedSum = numDevicesConnected + numDevicesConnectedSum;
@@ -391,6 +372,38 @@ void ofApp::updateJoyconData(int joyconId, JOY_SHOCK_STATE newButtonsStickData, 
 	int firstPos = (numDevicesConnectedSum - numDevicesConnected);
 	int joyconPosVec = joyconId - firstPos;
 	joyconsVec[joyconPosVec].updateData(newButtonsStickData, newRawIMUData);
+}
+
+void ofApp::updateJoyconVisualizations() {
+	if (numSelectedJoycons > 0) {
+		int joyconCelLines = 1;
+		int joyconCelColumns = numSelectedJoycons;
+
+		if (numSelectedJoycons > 2) {
+			joyconCelColumns = (numSelectedJoycons / 2) + (numSelectedJoycons % 2);
+			joyconCelLines = 2;
+		}
+
+		joyconCelsWidth = winWidth / joyconCelColumns;
+		joyconCelsHeight = winHeight / joyconCelLines;
+
+		int curColumn = 0;
+		int curLine = 0;
+		for (int index = 0; index < joyconsVec.size(); index++) {
+			if (joyconsVec[index].GUIToggle && (!joyconsVec[index].isVirtual || (joyconsVec[index].isVirtual && useVirtualJoycons))) {
+				if (curColumn == joyconCelColumns) {
+					curColumn = 0;
+					curLine++;
+				}
+				joyconsVec[index].updateDrawings(joyconCelsWidth, joyconCelsHeight, curColumn * joyconCelsWidth, curLine * joyconCelsHeight, border);
+				curColumn++;
+			}
+		}
+	}
+	else {
+		joyconCelsWidth = 0;
+		joyconCelsHeight = 0;
+	}
 }
 
 void ofApp::setupGuiControl() {
@@ -445,12 +458,20 @@ void ofApp::openGeneralConfigWindow() {
 	generalConfigWindowSettings.title = "General Config";
 	generalConfigWindow = ofCreateWindow(generalConfigWindowSettings);
 	ofAddListener(generalConfigWindow->events().draw, this, &ofApp::drawGeneralConfigWindow);
+	ofAddListener(generalConfigWindow->events().mousePressed, this, &ofApp::mousePressedGeneralConfigWindow);
 }
 
 void ofApp::drawGeneralConfigWindow(ofEventArgs &args) {
+	ofBackground(10);
+	ofSetColor(50);
+	ofRect(border, border, generalConfigWindowWidth - (2*border), generalConfigWindowHeight - (2*border));
 }
 
-void ofApp::openJoyconConfigWindow(Joycon& joyconToConfig) {
+void ofApp::mousePressedGeneralConfigWindow(ofMouseEventArgs &args) {
+	string a = ofSystemTextBoxDialog("testezim", "respostatestzim");
+}
+
+void ofApp::openJoyconConfigWindow(Joycon &joyconToConfig) {
 	joyconConfigWindowSettings.title = "Config: " + joyconToConfig.nameOnGUI;
 	joyconConfigWindow = ofCreateWindow(joyconConfigWindowSettings);
 	ofAddListener(joyconConfigWindow->events().draw, this, &ofApp::drawJoyconConfigWindow);

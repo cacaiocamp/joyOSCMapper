@@ -28,16 +28,20 @@ class ofApp : public ofBaseApp{
 		void instantiateConnectedJoycons();
 		void disconnectAndDisposeAll();
 		void updateJoyconData(int deviceId, JOY_SHOCK_STATE newButtonsStickData, IMU_STATE newRawIMUData);
+		void updateJoyconVisualizations();
 		void setupGuiJoyconsList();
 		void setupGuiControl();
 		void setGuiWithMessage(ofxPanel& gui, string message);
+
 		void openGeneralConfigWindow();
 		void drawGeneralConfigWindow(ofEventArgs &args);
+		void mousePressedGeneralConfigWindow(ofMouseEventArgs &args);
+
 		void openJoyconConfigWindow(Joycon& joyconToConfig);
 		void drawJoyconConfigWindow(ofEventArgs &args);
 
-		int winWidth = 0; int winHeight = 0; //dimensions of the window
-		int border = 5; //border size
+		int winWidth = 0; int winHeight = 0;
+		int border = 5;
 
 		int numDevicesConnected = 0;
 		int numDevicesConnectedSum = 0; //_n1
@@ -47,11 +51,6 @@ class ofApp : public ofBaseApp{
 		float joyconCelsWidth = 0;
 		float joyconCelsHeight = 0;
 		ofTrueTypeFont font;
-
-		ofGLFWWindowSettings generalConfigWindowSettings;
-		shared_ptr<ofAppBaseWindow> generalConfigWindow;
-		ofGLFWWindowSettings joyconConfigWindowSettings;
-		shared_ptr<ofAppBaseWindow> joyconConfigWindow;
 
 		//guiControl variables
 		ofxPanel guiControl;
@@ -107,6 +106,16 @@ class ofApp : public ofBaseApp{
 		int framesWaited = framesToWait; //number of frames waited
 		ofxLabel messageLabel;
 		ofColor guiColor = ofColor(0, 0, 0, 120);
+
+		//other windows
+		ofGLFWWindowSettings generalConfigWindowSettings;
+		shared_ptr<ofAppBaseWindow> generalConfigWindow;
+		int generalConfigWindowWidth; int generalConfigWindowHeight;
+		ofGLFWWindowSettings joyconConfigWindowSettings;
+		shared_ptr<ofAppBaseWindow> joyconConfigWindow;
+
+		//default configs
+		inputOSCTags defaultTags;
 };
 
 /*
