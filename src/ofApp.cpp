@@ -76,7 +76,7 @@ void ofApp::setup(){
 	removeAVirtualJoycon.setBackgroundColor(guiColor);
 	removeAllVirtual.setBackgroundColor(guiColor);
 	virtualJoyconsAddedLabel.setBackgroundColor(guiColor);
-	guiConfigVirtualJoycons.setPosition(guiControl.getPosition().x - guiWidth - border, border);
+	guiConfigVirtualJoycons.setPosition(guiControl.getPosition().x - guiWidth - BORDER, BORDER);
 
 	if (numDevicesConnected == 0) {
 		showShortcutsHelp = true;
@@ -112,7 +112,7 @@ void ofApp::update(){
 
 		if (selectedJoyconsCount != numSelectedJoycons) {
 			numSelectedJoycons = selectedJoyconsCount;
-			updateJoyconVisualizations();
+			updateJoyconsDrawings();
 		}
 	}
 }
@@ -122,7 +122,7 @@ void ofApp::draw() {
 	ofBackground(10);
 	for each (Joycon joycon in joyconsVec) {
 		if (joycon.GUIToggle && (!joycon.isVirtual || (joycon.isVirtual && useVirtualJoycons))) {
-			joycon.drawJoycon(border);
+			joycon.drawJoycon();
 		}
 	}
 
@@ -139,6 +139,10 @@ void ofApp::draw() {
 
 	if (useVirtualJoycons && showGuiControl)
 		guiConfigVirtualJoycons.draw();
+
+	if (clickedButtonOscMessage != "") {
+		ofDrawBitmapString(clickedButtonOscMessage, clickedButtonPos.x, clickedButtonPos.y);
+	}
 }
 
 //--------------------------------------------------------------
@@ -193,17 +197,55 @@ void ofApp::mouseMoved(int x, int y ){
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mousePressed(int x, int y, int button){
 	
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseReleased(int x, int y, int button){
+void ofApp::mousePressed(int x, int y, int button){
+	for (int index = 0; index < joyconsVec.size(); index++) {
+		if (x >= joyconsVec[index].celPosX && x <= joyconsVec[index].celPosX + joyconsVec[index].celWidth &&
+			y >= joyconsVec[index].celPosY && y <= joyconsVec[index].celPosY + joyconsVec[index].celHeight) {
+			joyconCelPressedIndex = index;
+			break;
+		}
+	}
 
+	if (joyconCelPressedIndex >= 0) {
+		if(button == OF_MOUSE_BUTTON_LEFT)
+			joyconsVec[joyconCelPressedIndex].checkMouseClick(x, y, button);
+		else{
+			clickedButtonOscMessage = joyconsVec[joyconCelPressedIndex].checkMouseClick(x, y, button);
+			int messageWidth = font.stringWidth(clickedButtonOscMessage);
+			if (x + messageWidth < winWidth)
+				clickedButtonPos.x = x;
+			else
+				clickedButtonPos.x = x - ((x + messageWidth) - winWidth);
+
+			int messageHeight = font.stringHeight(clickedButtonOscMessage);
+			if (y + messageHeight < winHeight)
+				clickedButtonPos.y = y;
+			else
+				clickedButtonPos.y = y - ((y + messageHeight) - winHeight);
+		}
+	}
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseReleased(int x, int y, int button){
+	if (joyconCelPressedIndex >= 0) {
+		if (button == OF_MOUSE_BUTTON_LEFT && joyconsVec[joyconCelPressedIndex].clickedInputPointer != NULL) {
+			*joyconsVec[joyconCelPressedIndex].clickedInputPointer = false;
+			joyconsVec[joyconCelPressedIndex].clickedInputPointer = NULL;
+		}
+		else {
+			clickedButtonOscMessage = "";
+			clickedButtonPos.x = NULL;
+			clickedButtonPos.y = NULL;
+		}
+
+		if(joyconsVec[joyconCelPressedIndex].clickedInputPointer == NULL && clickedButtonOscMessage == "")
+			joyconCelPressedIndex = -1;
+	}
 }
 
 //--------------------------------------------------------------
@@ -221,12 +263,12 @@ void ofApp::windowResized(int w, int h){
 	winWidth = w;
 	winHeight = h;
 
-	updateJoyconVisualizations();
-	guiControl.setPosition(w - guiWidth - border, border);
-	guiConfigVirtualJoycons.setPosition(guiControl.getPosition().x - guiWidth - border, border);
-	guiJoyconsList.setPosition(border, border);
+	updateJoyconsDrawings();
+	guiControl.setPosition(w - guiWidth - BORDER, BORDER);
+	guiConfigVirtualJoycons.setPosition(guiControl.getPosition().x - guiWidth - BORDER, BORDER);
+	guiJoyconsList.setPosition(BORDER, BORDER);
 	guiShortcuts.setPosition((winWidth / 2) - guiWidth, (winHeight / 2) - (guiShortcuts.getHeight() / 2));
-	guiGraphHelp.setPosition(guiShortcuts.getPosition().x + guiWidth + border, (winHeight / 2) - (guiGraphHelp.getHeight() / 2));
+	guiGraphHelp.setPosition(guiShortcuts.getPosition().x + guiWidth + BORDER, (winHeight / 2) - (guiGraphHelp.getHeight() / 2));
 }
 
 //--------------------------------------------------------------
@@ -255,7 +297,7 @@ void ofApp::checkAllButtonStates() {
 		}
 		setUpdateConnected = false;
 		framesWaited = 0;
-		updateJoyconVisualizations();
+		updateJoyconsDrawings();
 	}
 
 	if (framesWaited == framesToWait) {
@@ -374,7 +416,7 @@ void ofApp::updateJoyconData(int joyconId, JOY_SHOCK_STATE newButtonsStickData, 
 	joyconsVec[joyconPosVec].updateData(newButtonsStickData, newRawIMUData);
 }
 
-void ofApp::updateJoyconVisualizations() {
+void ofApp::updateJoyconsDrawings() {
 	if (numSelectedJoycons > 0) {
 		int joyconCelLines = 1;
 		int joyconCelColumns = numSelectedJoycons;
@@ -395,7 +437,7 @@ void ofApp::updateJoyconVisualizations() {
 					curColumn = 0;
 					curLine++;
 				}
-				joyconsVec[index].updateDrawings(joyconCelsWidth, joyconCelsHeight, curColumn * joyconCelsWidth, curLine * joyconCelsHeight, border);
+				joyconsVec[index].updateDrawings(joyconCelsWidth, joyconCelsHeight, curColumn * joyconCelsWidth, curLine * joyconCelsHeight);
 				curColumn++;
 			}
 		}
@@ -415,7 +457,7 @@ void ofApp::setupGuiControl() {
 	guiControl.add(connectedDevicesLabel.setup("numConnectedDevices", connectedDevicesLabel, guiWidth, guiLineHeight));
 	guiControl.add(showShortcutsHelp.setup("shortcuts/help", false, guiWidth, guiLineHeight));
 	connectedDevicesLabel.operator=(ofToString(numDevicesConnected));
-	guiControl.setPosition(winWidth - guiWidth - border, border);
+	guiControl.setPosition(winWidth - guiWidth - BORDER, BORDER);
 
 	guiControl.setBackgroundColor(guiColor);
 	updateConnected.setBackgroundColor(guiColor);
@@ -428,7 +470,7 @@ void ofApp::setupGuiControl() {
 void ofApp::setupGuiJoyconsList(){
 	guiJoyconsList.setup();
 	guiJoyconsList.setName("JoyconsList");
-	guiJoyconsList.setPosition(border, border);
+	guiJoyconsList.setPosition(BORDER, BORDER);
 	guiJoyconsList.setBackgroundColor(guiColor);
 
 	if(joyconsVec.size() > 0){
@@ -464,7 +506,7 @@ void ofApp::openGeneralConfigWindow() {
 void ofApp::drawGeneralConfigWindow(ofEventArgs &args) {
 	ofBackground(10);
 	ofSetColor(50);
-	ofRect(border, border, generalConfigWindowWidth - (2*border), generalConfigWindowHeight - (2*border));
+	ofRect(BORDER, BORDER, generalConfigWindowWidth - (2*BORDER), generalConfigWindowHeight - (2*BORDER));
 }
 
 void ofApp::mousePressedGeneralConfigWindow(ofMouseEventArgs &args) {

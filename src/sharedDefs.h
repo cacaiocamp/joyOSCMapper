@@ -1,5 +1,7 @@
 #pragma once
 
+#define BORDER 5
+
 struct inputValues
 {
 	bool upX = 0;

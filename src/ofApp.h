@@ -28,7 +28,7 @@ class ofApp : public ofBaseApp{
 		void instantiateConnectedJoycons();
 		void disconnectAndDisposeAll();
 		void updateJoyconData(int deviceId, JOY_SHOCK_STATE newButtonsStickData, IMU_STATE newRawIMUData);
-		void updateJoyconVisualizations();
+		void updateJoyconsDrawings();
 		void setupGuiJoyconsList();
 		void setupGuiControl();
 		void setGuiWithMessage(ofxPanel& gui, string message);
@@ -41,7 +41,6 @@ class ofApp : public ofBaseApp{
 		void drawJoyconConfigWindow(ofEventArgs &args);
 
 		int winWidth = 0; int winHeight = 0;
-		int border = 5;
 
 		int numDevicesConnected = 0;
 		int numDevicesConnectedSum = 0; //_n1
@@ -50,6 +49,9 @@ class ofApp : public ofBaseApp{
 		int numSelectedJoycons = 0;
 		float joyconCelsWidth = 0;
 		float joyconCelsHeight = 0;
+		int joyconCelPressedIndex = -1; //_n2
+		string clickedButtonOscMessage = "";
+		ofVec2f clickedButtonPos;
 		ofTrueTypeFont font;
 
 		//guiControl variables
@@ -57,7 +59,7 @@ class ofApp : public ofBaseApp{
 		bool showGuiControl = true;
 		ofxButton updateConnected;
 		bool executeUpdateConnected = false;
-		bool setUpdateConnected = false; //_n2
+		bool setUpdateConnected = false; //_n3
 		ofxButton disconnectAndDispose;
 		bool executeDisconnectAndDispose = false;
 		ofxToggle useVirtualJoycons;
@@ -71,7 +73,7 @@ class ofApp : public ofBaseApp{
 		bool showGuiJoyconsList = false;
 
 		//guiConfigVirtualJoycons variables
-		ofxPanel guiConfigVirtualJoycons; //_n3
+		ofxPanel guiConfigVirtualJoycons;
 		ofxButton addVirtualJoycon;
 		bool executeAddVirtualJoycon = false;
 		ofxButton removeAVirtualJoycon;
@@ -123,7 +125,7 @@ class ofApp : public ofBaseApp{
 		happens with the 'updateConnected' GUI button, those 2 variables are used to control the deviceIds.
 		Therefore, 'numDevicesConnectedSum' is used as the first deviceId in 'ofApp::instatiateJoycons()',
 		with 'numConnectedDevices' being the number of real joycons connected;
-	n2- This boolean is used with 'updateConnected' button. The button sets a message to the GUI informing
+	n3- This boolean is used with 'updateConnected' button. The button sets a message to the GUI informing
 		that the update is running and sets the boolean to true, drawing the message on GUI on the current
 		frame and starting the update on the next one (cause the boolean is true). This is made just to allow
 		the user to see the reconnecting message, as the 'JslConnectDevices()' may take a while to process
