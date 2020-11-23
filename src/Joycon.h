@@ -202,32 +202,34 @@ class Joycon {
 		}
 
 		void sendNewInputsAsOSC(inputValues newInputValues) {
-			if (newInputValues.upX != currentInputValues.upX)
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.upX, newInputValues.upX));
-			if (newInputValues.downB != currentInputValues.downB)
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.downB, newInputValues.downB));
-			if (newInputValues.leftY != currentInputValues.leftY)
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.leftY, newInputValues.leftY));
-			if (newInputValues.rightA != currentInputValues.rightA)
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.rightA, newInputValues.rightA));
-			if (newInputValues.minusPlus != currentInputValues.minusPlus)
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.minusPlus, newInputValues.minusPlus));
-			if (newInputValues.stickClick != currentInputValues.stickClick)
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.stickClick, newInputValues.stickClick));
-			if (newInputValues.lr != currentInputValues.lr)
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.lr, newInputValues.lr));
-			if (newInputValues.zlzr != currentInputValues.zlzr)
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.zlzr, newInputValues.zlzr));
-			if (newInputValues.printHome != currentInputValues.printHome)
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.printHome, newInputValues.printHome));
-			if (newInputValues.sl != currentInputValues.sl)
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.sl, newInputValues.sl));
-			if (newInputValues.sr != currentInputValues.sr)
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.sr, newInputValues.sr));
-			if (abs(newInputValues.stickX - currentInputValues.stickX) >= minStickStep)
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.stickX, newInputValues.stickX));
-			if (abs(newInputValues.stickY - currentInputValues.stickY) >= minStickStep)
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.stickY, newInputValues.stickY));
+			if (!isVirtual) {
+				if (newInputValues.upX != currentInputValues.upX)
+					oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.upX, newInputValues.upX));
+				if (newInputValues.downB != currentInputValues.downB)
+					oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.downB, newInputValues.downB));
+				if (newInputValues.leftY != currentInputValues.leftY)
+					oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.leftY, newInputValues.leftY));
+				if (newInputValues.rightA != currentInputValues.rightA)
+					oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.rightA, newInputValues.rightA));
+				if (newInputValues.minusPlus != currentInputValues.minusPlus)
+					oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.minusPlus, newInputValues.minusPlus));
+				if (newInputValues.stickClick != currentInputValues.stickClick)
+					oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.stickClick, newInputValues.stickClick));
+				if (newInputValues.lr != currentInputValues.lr)
+					oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.lr, newInputValues.lr));
+				if (newInputValues.zlzr != currentInputValues.zlzr)
+					oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.zlzr, newInputValues.zlzr));
+				if (newInputValues.printHome != currentInputValues.printHome)
+					oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.printHome, newInputValues.printHome));
+				if (newInputValues.sl != currentInputValues.sl)
+					oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.sl, newInputValues.sl));
+				if (newInputValues.sr != currentInputValues.sr)
+					oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.sr, newInputValues.sr));
+				if (abs(newInputValues.stickX - currentInputValues.stickX) >= minStickStep)
+					oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.stickX, newInputValues.stickX));
+				if (abs(newInputValues.stickY - currentInputValues.stickY) >= minStickStep)
+					oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.stickY, newInputValues.stickY));
+			}
 
 			if (useRawIMUData) {
 				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.gyroX, rawIMUData.gyroX));
@@ -707,70 +709,70 @@ class Joycon {
 
 			if (insideJoycon) {
 				if (pointInsidePolylines(upXButton.getOutline(), mouseClickX, mouseClickY)) {
-					if (mouseButton == OF_MOUSE_BUTTON_LEFT) {
+					if (mouseButton == OF_MOUSE_BUTTON_LEFT && isVirtual) {
 						currentInputValues.upX = true;
 						clickedInputPointer = &currentInputValues.upX;
-						return "";
+						return inputOSCTags.upX;
 					}
 					else {
 						return joyconOscAddress + inputOSCTags.upX;
 					}
 				}
 				else if (pointInsidePolylines(downBButton.getOutline(), mouseClickX, mouseClickY)) {
-					if (mouseButton == OF_MOUSE_BUTTON_LEFT) {
+					if (mouseButton == OF_MOUSE_BUTTON_LEFT && isVirtual) {
 						currentInputValues.downB = true;
 						clickedInputPointer = &currentInputValues.downB;
-						return "";
+						return inputOSCTags.downB;
 					}
 					else {
 						return joyconOscAddress + inputOSCTags.downB;
 					}
 				}
 				else if (pointInsidePolylines(leftYButton.getOutline(), mouseClickX, mouseClickY)) {
-					if (mouseButton == OF_MOUSE_BUTTON_LEFT) {
+					if (mouseButton == OF_MOUSE_BUTTON_LEFT && isVirtual) {
 						currentInputValues.leftY = true;
 						clickedInputPointer = &currentInputValues.leftY;
-						return "";
+						return inputOSCTags.leftY;
 					}
 					else {
 						return joyconOscAddress + inputOSCTags.leftY;
 					}
 				}
 				else if (pointInsidePolylines(rightAButton.getOutline(), mouseClickX, mouseClickY)) {
-					if (mouseButton == OF_MOUSE_BUTTON_LEFT) {
+					if (mouseButton == OF_MOUSE_BUTTON_LEFT && isVirtual) {
 						currentInputValues.rightA = true;
 						clickedInputPointer = &currentInputValues.rightA;
-						return "";
+						return inputOSCTags.rightA;
 					}
 					else {
 						return joyconOscAddress + inputOSCTags.rightA;
 					}
 				}
 				else if (pointInsidePolylines(minusPlusButton.getOutline(), mouseClickX, mouseClickY)) {
-					if (mouseButton == OF_MOUSE_BUTTON_LEFT) {
+					if (mouseButton == OF_MOUSE_BUTTON_LEFT && isVirtual) {
 						currentInputValues.minusPlus = true;
 						clickedInputPointer = &currentInputValues.minusPlus;
-						return "";
+						return inputOSCTags.minusPlus;
 					}
 					else {
 						return joyconOscAddress + inputOSCTags.minusPlus;
 					}
 				}
 				else if (pointInsidePolylines(printHomeButton.getOutline(), mouseClickX, mouseClickY)) {
-					if (mouseButton == OF_MOUSE_BUTTON_LEFT) {
+					if (mouseButton == OF_MOUSE_BUTTON_LEFT && isVirtual) {
 						currentInputValues.printHome = true;
 						clickedInputPointer = &currentInputValues.printHome;
-						return "";
+						return inputOSCTags.printHome;
 					}
 					else {
 						return joyconOscAddress + inputOSCTags.printHome;
 					}
 				}
 				else if (pointInsidePolylines(stickButton.getOutline(), mouseClickX, mouseClickY)) {
-					if (mouseButton == OF_MOUSE_BUTTON_LEFT) {
+					if (mouseButton == OF_MOUSE_BUTTON_LEFT && isVirtual) {
 						currentInputValues.stickClick = true;
 						clickedInputPointer = &currentInputValues.stickClick;
-						return "";
+						return inputOSCTags.stickClick;
 					}
 					else {
 						return joyconOscAddress + inputOSCTags.stickClick;
@@ -779,9 +781,11 @@ class Joycon {
 			}
 			else {
 				if (pointInsidePolylines(stickTargetArc.getOutline(), mouseClickX, mouseClickY)) {
-					if (mouseButton == OF_MOUSE_BUTTON_LEFT) {
+					if (mouseButton == OF_MOUSE_BUTTON_LEFT && isVirtual) {
 						currentInputValues.stickX = ofMap(mouseClickX - stickPointerCenterX, -1 * stickTargetRadius, stickTargetRadius, -1, 1);
-						currentInputValues.stickY = ofMap(mouseClickY - stickPointerCenterY, stickTargetRadius, -1 * stickTargetRadius, -1, 1);
+						currentInputValues.stickY = ofMap(mouseClickY - stickPointerCenterY, stickTargetRadius, -1 * stickTargetRadius, -1, 1); 
+						oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.stickX, currentInputValues.stickX));
+						oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.stickY, currentInputValues.stickY));
 						return "";
 					}
 					else {
@@ -793,47 +797,47 @@ class Joycon {
 				}
 				else if ((mouseClickX > stickPointerCenterX && controllerType == JS_TYPE_JOYCON_LEFT) || (mouseClickX < stickPointerCenterX && controllerType == JS_TYPE_JOYCON_RIGHT)) {
 					if (pointInsidePolylines(lrButton.getOutline(), mouseClickX, mouseClickY)) {
-						if (mouseButton == OF_MOUSE_BUTTON_LEFT) {
+						if (mouseButton == OF_MOUSE_BUTTON_LEFT && isVirtual) {
 							currentInputValues.lr = true;
 							clickedInputPointer = &currentInputValues.lr;
-							return "";
+							return inputOSCTags.lr;
 						}
 						else {
 							return joyconOscAddress + inputOSCTags.lr;
 						}
 					}
 					else if (pointInsidePolylines(zlzrButton.getOutline(), mouseClickX, mouseClickY)) {
-						if (mouseButton == OF_MOUSE_BUTTON_LEFT) {
+						if (mouseButton == OF_MOUSE_BUTTON_LEFT && isVirtual) {
 							currentInputValues.zlzr = true;
 							clickedInputPointer = &currentInputValues.zlzr;
-							return "";
+							return inputOSCTags.zlzr;
 						}
 						else {
 							return joyconOscAddress + inputOSCTags.zlzr;
 						}
 					}
 					else if (pointInsidePolylines(slButton.getOutline(), mouseClickX, mouseClickY)) {
-						if (mouseButton == OF_MOUSE_BUTTON_LEFT) {
+						if (mouseButton == OF_MOUSE_BUTTON_LEFT && isVirtual) {
 							currentInputValues.sl = true;
 							clickedInputPointer = &currentInputValues.sl;
-							return "";
+							return inputOSCTags.sl;
 						}
 						else {
 							return joyconOscAddress + inputOSCTags.sl;
 						}
 					}
 					else if (pointInsidePolylines(srButton.getOutline(), mouseClickX, mouseClickY)) {
-						if (mouseButton == OF_MOUSE_BUTTON_LEFT) {
+						if (mouseButton == OF_MOUSE_BUTTON_LEFT && isVirtual) {
 							currentInputValues.sr = true;
 							clickedInputPointer = &currentInputValues.sr;
-							return "";
+							return inputOSCTags.sr;
 						}
 						else {
 							return joyconOscAddress + inputOSCTags.sr;
 						}
 					}
 				}
-				else if (mouseButton != OF_MOUSE_BUTTON_LEFT){
+				else {
 					if (mouseClickX >= dataGraphPosX && mouseClickX <= dataGraphPosX + dataGraphWidth) {
 						float localDataGraphPosY = celPosY + dataGraphPosY;
 						float rawIMUGraphWidth = (celHeight / 2) - dataGraphPosY - BORDER;

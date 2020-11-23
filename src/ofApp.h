@@ -50,6 +50,7 @@ class ofApp : public ofBaseApp{
 		float joyconCelsWidth = 0;
 		float joyconCelsHeight = 0;
 		int joyconCelPressedIndex = -1; //_n2
+		string clickedButtonOscTag = "";
 		string clickedButtonOscMessage = "";
 		ofVec2f clickedButtonPos;
 		ofTrueTypeFont font;

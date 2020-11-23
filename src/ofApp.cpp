@@ -6,6 +6,12 @@ void getJslCallback(int joyconId, JOY_SHOCK_STATE lastButtonsStickData, JOY_SHOC
 	joyOSCMapperPointer->updateJoyconData(joyconId, newButtonsStickData, newRawIMUData);
 }
 
+void ofApp::updateJoyconData(int joyconId, JOY_SHOCK_STATE newButtonsStickData, IMU_STATE newRawIMUData) {
+	int firstPos = (numDevicesConnectedSum - numDevicesConnected);
+	int joyconPosVec = joyconId - firstPos;
+	joyconsVec[joyconPosVec].updateData(newButtonsStickData, newRawIMUData);
+}
+
 //--------------------------------------------------------------
 void ofApp::setup(){
 	joyOSCMapperPointer = this;//_n1
@@ -107,6 +113,8 @@ void ofApp::update(){
 			if (joyconsVec[index].GUIToggle && (!joyconsVec[index].isVirtual || (joyconsVec[index].isVirtual && useVirtualJoycons))) {
 				selectedJoyconsCount++;
 				joyconsVec[index].updateGraphsVisualizations();
+				if (joyconsVec[index].isVirtual)
+					joyconsVec[index].sendNewInputsAsOSC(joyconsVec[index].currentInputValues);
 			}
 		}
 
@@ -211,8 +219,18 @@ void ofApp::mousePressed(int x, int y, int button){
 	}
 
 	if (joyconCelPressedIndex >= 0) {
-		if(button == OF_MOUSE_BUTTON_LEFT)
-			joyconsVec[joyconCelPressedIndex].checkMouseClick(x, y, button);
+		if (button == OF_MOUSE_BUTTON_LEFT && joyconsVec[joyconCelPressedIndex].isVirtual) {
+			clickedButtonOscTag = joyconsVec[joyconCelPressedIndex].checkMouseClick(x, y, button);
+			if (joyconsVec[joyconCelPressedIndex].clickedInputPointer != NULL) {
+				joyconsVec[joyconCelPressedIndex].oscSender.sendMessage(
+					joyconsVec[joyconCelPressedIndex].getInputOscMessage(
+						joyconsVec[joyconCelPressedIndex].joyconOscAddress,
+						clickedButtonOscTag,
+						*joyconsVec[joyconCelPressedIndex].clickedInputPointer
+					)
+				);
+			}
+		}
 		else{
 			clickedButtonOscMessage = joyconsVec[joyconCelPressedIndex].checkMouseClick(x, y, button);
 			int messageWidth = font.stringWidth(clickedButtonOscMessage);
@@ -234,8 +252,18 @@ void ofApp::mousePressed(int x, int y, int button){
 void ofApp::mouseReleased(int x, int y, int button){
 	if (joyconCelPressedIndex >= 0) {
 		if (button == OF_MOUSE_BUTTON_LEFT && joyconsVec[joyconCelPressedIndex].clickedInputPointer != NULL) {
-			*joyconsVec[joyconCelPressedIndex].clickedInputPointer = false;
+			*joyconsVec[joyconCelPressedIndex].clickedInputPointer = false; 
+			
+			joyconsVec[joyconCelPressedIndex].oscSender.sendMessage(
+				joyconsVec[joyconCelPressedIndex].getInputOscMessage(
+					joyconsVec[joyconCelPressedIndex].joyconOscAddress,
+					clickedButtonOscTag,
+					*joyconsVec[joyconCelPressedIndex].clickedInputPointer
+				)
+			);
+
 			joyconsVec[joyconCelPressedIndex].clickedInputPointer = NULL;
+			
 		}
 		else {
 			clickedButtonOscMessage = "";
@@ -408,12 +436,6 @@ void ofApp::disconnectAndDisposeAll() {
 		numDevicesConnected = 0;
 		connectedDevicesLabel.operator=(ofToString(numDevicesConnected));
 	}
-}
-
-void ofApp::updateJoyconData(int joyconId, JOY_SHOCK_STATE newButtonsStickData, IMU_STATE newRawIMUData) {
-	int firstPos = (numDevicesConnectedSum - numDevicesConnected);
-	int joyconPosVec = joyconId - firstPos;
-	joyconsVec[joyconPosVec].updateData(newButtonsStickData, newRawIMUData);
 }
 
 void ofApp::updateJoyconsDrawings() {
