@@ -28,8 +28,8 @@ class Joycon {
 		string nameOnGUI;
 		ofTrueTypeFont font; 
 		ofxOscSender oscSender;
-		string oscNetAddress = "localhost";
-		int oscSendPort = 12345;
+		string oscNetAddress = "127.0.0.1";
+		int oscSendPort = 57120;
 		string joyconOscAddress = "";
 		inputOSCTags inputOSCTags;
 		inputValues currentInputValues;
@@ -150,11 +150,13 @@ class Joycon {
 					break;
 			}
 
-			joyconOscAddress = prefix + ofToString(devicesConnectedNumber);
+			joyconOscAddress = "/" + prefix + ofToString(devicesConnectedNumber);
 		}
 
 		void oscSenderSetup() {
-			oscSender.setup(oscNetAddress, oscSendPort);
+			bool success = oscSender.setup(oscNetAddress, oscSendPort);
+			if (!success)
+				cout << "Could not connect to the net address " << oscNetAddress << ", with port " << oscSendPort << ";" << endl;
 		}
 
 		void updateData(JOY_SHOCK_STATE newButtonsStickData, IMU_STATE newRawIMUData){
@@ -253,31 +255,48 @@ class Joycon {
 			}
 		}
 
-		ofxOscMessage getInputOscMessage(string oscNetAddress, string inputAddress, float inputValue) {
+		ofxOscMessage getInputOscMessage(string joyconAddress, string inputAddress, float inputValue) {
 			ofxOscMessage inputMessage;
-			inputMessage.setAddress(oscNetAddress + inputAddress);
+			inputMessage.setAddress(joyconAddress + inputAddress);
 			inputMessage.addFloatArg(inputValue);
 			return inputMessage;
 		};
 
 		void updateGraphsVisualizations() {
 			if (isVirtual) {
-				gyroXValues[currentFirstPosGraphs] = ofRandom(-MAX_GYRO_VALUE, MAX_GYRO_VALUE) * -1;
-				gyroYValues[currentFirstPosGraphs] = ofRandom(-MAX_GYRO_VALUE, MAX_GYRO_VALUE) * -1;
-				gyroZValues[currentFirstPosGraphs] = ofRandom(-MAX_GYRO_VALUE, MAX_GYRO_VALUE) * -1;
-				rawAccelXValues[currentFirstPosGraphs] = ofRandom(-MAX_ACCEL_VALUE, MAX_ACCEL_VALUE) * -1;
-				rawAccelYValues[currentFirstPosGraphs] = ofRandom(-MAX_ACCEL_VALUE, MAX_ACCEL_VALUE) * -1;
-				rawAccelZValues[currentFirstPosGraphs] = ofRandom(-MAX_ACCEL_VALUE, MAX_ACCEL_VALUE) * -1;
-				quatWValues[currentFirstPosGraphs] = ofRandom(-1, 1) * -1;
-				quatIValues[currentFirstPosGraphs] = ofRandom(-1, 1) * -1;
-				quatJValues[currentFirstPosGraphs] = ofRandom(-1, 1) * -1;
-				quatKValues[currentFirstPosGraphs] = ofRandom(-1, 1) * -1;
-				cookedAccelXValues[currentFirstPosGraphs] = ofRandom(-MAX_ACCEL_VALUE, MAX_ACCEL_VALUE) * -1;
-				cookedAccelYValues[currentFirstPosGraphs] = ofRandom(-MAX_ACCEL_VALUE, MAX_ACCEL_VALUE) * -1;
-				cookedAccelZValues[currentFirstPosGraphs] = ofRandom(-MAX_ACCEL_VALUE, MAX_ACCEL_VALUE) * -1;
-				gravityXValues[currentFirstPosGraphs] = ofRandom(-1, 1) * -1;
-				gravityYValues[currentFirstPosGraphs] = ofRandom(-1, 1) * -1;
-				gravityZValues[currentFirstPosGraphs] = ofRandom(-1, 1) * -1;
+				rawIMUData.gyroX = ofRandom(-MAX_GYRO_VALUE, MAX_GYRO_VALUE);
+				rawIMUData.gyroY = ofRandom(-MAX_GYRO_VALUE, MAX_GYRO_VALUE);
+				rawIMUData.gyroZ = ofRandom(-MAX_GYRO_VALUE, MAX_GYRO_VALUE);
+				rawIMUData.accelX = ofRandom(-MAX_ACCEL_VALUE, MAX_ACCEL_VALUE);
+				rawIMUData.accelY = ofRandom(-MAX_ACCEL_VALUE, MAX_ACCEL_VALUE);
+				rawIMUData.accelZ = ofRandom(-MAX_ACCEL_VALUE, MAX_ACCEL_VALUE);
+				gyroXValues[currentFirstPosGraphs] = rawIMUData.gyroX;
+				gyroYValues[currentFirstPosGraphs] = rawIMUData.gyroY;
+				gyroZValues[currentFirstPosGraphs] = rawIMUData.gyroZ;
+				rawAccelXValues[currentFirstPosGraphs] = rawIMUData.accelX;
+				rawAccelYValues[currentFirstPosGraphs] = rawIMUData.accelY;
+				rawAccelZValues[currentFirstPosGraphs] = rawIMUData.accelZ;
+
+				cookedIMUData.quatW = ofRandom(-1, 1);
+				cookedIMUData.quatX = ofRandom(-1, 1);
+				cookedIMUData.quatY = ofRandom(-1, 1);
+				cookedIMUData.quatZ = ofRandom(-1, 1);
+				cookedIMUData.accelX = ofRandom(-MAX_ACCEL_VALUE, MAX_ACCEL_VALUE);
+				cookedIMUData.accelY = ofRandom(-MAX_ACCEL_VALUE, MAX_ACCEL_VALUE);
+				cookedIMUData.accelZ = ofRandom(-MAX_ACCEL_VALUE, MAX_ACCEL_VALUE);
+				cookedIMUData.gravX = ofRandom(-1, 1);
+				cookedIMUData.gravY = ofRandom(-1, 1);
+				cookedIMUData.gravZ = ofRandom(-1, 1);
+				quatWValues[currentFirstPosGraphs] = cookedIMUData.quatW;
+				quatIValues[currentFirstPosGraphs] = cookedIMUData.quatX;
+				quatJValues[currentFirstPosGraphs] = cookedIMUData.quatY;
+				quatKValues[currentFirstPosGraphs] = cookedIMUData.quatZ;
+				cookedAccelXValues[currentFirstPosGraphs] = cookedIMUData.accelX;
+				cookedAccelYValues[currentFirstPosGraphs] = cookedIMUData.accelY;
+				cookedAccelZValues[currentFirstPosGraphs] = cookedIMUData.accelZ;
+				gravityXValues[currentFirstPosGraphs] = cookedIMUData.gravX;
+				gravityYValues[currentFirstPosGraphs] = cookedIMUData.gravY;
+				gravityZValues[currentFirstPosGraphs] = cookedIMUData.gravZ;
 			}
 			else {
 				if (drawRawIMUData) {
@@ -866,7 +885,7 @@ class Joycon {
 								joyconOscAddress + inputOSCTags.quatZ;
 						}
 						else if (mouseClickY >= localDataGraphPosY + cokIMUGraphWidth && mouseClickY <= localDataGraphPosY + (2 * cokIMUGraphWidth)) {
-							return valueRangeMessage + '\n' +
+							return "from " + ofToString(-1 * MAX_ACCEL_VALUE) + " to " + ofToString(MAX_ACCEL_VALUE) + " g" + '\n' +
 								joyconOscAddress + inputOSCTags.caclX + '\n' +
 								joyconOscAddress + inputOSCTags.caclY + '\n' +
 								joyconOscAddress + inputOSCTags.caclZ;
