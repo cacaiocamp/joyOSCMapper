@@ -727,76 +727,20 @@ class Joycon {
 			bool insideJoycon = pointInsidePolylines(joyconDrawing.getOutline(), mouseClickX, mouseClickY);
 
 			if (insideJoycon) {
-				if (pointInsidePolylines(upXButton.getOutline(), mouseClickX, mouseClickY)) {
-					if (mouseButton == OF_MOUSE_BUTTON_LEFT && isVirtual) {
-						currentInputValues.upX = true;
-						clickedInputPointer = &currentInputValues.upX;
-						return inputOSCTags.upX;
-					}
-					else {
-						return joyconOscAddress + inputOSCTags.upX;
-					}
-				}
-				else if (pointInsidePolylines(downBButton.getOutline(), mouseClickX, mouseClickY)) {
-					if (mouseButton == OF_MOUSE_BUTTON_LEFT && isVirtual) {
-						currentInputValues.downB = true;
-						clickedInputPointer = &currentInputValues.downB;
-						return inputOSCTags.downB;
-					}
-					else {
-						return joyconOscAddress + inputOSCTags.downB;
-					}
-				}
-				else if (pointInsidePolylines(leftYButton.getOutline(), mouseClickX, mouseClickY)) {
-					if (mouseButton == OF_MOUSE_BUTTON_LEFT && isVirtual) {
-						currentInputValues.leftY = true;
-						clickedInputPointer = &currentInputValues.leftY;
-						return inputOSCTags.leftY;
-					}
-					else {
-						return joyconOscAddress + inputOSCTags.leftY;
-					}
-				}
-				else if (pointInsidePolylines(rightAButton.getOutline(), mouseClickX, mouseClickY)) {
-					if (mouseButton == OF_MOUSE_BUTTON_LEFT && isVirtual) {
-						currentInputValues.rightA = true;
-						clickedInputPointer = &currentInputValues.rightA;
-						return inputOSCTags.rightA;
-					}
-					else {
-						return joyconOscAddress + inputOSCTags.rightA;
-					}
-				}
-				else if (pointInsidePolylines(minusPlusButton.getOutline(), mouseClickX, mouseClickY)) {
-					if (mouseButton == OF_MOUSE_BUTTON_LEFT && isVirtual) {
-						currentInputValues.minusPlus = true;
-						clickedInputPointer = &currentInputValues.minusPlus;
-						return inputOSCTags.minusPlus;
-					}
-					else {
-						return joyconOscAddress + inputOSCTags.minusPlus;
-					}
-				}
-				else if (pointInsidePolylines(printHomeButton.getOutline(), mouseClickX, mouseClickY)) {
-					if (mouseButton == OF_MOUSE_BUTTON_LEFT && isVirtual) {
-						currentInputValues.printHome = true;
-						clickedInputPointer = &currentInputValues.printHome;
-						return inputOSCTags.printHome;
-					}
-					else {
-						return joyconOscAddress + inputOSCTags.printHome;
-					}
-				}
-				else if (pointInsidePolylines(stickButton.getOutline(), mouseClickX, mouseClickY)) {
-					if (mouseButton == OF_MOUSE_BUTTON_LEFT && isVirtual) {
-						currentInputValues.stickClick = true;
-						clickedInputPointer = &currentInputValues.stickClick;
-						return inputOSCTags.stickClick;
-					}
-					else {
-						return joyconOscAddress + inputOSCTags.stickClick;
-					}
-				}
+				if (pointInsidePolylines(upXButton.getOutline(), mouseClickX, mouseClickY)) 
+					return mouseClickAction(mouseButton, currentInputValues.upX, inputOSCTags.upX);
+				else if (pointInsidePolylines(downBButton.getOutline(), mouseClickX, mouseClickY)) 
+					return mouseClickAction(mouseButton, currentInputValues.downB, inputOSCTags.downB);
+				else if (pointInsidePolylines(leftYButton.getOutline(), mouseClickX, mouseClickY)) 
+					return mouseClickAction(mouseButton, currentInputValues.leftY, inputOSCTags.leftY);
+				else if (pointInsidePolylines(rightAButton.getOutline(), mouseClickX, mouseClickY)) 
+					return mouseClickAction(mouseButton, currentInputValues.rightA, inputOSCTags.rightA);
+				else if (pointInsidePolylines(minusPlusButton.getOutline(), mouseClickX, mouseClickY)) 
+					return mouseClickAction(mouseButton, currentInputValues.minusPlus, inputOSCTags.minusPlus);
+				else if (pointInsidePolylines(printHomeButton.getOutline(), mouseClickX, mouseClickY)) 
+					return mouseClickAction(mouseButton, currentInputValues.printHome, inputOSCTags.printHome);
+				else if (pointInsidePolylines(stickButton.getOutline(), mouseClickX, mouseClickY)) 
+					return mouseClickAction(mouseButton, currentInputValues.stickClick, inputOSCTags.stickClick);
 			}
 			else {
 				if (pointInsidePolylines(stickTargetArc.getOutline(), mouseClickX, mouseClickY)) {
@@ -815,46 +759,14 @@ class Joycon {
 					}
 				}
 				else if ((mouseClickX > stickPointerCenterX && controllerType == JS_TYPE_JOYCON_LEFT) || (mouseClickX < stickPointerCenterX && controllerType == JS_TYPE_JOYCON_RIGHT)) {
-					if (pointInsidePolylines(lrButton.getOutline(), mouseClickX, mouseClickY)) {
-						if (mouseButton == OF_MOUSE_BUTTON_LEFT && isVirtual) {
-							currentInputValues.lr = true;
-							clickedInputPointer = &currentInputValues.lr;
-							return inputOSCTags.lr;
-						}
-						else {
-							return joyconOscAddress + inputOSCTags.lr;
-						}
-					}
-					else if (pointInsidePolylines(zlzrButton.getOutline(), mouseClickX, mouseClickY)) {
-						if (mouseButton == OF_MOUSE_BUTTON_LEFT && isVirtual) {
-							currentInputValues.zlzr = true;
-							clickedInputPointer = &currentInputValues.zlzr;
-							return inputOSCTags.zlzr;
-						}
-						else {
-							return joyconOscAddress + inputOSCTags.zlzr;
-						}
-					}
-					else if (pointInsidePolylines(slButton.getOutline(), mouseClickX, mouseClickY)) {
-						if (mouseButton == OF_MOUSE_BUTTON_LEFT && isVirtual) {
-							currentInputValues.sl = true;
-							clickedInputPointer = &currentInputValues.sl;
-							return inputOSCTags.sl;
-						}
-						else {
-							return joyconOscAddress + inputOSCTags.sl;
-						}
-					}
-					else if (pointInsidePolylines(srButton.getOutline(), mouseClickX, mouseClickY)) {
-						if (mouseButton == OF_MOUSE_BUTTON_LEFT && isVirtual) {
-							currentInputValues.sr = true;
-							clickedInputPointer = &currentInputValues.sr;
-							return inputOSCTags.sr;
-						}
-						else {
-							return joyconOscAddress + inputOSCTags.sr;
-						}
-					}
+					if (pointInsidePolylines(lrButton.getOutline(), mouseClickX, mouseClickY))
+						return mouseClickAction(mouseButton, currentInputValues.lr, inputOSCTags.lr);
+					else if (pointInsidePolylines(zlzrButton.getOutline(), mouseClickX, mouseClickY)) 
+						return mouseClickAction(mouseButton, currentInputValues.zlzr, inputOSCTags.zlzr);
+					else if (pointInsidePolylines(slButton.getOutline(), mouseClickX, mouseClickY))
+						return mouseClickAction(mouseButton, currentInputValues.sl, inputOSCTags.sl);
+					else if (pointInsidePolylines(srButton.getOutline(), mouseClickX, mouseClickY)) 
+						return mouseClickAction(mouseButton, currentInputValues.sr, inputOSCTags.sr);
 				}
 				else {
 					if (mouseClickX >= dataGraphPosX && mouseClickX <= dataGraphPosX + dataGraphWidth) {
@@ -910,6 +822,17 @@ class Joycon {
 				}
 			}
 			return false;
+		}
+
+		string mouseClickAction(int mouseButton, bool &joyconButton, string joyconButtonOSCTag) {
+			if (mouseButton == OF_MOUSE_BUTTON_LEFT && isVirtual) {
+				joyconButton = true;
+				clickedInputPointer = &joyconButton;
+				return joyconButtonOSCTag;
+			}
+			else {
+				return joyconOscAddress + joyconButtonOSCTag;
+			}
 		}
 };
 
