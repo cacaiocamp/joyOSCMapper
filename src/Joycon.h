@@ -585,9 +585,10 @@ class Joycon {
 			}
 
 			bool enoughSpaceForCookedGraph = true;
-			if (dataGraphWidth < celWidth * 1 / 5) {
-				enoughSpaceForCookedGraph = false;
+			if (dataGraphWidth < celWidth * 1 / 5 || !drawRawIMUData || !drawCookedIMUData) {
 				dataGraphWidth = dataGraphWidth * 2;
+				if(drawRawIMUData && drawCookedIMUData)
+					enoughSpaceForCookedGraph = false;
 			}
 
 			if (drawRawIMUData && dataGraphWidth >= celWidth * 1 / 5) {
@@ -610,7 +611,9 @@ class Joycon {
 			}
 
 			if (drawCookedIMUData && enoughSpaceForCookedGraph) {
-				float localDataGraphPosX = dataGraphPosX + dataGraphWidth + BORDER;
+				float localDataGraphPosX = dataGraphPosX;
+				if(drawRawIMUData)
+					localDataGraphPosX = dataGraphPosX + dataGraphWidth + BORDER;
 				float localDataGraphPosY = dataGraphPosY;
 				float dataGraphHeight = (celHeight - (2 * localDataGraphPosY)) / 3 - BORDER;
 				draw2DGraph(localDataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, quatIValues, quatJValues, quatKValues, 1, 4, quatWValues);
