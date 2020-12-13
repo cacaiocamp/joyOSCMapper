@@ -9,9 +9,13 @@
 #define GPRESSED 150
 #define BPRESSED 100//_n1
 #define BASE_BUTTON_COLOR 25
-#define MIN_WIDTH_GRAPH_TEXT 100
 #define MAX_GYRO_VALUE 4000
 #define MAX_ACCEL_VALUE 8
+#define MIN_WIDTH_GRAPH_TEXT 100
+#define GRAPH_WHITE ofColor(200, 200, 200, 200)
+#define GRAPH_RED ofColor(255, 100, 100, 200)
+#define GRAPH_GREEN ofColor(100, 255, 100, 200)
+#define GRAPH_BLUE ofColor(100, 100, 255, 200)
 
 class Joycon {
 	public:
@@ -69,6 +73,14 @@ class Joycon {
 		float dataGraphPosX = 0;
 		float dataGraphPosY = 0;
 		float dataGraphWidth = 0;
+		float rawGraphHeight = 0;
+		float cookedGraphHeight = 0;
+		float graphXAxisStep = 0;
+		ofPath gyroGraph;
+		ofPath rawAccelGraph;
+		ofPath quatGraph;
+		ofPath cookedAccelGraph;
+		ofPath gravGraph;
 		vector<float> gyroXValues;
 		vector<float> gyroYValues;
 		vector<float> gyroZValues;
@@ -85,9 +97,8 @@ class Joycon {
 		vector<float> gravityXValues;
 		vector<float> gravityYValues;
 		vector<float> gravityZValues;
-		int IMUVectorsSize = 70;
+		int IMUVectorsSize = 67;
 		int currentFirstPosGraphs = 0; //_n4
-
 
 		Joycon(int newDeviceId, int devicesConnectedNumber, int guiAlpha, ofTrueTypeFont loadedFont) {
 			deviceId = newDeviceId;
@@ -498,6 +509,10 @@ class Joycon {
 			stickPointerRadius = stickTargetRadius / 6;
 			stickPointerCenterX = stickVisualizationCenterX;
 			stickPointerCenterY = stickCenterY;
+
+			rawGraphHeight = (celHeight / 2) - dataGraphPosY - BORDER;
+			cookedGraphHeight = (celHeight - (2 * dataGraphPosY)) / 3 - BORDER;
+			graphXAxisStep = dataGraphWidth / (IMUVectorsSize - 1);
 		};
 
 		void drawJoycon() {
@@ -590,10 +605,10 @@ class Joycon {
 				if(drawRawIMUData && drawCookedIMUData)
 					enoughSpaceForCookedGraph = false;
 			}
-
+			
 			if (drawRawIMUData && dataGraphWidth >= celWidth * 1 / 5) {
 				float localDataGraphPosY = dataGraphPosY;
-				float dataGraphHeight = (celHeight/2) - localDataGraphPosY - BORDER;
+				float dataGraphHeight = (celHeight / 2) - localDataGraphPosY - BORDER;
 				draw2DGraph(dataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, gyroXValues, gyroYValues, gyroZValues, MAX_GYRO_VALUE, 3);
 				ofSetColor(joyconColor);
 				if (font.stringWidth("angularVelocity") < dataGraphWidth && font.stringHeight("V") < dataGraphHeight)
@@ -612,7 +627,7 @@ class Joycon {
 
 			if (drawCookedIMUData && enoughSpaceForCookedGraph) {
 				float localDataGraphPosX = dataGraphPosX;
-				if(drawRawIMUData)
+				if (drawRawIMUData)
 					localDataGraphPosX = dataGraphPosX + dataGraphWidth + BORDER;
 				float localDataGraphPosY = dataGraphPosY;
 				float dataGraphHeight = (celHeight - (2 * localDataGraphPosY)) / 3 - BORDER;
@@ -620,7 +635,7 @@ class Joycon {
 				ofSetColor(joyconColor);
 				if (font.stringWidth("quatOrientation") < dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
 					ofDrawBitmapString("quatOrientation", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
-				else if(font.stringWidth("quatOrientation") >= dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
+				else if (font.stringWidth("quatOrientation") >= dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
 					ofDrawBitmapString("qO", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
 
 				localDataGraphPosY = localDataGraphPosY + dataGraphHeight + BORDER;
@@ -648,7 +663,6 @@ class Joycon {
 		void draw2DGraph(float posX, float posY, float graphWidth, float graphHeight, vector<float> graphValuesI, vector<float> graphValuesJ, vector<float> graphValuesK, float maxYValue = 1, int numLayers = 4, vector<float> graphValuesW = vector<float>()) {
 			float xAxisStep = graphWidth / (IMUVectorsSize-1);
 			float yAxisStep = (graphHeight / 2) / maxYValue;
-			int lastPosition = currentFirstPosGraphs - 1;
 			ofVec2f currentGraphPointI;
 			ofVec2f currentGraphPointJ;
 			ofVec2f currentGraphPointK;
@@ -657,10 +671,6 @@ class Joycon {
 			ofVec2f lastGraphPointJ;
 			ofVec2f lastGraphPointK;
 			ofVec2f lastGraphPointW;
-
-			if (lastPosition < 0) {
-				lastPosition = IMUVectorsSize - 1;
-			}
 
 			ofFill();
 			ofSetColor(ofColor(5, 5, 5, 225));
@@ -696,14 +706,14 @@ class Joycon {
 
 				if (indexGraph != 0) {
 					ofFill();
-					ofSetColor(ofColor(255, 100, 100, 200));
+					ofSetColor(GRAPH_RED);
 					ofDrawLine(currentGraphPointI.x, currentGraphPointI.y, lastGraphPointI.x, lastGraphPointI.y);
-					ofSetColor(ofColor(0, 255, 0, 200));
+					ofSetColor(GRAPH_GREEN);
 					ofDrawLine(currentGraphPointJ.x, currentGraphPointJ.y, lastGraphPointJ.x, lastGraphPointJ.y);
-					ofSetColor(ofColor(50, 100, 255, 200));
+					ofSetColor(GRAPH_BLUE);
 					ofDrawLine(currentGraphPointK.x, currentGraphPointK.y, lastGraphPointK.x, lastGraphPointK.y);
 					if (numLayers > 3) {
-						ofSetColor(ofColor(200, 200, 200, 200));
+						ofSetColor(GRAPH_WHITE);
 						ofDrawLine(currentGraphPointW.x, currentGraphPointW.y, lastGraphPointW.x, lastGraphPointW.y);
 					}
 				}

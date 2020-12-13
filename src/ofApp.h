@@ -54,6 +54,7 @@ class ofApp : public ofBaseApp{
 		string clickedButtonOscMessage = "";
 		ofVec2f clickedButtonPos;
 		ofTrueTypeFont font;
+		stringstream oscOnlyInfo;
 
 		//guiControl variables
 		ofxPanel guiControl;
@@ -66,6 +67,8 @@ class ofApp : public ofBaseApp{
 		ofxToggle useVirtualJoycons;
 		bool lastUseVirtualJoyconsValue = false;
 		ofxLabel connectedDevicesLabel;
+		ofxToggle oscOnly;
+		bool lastOscOnlyValue = false;
 		ofxToggle showShortcutsHelp;
 		bool lastShowShortcutsHelpValue = false;
 
@@ -93,6 +96,9 @@ class ofApp : public ofBaseApp{
 		ofxLabel vShortcut;
 		ofxLabel aShortcut;
 		ofxLabel rShortcut;
+		ofxLabel oShortcut;
+		ofxLabel leftClickHelp;
+		ofxLabel rightClickHelp;
 		bool showGuiShortcuts = false;
 
 		//guiGraphHelp

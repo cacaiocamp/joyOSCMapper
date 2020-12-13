@@ -29,7 +29,9 @@ void ofApp::setup(){
 	ofSetWindowShape(winWidth, winHeight);
 	ofSetWindowPosition(hMargin, vMargin);
 	ofSetWindowTitle("joyOSCMapper");
-	ofSetFrameRate(70);
+	ofBackground(10);
+	ofSetFrameRate(67);
+	ofSetVerticalSync(false);
 	font.load(OF_TTF_MONO, 10);
 
 	setupGuiControl();
@@ -38,15 +40,18 @@ void ofApp::setup(){
 
 	guiShortcuts.setup();
 	guiShortcuts.setName("Shortcuts/Help");
-	guiShortcuts.add(sShortcut.setup("s-show/hide Shortcuts    ", vShortcut, guiWidth, guiLineHeight));
-	guiShortcuts.add(cShortcut.setup("c-openGeneralConfig      ", vShortcut, guiWidth, guiLineHeight));
+	guiShortcuts.add(sShortcut.setup("s-show/hide Shortcuts    ", sShortcut, guiWidth, guiLineHeight));
+	guiShortcuts.add(cShortcut.setup("c-openGeneralConfig      ", cShortcut, guiWidth, guiLineHeight));
 	guiShortcuts.add(gShortcut.setup("g-show/hide GUIControl   ", gShortcut, guiWidth, guiLineHeight));
 	guiShortcuts.add(uShortcut.setup("  u-updateConnected      ", uShortcut, guiWidth, guiLineHeight));
-	guiShortcuts.add(dShortcut.setup("  d-disconnectDisposeAll ", uShortcut, guiWidth, guiLineHeight));
+	guiShortcuts.add(dShortcut.setup("  d-disconnectDisposeAll ", dShortcut, guiWidth, guiLineHeight));
 	guiShortcuts.add(jShortcut.setup("j-show/hide JoyconsList  ", jShortcut, guiWidth, guiLineHeight));
 	guiShortcuts.add(vShortcut.setup("v-un/toggle VirtualJoys  ", vShortcut, guiWidth, guiLineHeight));
-	guiShortcuts.add(aShortcut.setup("  a-addAVirualJoycon     ", vShortcut, guiWidth, guiLineHeight));
-	guiShortcuts.add(rShortcut.setup("  r-removeAVirualJoycon  ", vShortcut, guiWidth, guiLineHeight));
+	guiShortcuts.add(aShortcut.setup("  a-addAVirualJoycon     ", aShortcut, guiWidth, guiLineHeight));
+	guiShortcuts.add(rShortcut.setup("  r-removeAVirualJoycon  ", rShortcut, guiWidth, guiLineHeight));
+	guiShortcuts.add(oShortcut.setup("o-un/toggle oscOnly mode ", oShortcut, guiWidth, guiLineHeight));
+	guiShortcuts.add(leftClickHelp.setup("lClick-test vrtJoy input ", leftClickHelp, guiWidth, guiLineHeight));
+	guiShortcuts.add(rightClickHelp.setup("rClick-check oscAddress ", rightClickHelp, guiWidth, guiLineHeight));
 	guiShortcuts.setBackgroundColor(guiColor);
 	sShortcut.setBackgroundColor(guiColor);
 	cShortcut.setBackgroundColor(guiColor);
@@ -57,6 +62,9 @@ void ofApp::setup(){
 	vShortcut.setBackgroundColor(guiColor);
 	aShortcut.setBackgroundColor(guiColor);
 	rShortcut.setBackgroundColor(guiColor);
+	oShortcut.setBackgroundColor(guiColor);
+	leftClickHelp.setBackgroundColor(guiColor);
+	rightClickHelp.setBackgroundColor(guiColor);
 
 	guiGraphHelp.setup();
 	guiGraphHelp.setName("GraphColors");
@@ -101,10 +109,14 @@ void ofApp::setup(){
 
 	joyconConfigWindowSettings.setSize(screenWidth - hMargin, screenHeight - vMargin);
 	joyconConfigWindowSettings.setPosition(ofVec2f(hMargin / 2, vMargin / 2));
+
+	oscOnlyInfo << "The oscOnly mode is on. All joycon drawings have stoped," << '\n' << " but their respective OSC messages are still being sent.";
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
+	ofSetWindowTitle("joyOSCMapper fps: " + ofToString(ofGetFrameRate()));
+
 	checkAllButtonStates();
 
 	if (joyconsVec.size() > 0) {
@@ -127,11 +139,15 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw() {
-	ofBackground(10);
-	for each (Joycon joycon in joyconsVec) {
-		if (joycon.GUIToggle && (!joycon.isVirtual || (joycon.isVirtual && useVirtualJoycons))) {
-			joycon.drawJoycon();
+	if (!oscOnly) {
+		for each (Joycon joycon in joyconsVec) {
+			if (joycon.GUIToggle && (!joycon.isVirtual || (joycon.isVirtual && useVirtualJoycons))) {
+				joycon.drawJoycon();
+			}
 		}
+	}
+	else if (oscOnly) {
+		font.drawString(oscOnlyInfo.str(), (winWidth - font.stringWidth(oscOnlyInfo.str()))/2, (winHeight - font.stringHeight(oscOnlyInfo.str())) / 2);
 	}
 
 	if (showGuiControl)
@@ -180,6 +196,9 @@ void ofApp::keyPressed(int key){
 			break;
 		case 'h':
 			showShortcutsHelp = !showShortcutsHelp;
+			break;
+		case 'o':
+			oscOnly = !oscOnly;
 			break;
 		case 's':
 			showShortcutsHelp = !showShortcutsHelp;
@@ -348,6 +367,10 @@ void ofApp::checkAllButtonStates() {
 			setupGuiJoyconsList();
 			lastUseVirtualJoyconsValue = useVirtualJoycons;
 		}
+		else if (oscOnly != lastOscOnlyValue) {
+			framesWaited = 0;
+			lastOscOnlyValue = oscOnly;
+		}
 		else if (showShortcutsHelp != lastShowShortcutsHelpValue) {
 			framesWaited = 0;
 			lastShowShortcutsHelpValue = showShortcutsHelp;
@@ -477,6 +500,7 @@ void ofApp::setupGuiControl() {
 	guiControl.add(disconnectAndDispose.setup("disconnect&DisposeAll", guiWidth, guiLineHeight));
 	guiControl.add(useVirtualJoycons.setup("useVirtualJoycons", false, guiWidth, guiLineHeight));
 	guiControl.add(connectedDevicesLabel.setup("numConnectedDevices", connectedDevicesLabel, guiWidth, guiLineHeight));
+	guiControl.add(oscOnly.setup("oscOnly", false, guiWidth, guiLineHeight));
 	guiControl.add(showShortcutsHelp.setup("shortcuts/help", false, guiWidth, guiLineHeight));
 	connectedDevicesLabel.operator=(ofToString(numDevicesConnected));
 	guiControl.setPosition(winWidth - guiWidth - BORDER, BORDER);
@@ -486,6 +510,7 @@ void ofApp::setupGuiControl() {
 	disconnectAndDispose.setBackgroundColor(guiColor);
 	connectedDevicesLabel.setBackgroundColor(guiColor);
 	useVirtualJoycons.setBackgroundColor(guiColor);
+	oscOnly.setBackgroundColor(guiColor);
 	showShortcutsHelp.setBackgroundColor(guiColor);
 }
 
