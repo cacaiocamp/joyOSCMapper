@@ -32,7 +32,7 @@ class Joycon {
 		ofTrueTypeFont font; 
 		ofxOscSender oscSender;
 		string oscNetAddress = "127.0.0.1";
-		int oscSendPort = 57120;
+		int oscSendPort = 11111;
 		string joyconOscAddress = "";
 		inputOSCTags inputOSCTags;
 		inputValues currentInputValues;

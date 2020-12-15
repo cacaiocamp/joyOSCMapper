@@ -110,6 +110,7 @@ void ofApp::setup(){
 	joyconConfigWindowSettings.setPosition(ofVec2f(hMargin / 2, vMargin / 2));
 
 	oscOnlyInfo << "The oscOnly mode is on. All joycon drawings have stoped," << '\n' << " but their respective OSC messages are still being sent.";
+	oscReceiver.setup(oscReceiverPort);
 }
 
 //--------------------------------------------------------------
@@ -129,9 +130,17 @@ void ofApp::update(){
 			}
 		}
 
-		if (selectedJoyconsCount != numSelectedJoycons) {
+		if (selectedJoyconsCount != numSelectedJoycons && !oscOnly) {
 			numSelectedJoycons = selectedJoyconsCount;
 			updateJoyconsDrawings();
+		}
+	}
+
+	if (oscReceiver.hasWaitingMessages()) {
+		ofxOscMessage waitingMsg;
+		oscReceiver.getNextMessage(waitingMsg);
+		if (waitingMsg.getAddress() == "/oscOnly") {
+			oscOnly = waitingMsg.getArgAsInt(0);
 		}
 	}
 }
@@ -145,7 +154,7 @@ void ofApp::draw() {
 			}
 		}
 	}
-	else if (oscOnly) {
+	else {
 		font.drawString(oscOnlyInfo.str(), (winWidth - font.stringWidth(oscOnlyInfo.str()))/2, (winHeight - font.stringHeight(oscOnlyInfo.str())) / 2);
 	}
 

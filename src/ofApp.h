@@ -55,6 +55,8 @@ class ofApp : public ofBaseApp{
 		ofVec2f clickedButtonPos;
 		ofTrueTypeFont font;
 		stringstream oscOnlyInfo;
+		ofxOscReceiver oscReceiver;
+		int oscReceiverPort = 22222;
 
 		//guiControl variables
 		ofxPanel guiControl;
