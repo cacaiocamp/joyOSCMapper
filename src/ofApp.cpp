@@ -16,7 +16,6 @@ void ofApp::updateJoyconData(int joyconId, JOY_SHOCK_STATE newButtonsStickData, 
 void ofApp::setup(){
 	joyOSCMapperPointer = this;//_n1
 
-	//set dimensions of the App window
 	int screenWidth = ofGetScreenWidth();
 	int screenHeight = ofGetScreenHeight();
 	int winWidthProportion = 5;

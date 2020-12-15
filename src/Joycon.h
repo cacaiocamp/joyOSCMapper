@@ -854,15 +854,15 @@ class Joycon {
 	n2- this is used with the constants defined on JoyShockLibrary. This library also identifies
 		ProControllers(3) and DualShock(4), but that's not suported;
 	n3- Virtual joycons are objects of type 'Joycon' that are not linked to connected divices. They are just
-		visualizations used to test, configure and save the OSC messages sent by each joycon input even when no 
-		device is connected;
+		visualizations used to test and configure preferences of each joycon input even when no 
+		devices are connected;
 	n4- these float vectors are used to store the last 'IMUVectorsSize' values of IMU data, raw and cooked.
 		This is used to draw the graphs with the data;
 	n5- the stats/values of all joycon buttons come in a single integer number, with each bit of the integer
 		corresponding to a button. The correct bits for each button are here JSMASK constants, defined
-		on JoyShockLibrary. If a button is pressed, the value should be 1, if not, 0;
+		on JoyShockLibrary. If a button is pressed the value should be 1, if not, 0;
 	n6- this if-else section sets the variables used to draw the joycon, changing positions based on controller type
-		(that's why some ofPaths have a composite name). Right after, all joycon components are drawn;
+		(that's why some ofPaths have a composite name);
 	n7- the logic on the 2D graph construction is kind of diferent from a common 'for' loop. The ideia here is to make
 		the new IMU value added each frame to the vectors always apear on the end of the 2D graph. For that, it reads
 		the vectors from position 'currentFirstPosGraphs' to 'currentFirstPosGraphs-1', changing 'currentFirstPosGraphs'
