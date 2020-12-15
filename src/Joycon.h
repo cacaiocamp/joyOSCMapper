@@ -11,7 +11,6 @@
 #define BASE_BUTTON_COLOR 25
 #define MAX_GYRO_VALUE 4000
 #define MAX_ACCEL_VALUE 8
-#define MIN_WIDTH_GRAPH_TEXT 100
 #define GRAPH_WHITE ofColor(200, 200, 200, 200)
 #define GRAPH_RED ofColor(255, 100, 100, 200)
 #define GRAPH_GREEN ofColor(100, 255, 100, 200)
@@ -43,11 +42,11 @@ class Joycon {
 		int celPosY = 0; 
 		int celWidth = 0;
 		int celHeight = 0;
-		float minStickStep = 0.0025;
 		bool useRawIMUData = true;
 		bool useCookedIMUData = true;
 		bool drawRawIMUData = true;
 		bool drawCookedIMUData = true;
+		float minStickStep = 0.0025;
 
 		ofPath joyconDrawing;
 		ofPath upXButton;
@@ -73,14 +72,6 @@ class Joycon {
 		float dataGraphPosX = 0;
 		float dataGraphPosY = 0;
 		float dataGraphWidth = 0;
-		float rawGraphHeight = 0;
-		float cookedGraphHeight = 0;
-		float graphXAxisStep = 0;
-		ofPath gyroGraph;
-		ofPath rawAccelGraph;
-		ofPath quatGraph;
-		ofPath cookedAccelGraph;
-		ofPath gravGraph;
 		vector<float> gyroXValues;
 		vector<float> gyroYValues;
 		vector<float> gyroZValues;
@@ -509,10 +500,6 @@ class Joycon {
 			stickPointerRadius = stickTargetRadius / 6;
 			stickPointerCenterX = stickVisualizationCenterX;
 			stickPointerCenterY = stickCenterY;
-
-			rawGraphHeight = (celHeight / 2) - dataGraphPosY - BORDER;
-			cookedGraphHeight = (celHeight - (2 * dataGraphPosY)) / 3 - BORDER;
-			graphXAxisStep = dataGraphWidth / (IMUVectorsSize - 1);
 		};
 
 		void drawJoycon() {
