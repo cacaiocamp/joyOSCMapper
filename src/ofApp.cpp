@@ -124,7 +124,7 @@ void ofApp::update(){
 		for (int index = 0; index < joyconsVec.size(); index++) {
 			if (joyconsVec[index].GUIToggle && (!joyconsVec[index].isVirtual || (joyconsVec[index].isVirtual && useVirtualJoycons))) {
 				selectedJoyconsCount++;
-				joyconsVec[index].updateGraphsVisualizations();
+				joyconsVec[index].updateGraphsValues();
 				if (joyconsVec[index].isVirtual)
 					joyconsVec[index].sendNewInputsAsOSC(joyconsVec[index].currentInputValues);
 			}
@@ -251,7 +251,6 @@ void ofApp::mousePressed(int x, int y, int button){
 			if (joyconsVec[joyconCelPressedIndex].clickedInputPointer != NULL) {
 				joyconsVec[joyconCelPressedIndex].oscSender.sendMessage(
 					joyconsVec[joyconCelPressedIndex].getInputOscMessage(
-						joyconsVec[joyconCelPressedIndex].joyconOscAddress,
 						clickedButtonOscTag,
 						*joyconsVec[joyconCelPressedIndex].clickedInputPointer
 					)
@@ -283,7 +282,6 @@ void ofApp::mouseReleased(int x, int y, int button){
 			
 			joyconsVec[joyconCelPressedIndex].oscSender.sendMessage(
 				joyconsVec[joyconCelPressedIndex].getInputOscMessage(
-					joyconsVec[joyconCelPressedIndex].joyconOscAddress,
 					clickedButtonOscTag,
 					*joyconsVec[joyconCelPressedIndex].clickedInputPointer
 				)

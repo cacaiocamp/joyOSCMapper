@@ -17,6 +17,8 @@ struct inputValues
 	bool sl = 0;
 	float stickX = 0;
 	float stickY = 0;
+	float stickDistance = 0;
+	float stickAzimuth = 0;
 };
 
 struct inputOSCTags
@@ -35,6 +37,8 @@ struct inputOSCTags
 
 	string stickX = "/stickX";
 	string stickY = "/stickY";
+	string stickDistance = "/stickDistance";
+	string stickAzimuth = "/stickAzimuth";
 
 	string gyroX = "/gyroX";
 	string gyroY = "/gyroY";

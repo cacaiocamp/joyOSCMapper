@@ -46,6 +46,7 @@ class Joycon {
 		bool useCookedIMUData = true;
 		bool drawRawIMUData = true;
 		bool drawCookedIMUData = true;
+		bool useStickAsPolar = true;
 		float minStickStep = 0.0025;
 
 		ofPath joyconDrawing;
@@ -68,6 +69,8 @@ class Joycon {
 		float stickPointerCenterX;
 		float stickPointerCenterY;
 		float minWidthForStick;
+		float stickAsPolarX;
+		float stickAsPolarY;
 
 		float dataGraphPosX = 0;
 		float dataGraphPosY = 0;
@@ -208,63 +211,73 @@ class Joycon {
 		void sendNewInputsAsOSC(inputValues newInputValues) {
 			if (!isVirtual) {
 				if (newInputValues.upX != currentInputValues.upX)
-					oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.upX, newInputValues.upX));
+					oscSender.sendMessage(getInputOscMessage(inputOSCTags.upX, newInputValues.upX));
 				if (newInputValues.downB != currentInputValues.downB)
-					oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.downB, newInputValues.downB));
+					oscSender.sendMessage(getInputOscMessage(inputOSCTags.downB, newInputValues.downB));
 				if (newInputValues.leftY != currentInputValues.leftY)
-					oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.leftY, newInputValues.leftY));
+					oscSender.sendMessage(getInputOscMessage(inputOSCTags.leftY, newInputValues.leftY));
 				if (newInputValues.rightA != currentInputValues.rightA)
-					oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.rightA, newInputValues.rightA));
+					oscSender.sendMessage(getInputOscMessage(inputOSCTags.rightA, newInputValues.rightA));
 				if (newInputValues.minusPlus != currentInputValues.minusPlus)
-					oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.minusPlus, newInputValues.minusPlus));
+					oscSender.sendMessage(getInputOscMessage(inputOSCTags.minusPlus, newInputValues.minusPlus));
 				if (newInputValues.stickClick != currentInputValues.stickClick)
-					oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.stickClick, newInputValues.stickClick));
+					oscSender.sendMessage(getInputOscMessage(inputOSCTags.stickClick, newInputValues.stickClick));
 				if (newInputValues.lr != currentInputValues.lr)
-					oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.lr, newInputValues.lr));
+					oscSender.sendMessage(getInputOscMessage(inputOSCTags.lr, newInputValues.lr));
 				if (newInputValues.zlzr != currentInputValues.zlzr)
-					oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.zlzr, newInputValues.zlzr));
+					oscSender.sendMessage(getInputOscMessage(inputOSCTags.zlzr, newInputValues.zlzr));
 				if (newInputValues.printHome != currentInputValues.printHome)
-					oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.printHome, newInputValues.printHome));
+					oscSender.sendMessage(getInputOscMessage(inputOSCTags.printHome, newInputValues.printHome));
 				if (newInputValues.sl != currentInputValues.sl)
-					oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.sl, newInputValues.sl));
+					oscSender.sendMessage(getInputOscMessage(inputOSCTags.sl, newInputValues.sl));
 				if (newInputValues.sr != currentInputValues.sr)
-					oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.sr, newInputValues.sr));
-				if (abs(newInputValues.stickX - currentInputValues.stickX) >= minStickStep)
-					oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.stickX, newInputValues.stickX));
-				if (abs(newInputValues.stickY - currentInputValues.stickY) >= minStickStep)
-					oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.stickY, newInputValues.stickY));
+					oscSender.sendMessage(getInputOscMessage(inputOSCTags.sr, newInputValues.sr));
+				if (abs(newInputValues.stickX - currentInputValues.stickX) >= minStickStep || abs(newInputValues.stickY - currentInputValues.stickY) >= minStickStep) {
+					oscSender.sendMessage(getInputOscMessage(inputOSCTags.stickX, newInputValues.stickX));
+					oscSender.sendMessage(getInputOscMessage(inputOSCTags.stickY, newInputValues.stickY));
+					if (useStickAsPolar) {
+						getStickAsPolarCoordinates();
+						oscSender.sendMessage(getInputOscMessage(inputOSCTags.stickDistance, currentInputValues.stickDistance));
+						oscSender.sendMessage(getInputOscMessage(inputOSCTags.stickAzimuth, currentInputValues.stickAzimuth));
+					}
+				}
 			}
 
 			if (useRawIMUData) {
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.gyroX, rawIMUData.gyroX));
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.gyroY, rawIMUData.gyroY));
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.gyroZ, rawIMUData.gyroZ));
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.raclX, rawIMUData.accelX));
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.raclY, rawIMUData.accelY));
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.raclZ, rawIMUData.accelZ));
+				oscSender.sendMessage(getInputOscMessage(inputOSCTags.gyroX, rawIMUData.gyroX));
+				oscSender.sendMessage(getInputOscMessage(inputOSCTags.gyroY, rawIMUData.gyroY));
+				oscSender.sendMessage(getInputOscMessage(inputOSCTags.gyroZ, rawIMUData.gyroZ));
+				oscSender.sendMessage(getInputOscMessage(inputOSCTags.raclX, rawIMUData.accelX));
+				oscSender.sendMessage(getInputOscMessage(inputOSCTags.raclY, rawIMUData.accelY));
+				oscSender.sendMessage(getInputOscMessage(inputOSCTags.raclZ, rawIMUData.accelZ));
 			}
 			if (useCookedIMUData) {
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.quatW, cookedIMUData.quatW));
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.quatX, cookedIMUData.quatX));
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.quatY, cookedIMUData.quatY));
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.quatZ, cookedIMUData.quatZ));
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.caclX, cookedIMUData.accelX));
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.caclY, cookedIMUData.accelY));
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.caclZ, cookedIMUData.accelZ));
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.gravX, cookedIMUData.gravX));
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.gravY, cookedIMUData.gravY));
-				oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.gravZ, cookedIMUData.gravZ));
+				oscSender.sendMessage(getInputOscMessage(inputOSCTags.quatW, cookedIMUData.quatW));
+				oscSender.sendMessage(getInputOscMessage(inputOSCTags.quatX, cookedIMUData.quatX));
+				oscSender.sendMessage(getInputOscMessage(inputOSCTags.quatY, cookedIMUData.quatY));
+				oscSender.sendMessage(getInputOscMessage(inputOSCTags.quatZ, cookedIMUData.quatZ));
+				oscSender.sendMessage(getInputOscMessage(inputOSCTags.caclX, cookedIMUData.accelX));
+				oscSender.sendMessage(getInputOscMessage(inputOSCTags.caclY, cookedIMUData.accelY));
+				oscSender.sendMessage(getInputOscMessage(inputOSCTags.caclZ, cookedIMUData.accelZ));
+				oscSender.sendMessage(getInputOscMessage(inputOSCTags.gravX, cookedIMUData.gravX));
+				oscSender.sendMessage(getInputOscMessage(inputOSCTags.gravY, cookedIMUData.gravY));
+				oscSender.sendMessage(getInputOscMessage(inputOSCTags.gravZ, cookedIMUData.gravZ));
 			}
 		}
 
-		ofxOscMessage getInputOscMessage(string joyconAddress, string inputAddress, float inputValue) {
+		ofxOscMessage getInputOscMessage(string inputAddress, float inputValue) {
 			ofxOscMessage inputMessage;
-			inputMessage.setAddress(joyconAddress + inputAddress);
+			inputMessage.setAddress(joyconOscAddress + inputAddress);
 			inputMessage.addFloatArg(inputValue);
 			return inputMessage;
 		};
 
-		void updateGraphsVisualizations() {
+		void getStickAsPolarCoordinates() {
+			currentInputValues.stickDistance = sqrt(pow(currentInputValues.stickX, 2) + pow(currentInputValues.stickY, 2));
+			currentInputValues.stickAzimuth = atan2(currentInputValues.stickY, currentInputValues.stickX);
+		}
+
+		void updateGraphsValues() {
 			if (isVirtual) {
 				rawIMUData.gyroX = ofRandom(-MAX_GYRO_VALUE, MAX_GYRO_VALUE);
 				rawIMUData.gyroY = ofRandom(-MAX_GYRO_VALUE, MAX_GYRO_VALUE);
@@ -500,6 +513,8 @@ class Joycon {
 			stickPointerRadius = stickTargetRadius / 6;
 			stickPointerCenterX = stickVisualizationCenterX;
 			stickPointerCenterY = stickCenterY;
+			stickAsPolarX = stickPointerCenterX - stickTargetRadius;
+			stickAsPolarY = stickCenterY - (stickTargetRadius + (2*BORDER));
 		};
 
 		void drawJoycon() {
@@ -584,6 +599,10 @@ class Joycon {
 				float posY = currentInputValues.stickY * stickTargetRadius * -1;
 				ofSetColor(joyconColor.r, joyconColor.g, joyconColor.b, joyconColor.a + 25);
 				ofDrawCircle(stickPointerCenterX + posX, stickPointerCenterY + posY, stickPointerRadius); //stick pointer indicador
+
+				ofSetColor(ofColor(150, 150, 150, 200));
+				ofDrawBitmapString(ofToString(currentInputValues.stickDistance, 3), stickAsPolarX, stickAsPolarY - (2 * BORDER));
+				ofDrawBitmapString(ofToString(currentInputValues.stickAzimuth, 3), stickAsPolarX, stickAsPolarY);
 			}
 
 			bool enoughSpaceForCookedGraph = true;
@@ -747,15 +766,24 @@ class Joycon {
 					if (mouseButton == OF_MOUSE_BUTTON_LEFT && isVirtual) {
 						currentInputValues.stickX = ofMap(mouseClickX - stickPointerCenterX, -1 * stickTargetRadius, stickTargetRadius, -1, 1);
 						currentInputValues.stickY = ofMap(mouseClickY - stickPointerCenterY, stickTargetRadius, -1 * stickTargetRadius, -1, 1); 
-						oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.stickX, currentInputValues.stickX));
-						oscSender.sendMessage(getInputOscMessage(joyconOscAddress, inputOSCTags.stickY, currentInputValues.stickY));
+						oscSender.sendMessage(getInputOscMessage(inputOSCTags.stickX, currentInputValues.stickX));
+						oscSender.sendMessage(getInputOscMessage(inputOSCTags.stickY, currentInputValues.stickY));
+						if (useStickAsPolar) {
+							getStickAsPolarCoordinates();
+							oscSender.sendMessage(getInputOscMessage(inputOSCTags.stickDistance, currentInputValues.stickDistance));
+							oscSender.sendMessage(getInputOscMessage(inputOSCTags.stickAzimuth, currentInputValues.stickAzimuth));
+						}
 						return "";
 					}
 					else {
 						string valueRangeMessage = "from -1.0 to 1.0 ";
-						return valueRangeMessage + '\n' +
+						string valueMessagePolar = "polarCoord:";
+						return valueMessagePolar + '\n' +
+							joyconOscAddress + inputOSCTags.stickDistance + '\n' +
+							joyconOscAddress + inputOSCTags.stickAzimuth + '\n' + '\n' +
+							valueRangeMessage + '\n' +
 							joyconOscAddress + inputOSCTags.stickX + '\n' + 
-							joyconOscAddress + inputOSCTags.stickY;
+							joyconOscAddress + inputOSCTags.stickY + '\n';
 					}
 				}
 				else if ((mouseClickX > stickPointerCenterX && controllerType == JS_TYPE_JOYCON_LEFT) || (mouseClickX < stickPointerCenterX && controllerType == JS_TYPE_JOYCON_RIGHT)) {
