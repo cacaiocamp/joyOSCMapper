@@ -2,6 +2,13 @@
 
 #define BORDER 5
 
+struct stickAsDpad {
+	bool up = 0;
+	bool down = 0;
+	bool left = 0;
+	bool right = 0;
+};
+
 struct inputValues
 {
 	bool upX = 0;
@@ -19,6 +26,7 @@ struct inputValues
 	float stickY = 0;
 	float stickDistance = 0;
 	float stickAzimuth = 0;
+	stickAsDpad stickAsDpad;
 };
 
 struct inputOSCTags
@@ -39,6 +47,10 @@ struct inputOSCTags
 	string stickY = "/stickY";
 	string stickDistance = "/stickDistance";
 	string stickAzimuth = "/stickAzimuth";
+	string stickAsDpadUp = "/stickAsDpadUp";
+	string stickAsDpadDown = "/stickAsDpadDown";
+	string stickAsDpadLeft = "/stickAsDpadLeft";
+	string stickAsDpadRight = "/stickAsDpadRight";
 
 	string gyroX = "/gyroX";
 	string gyroY = "/gyroY";

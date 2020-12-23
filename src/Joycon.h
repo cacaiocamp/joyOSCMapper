@@ -47,7 +47,9 @@ class Joycon {
 		bool drawRawIMUData = true;
 		bool drawCookedIMUData = true;
 		bool useStickAsPolar = true;
+		bool useStickAsDpad = true;
 		float minStickStep = 0.0025;
+		float stickAsDpadProp = 0.2;
 
 		ofPath joyconDrawing;
 		ofPath upXButton;
@@ -63,14 +65,17 @@ class Joycon {
 		ofPath srButton;
 		ofPath slButton;
 		ofPath stickTargetArc;
-		ofPath stickTargetLines;
+		ofPath stickTargetLineUp;
+		ofPath stickTargetLineDown;
+		ofPath stickTargetLineLeft;
+		ofPath stickTargetLineRight;
 		float stickTargetRadius;
 		float stickPointerRadius;
 		float stickPointerCenterX;
 		float stickPointerCenterY;
-		float minWidthForStick;
 		float stickAsPolarX;
 		float stickAsPolarY;
+		float minWidthForStick;
 
 		float dataGraphPosX = 0;
 		float dataGraphPosY = 0;
@@ -174,38 +179,49 @@ class Joycon {
 
 		inputValues getEachInputValue(JOY_SHOCK_STATE newButtonsStickData) {//_n5
 			int buttonsData = newButtonsStickData.buttons;
-			inputValues currentInputValues;
+			inputValues newInputValues;
 
 			if (controllerType == JS_TYPE_JOYCON_LEFT) {
-				currentInputValues.upX = (buttonsData & JSMASK_UP) == JSMASK_UP;
-				currentInputValues.downB = (buttonsData & JSMASK_DOWN) == JSMASK_DOWN;
-				currentInputValues.leftY = (buttonsData & JSMASK_LEFT) == JSMASK_LEFT;
-				currentInputValues.rightA = (buttonsData & JSMASK_RIGHT) == JSMASK_RIGHT;
-				currentInputValues.minusPlus = (buttonsData & JSMASK_MINUS) == JSMASK_MINUS;
-				currentInputValues.stickClick = (buttonsData & JSMASK_LCLICK) == JSMASK_LCLICK;
-				currentInputValues.lr = (buttonsData & JSMASK_L) == JSMASK_L;
-				currentInputValues.zlzr = (buttonsData & JSMASK_ZL) == JSMASK_ZL;
-				currentInputValues.printHome = (buttonsData & JSMASK_CAPTURE) == JSMASK_CAPTURE;
-				currentInputValues.stickX = newButtonsStickData.stickLX;
-				currentInputValues.stickY = newButtonsStickData.stickLY;
+				newInputValues.upX = (buttonsData & JSMASK_UP) == JSMASK_UP;
+				newInputValues.downB = (buttonsData & JSMASK_DOWN) == JSMASK_DOWN;
+				newInputValues.leftY = (buttonsData & JSMASK_LEFT) == JSMASK_LEFT;
+				newInputValues.rightA = (buttonsData & JSMASK_RIGHT) == JSMASK_RIGHT;
+				newInputValues.minusPlus = (buttonsData & JSMASK_MINUS) == JSMASK_MINUS;
+				newInputValues.stickClick = (buttonsData & JSMASK_LCLICK) == JSMASK_LCLICK;
+				newInputValues.lr = (buttonsData & JSMASK_L) == JSMASK_L;
+				newInputValues.zlzr = (buttonsData & JSMASK_ZL) == JSMASK_ZL;
+				newInputValues.printHome = (buttonsData & JSMASK_CAPTURE) == JSMASK_CAPTURE;
+				newInputValues.stickX = newButtonsStickData.stickLX;
+				newInputValues.stickY = newButtonsStickData.stickLY;
 			}
 			else {
-				currentInputValues.upX = (buttonsData & JSMASK_N) == JSMASK_N;
-				currentInputValues.downB = (buttonsData & JSMASK_S) == JSMASK_S;
-				currentInputValues.leftY = (buttonsData & JSMASK_W) == JSMASK_W;
-				currentInputValues.rightA = (buttonsData & JSMASK_E) == JSMASK_E;
-				currentInputValues.minusPlus = (buttonsData & JSMASK_PLUS) == JSMASK_PLUS;
-				currentInputValues.stickClick = (buttonsData & JSMASK_RCLICK) == JSMASK_RCLICK;
-				currentInputValues.lr = (buttonsData & JSMASK_R) == JSMASK_R;
-				currentInputValues.zlzr = (buttonsData & JSMASK_ZR) == JSMASK_ZR;
-				currentInputValues.printHome = (buttonsData & JSMASK_HOME) == JSMASK_HOME;
-				currentInputValues.stickX = newButtonsStickData.stickRX;
-				currentInputValues.stickY = newButtonsStickData.stickRY;
+				newInputValues.upX = (buttonsData & JSMASK_N) == JSMASK_N;
+				newInputValues.downB = (buttonsData & JSMASK_S) == JSMASK_S;
+				newInputValues.leftY = (buttonsData & JSMASK_W) == JSMASK_W;
+				newInputValues.rightA = (buttonsData & JSMASK_E) == JSMASK_E;
+				newInputValues.minusPlus = (buttonsData & JSMASK_PLUS) == JSMASK_PLUS;
+				newInputValues.stickClick = (buttonsData & JSMASK_RCLICK) == JSMASK_RCLICK;
+				newInputValues.lr = (buttonsData & JSMASK_R) == JSMASK_R;
+				newInputValues.zlzr = (buttonsData & JSMASK_ZR) == JSMASK_ZR;
+				newInputValues.printHome = (buttonsData & JSMASK_HOME) == JSMASK_HOME;
+				newInputValues.stickX = newButtonsStickData.stickRX;
+				newInputValues.stickY = newButtonsStickData.stickRY; 
+				
 			}
-			currentInputValues.sl = (buttonsData & JSMASK_SL) == JSMASK_SL;
-			currentInputValues.sr = (buttonsData & JSMASK_SR) == JSMASK_SR;
+			newInputValues.sl = (buttonsData & JSMASK_SL) == JSMASK_SL;
+			newInputValues.sr = (buttonsData & JSMASK_SR) == JSMASK_SR;
 
-			return currentInputValues;
+			if (useStickAsPolar) {
+				ofVec2f newPolarCoords = getStickAsPolarCoordinates(newInputValues.stickX, newInputValues.stickY);
+				newInputValues.stickDistance = newPolarCoords.x;
+				newInputValues.stickAzimuth = newPolarCoords.y;
+			}
+			if (useStickAsDpad) {
+				stickAsDpad newStickAsDpad = setStickAsDpad(newInputValues.stickX, newInputValues.stickY);
+				newInputValues.stickAsDpad = newStickAsDpad;
+			}
+
+			return newInputValues;
 		}
 
 		void sendNewInputsAsOSC(inputValues newInputValues) {
@@ -235,10 +251,21 @@ class Joycon {
 				if (abs(newInputValues.stickX - currentInputValues.stickX) >= minStickStep || abs(newInputValues.stickY - currentInputValues.stickY) >= minStickStep) {
 					oscSender.sendMessage(getInputOscMessage(inputOSCTags.stickX, newInputValues.stickX));
 					oscSender.sendMessage(getInputOscMessage(inputOSCTags.stickY, newInputValues.stickY));
+
 					if (useStickAsPolar) {
-						getStickAsPolarCoordinates();
 						oscSender.sendMessage(getInputOscMessage(inputOSCTags.stickDistance, currentInputValues.stickDistance));
 						oscSender.sendMessage(getInputOscMessage(inputOSCTags.stickAzimuth, currentInputValues.stickAzimuth));
+					}
+
+					if (useStickAsDpad) {
+						if(newInputValues.stickAsDpad.up != currentInputValues.stickAsDpad.up)
+							oscSender.sendMessage(getInputOscMessage(inputOSCTags.stickAsDpadUp, newInputValues.stickAsDpad.up));
+						if (newInputValues.stickAsDpad.down != currentInputValues.stickAsDpad.down)
+							oscSender.sendMessage(getInputOscMessage(inputOSCTags.stickAsDpadDown, newInputValues.stickAsDpad.down));
+						if (newInputValues.stickAsDpad.left != currentInputValues.stickAsDpad.left)
+							oscSender.sendMessage(getInputOscMessage(inputOSCTags.stickAsDpadLeft, newInputValues.stickAsDpad.left));
+						if (newInputValues.stickAsDpad.right != currentInputValues.stickAsDpad.right)
+							oscSender.sendMessage(getInputOscMessage(inputOSCTags.stickAsDpadRight, newInputValues.stickAsDpad.right));
 					}
 				}
 			}
@@ -272,9 +299,41 @@ class Joycon {
 			return inputMessage;
 		};
 
-		void getStickAsPolarCoordinates() {
-			currentInputValues.stickDistance = sqrt(pow(currentInputValues.stickX, 2) + pow(currentInputValues.stickY, 2));
-			currentInputValues.stickAzimuth = atan2(currentInputValues.stickY, currentInputValues.stickX);
+		ofVec2f getStickAsPolarCoordinates(float stickX, float stickY) {
+			return ofVec2f(sqrt(pow(stickX, 2) + pow(stickY, 2)), atan2(stickY, stickX));
+		}
+
+		stickAsDpad setStickAsDpad(float stickX, float stickY) {
+			stickAsDpad newStickAsDpad;
+			if (abs(stickX) > stickAsDpadProp) {
+				if (stickX < 0) {
+					newStickAsDpad.left = false;
+					newStickAsDpad.right = true;
+				}
+				else {
+					newStickAsDpad.left = true;
+					newStickAsDpad.right = false;
+				}
+			}
+			else {
+				newStickAsDpad.left = false;
+				newStickAsDpad.right = false;
+			}
+			if (abs(stickY) > stickAsDpadProp) {
+				if (stickY > 0) {
+					newStickAsDpad.up = true;
+					newStickAsDpad.down = false;
+				}
+				else {
+					newStickAsDpad.up = false;
+					newStickAsDpad.down = true;
+				}
+			}
+			else {
+				newStickAsDpad.up = false;
+				newStickAsDpad.down = false;
+			}
+			return newStickAsDpad;
 		}
 
 		void updateGraphsValues() {
@@ -382,7 +441,10 @@ class Joycon {
 			srButton.clear();
 			slButton.clear();
 			stickTargetArc.clear();
-			stickTargetLines.clear();
+			stickTargetLineUp.clear();
+			stickTargetLineDown.clear();
+			stickTargetLineLeft.clear();
+			stickTargetLineRight.clear();
 
 			if (controllerType == JS_TYPE_JOYCON_LEFT) { //_n6
 				joyconRightEdgeX = celPosX + celWidth - horizontalBorder;
@@ -500,14 +562,24 @@ class Joycon {
 			stickTargetArc.setFilled(false);
 			stickTargetArc.close();
 
-			stickTargetLines.moveTo(stickVisualizationCenterX, stickCenterY - exceededLineWidth);
+			/*stickTargetLines.moveTo(stickVisualizationCenterX, stickCenterY - exceededLineWidth);
 			stickTargetLines.lineTo(stickVisualizationCenterX, stickCenterY + exceededLineWidth);
 			stickTargetLines.moveTo(stickVisualizationCenterX - exceededLineWidth, stickCenterY);
 			stickTargetLines.lineTo(stickVisualizationCenterX + exceededLineWidth, stickCenterY);
-			stickTargetLines.setStrokeColor(ofColor(150, 150, 150, 200));
-			stickTargetLines.setStrokeWidth(1);
-			stickTargetLines.setFilled(false);
-			stickTargetLines.close();
+			stickTargetLines.close();*/
+
+			stickTargetLineUp.moveTo(stickVisualizationCenterX, stickCenterY);
+			stickTargetLineUp.lineTo(stickVisualizationCenterX, stickCenterY - exceededLineWidth);
+			stickTargetLineUp.close();
+			stickTargetLineDown.moveTo(stickVisualizationCenterX, stickCenterY);
+			stickTargetLineDown.lineTo(stickVisualizationCenterX, stickCenterY + exceededLineWidth);
+			stickTargetLineDown.close();
+			stickTargetLineLeft.moveTo(stickVisualizationCenterX, stickCenterY);
+			stickTargetLineLeft.lineTo(stickVisualizationCenterX + exceededLineWidth, stickCenterY);
+			stickTargetLineLeft.close();
+			stickTargetLineRight.moveTo(stickVisualizationCenterX, stickCenterY);
+			stickTargetLineRight.lineTo(stickVisualizationCenterX - exceededLineWidth, stickCenterY);
+			stickTargetLineRight.close();
 
 			stickTargetRadius = visualizationRadius;
 			stickPointerRadius = stickTargetRadius / 6;
@@ -590,10 +662,22 @@ class Joycon {
 				stickTargetArc.setFilled(false);
 				stickTargetArc.draw();
 
-				stickTargetLines.setStrokeColor(ofColor(150, 150, 150, 200));
-				stickTargetLines.setStrokeWidth(1);
-				stickTargetLines.setFilled(false);
-				stickTargetLines.draw();
+				stickTargetLineUp.setStrokeColor(getInputColor(currentInputValues.stickAsDpad.up, 100));
+				stickTargetLineUp.setStrokeWidth(1);
+				stickTargetLineUp.setFilled(false);
+				stickTargetLineUp.draw();
+				stickTargetLineDown.setStrokeColor(getInputColor(currentInputValues.stickAsDpad.down, 100));
+				stickTargetLineDown.setStrokeWidth(1);
+				stickTargetLineDown.setFilled(false);
+				stickTargetLineDown.draw();
+				stickTargetLineLeft.setStrokeColor(getInputColor(currentInputValues.stickAsDpad.left, 100));
+				stickTargetLineLeft.setStrokeWidth(1);
+				stickTargetLineLeft.setFilled(false);
+				stickTargetLineLeft.draw();
+				stickTargetLineRight.setStrokeColor(getInputColor(currentInputValues.stickAsDpad.right, 100));
+				stickTargetLineRight.setStrokeWidth(1);
+				stickTargetLineRight.setFilled(false);
+				stickTargetLineRight.draw();
 
 				float posX = currentInputValues.stickX * stickTargetRadius;
 				float posY = currentInputValues.stickY * stickTargetRadius * -1;
@@ -769,21 +853,41 @@ class Joycon {
 						oscSender.sendMessage(getInputOscMessage(inputOSCTags.stickX, currentInputValues.stickX));
 						oscSender.sendMessage(getInputOscMessage(inputOSCTags.stickY, currentInputValues.stickY));
 						if (useStickAsPolar) {
-							getStickAsPolarCoordinates();
+							ofVec2f newPolar = getStickAsPolarCoordinates(currentInputValues.stickX, currentInputValues.stickY);
+							currentInputValues.stickDistance = newPolar.x;
+							currentInputValues.stickAzimuth = newPolar.y;
 							oscSender.sendMessage(getInputOscMessage(inputOSCTags.stickDistance, currentInputValues.stickDistance));
 							oscSender.sendMessage(getInputOscMessage(inputOSCTags.stickAzimuth, currentInputValues.stickAzimuth));
+						}
+						if (useStickAsDpad) {
+							stickAsDpad newStickAsDpad = setStickAsDpad(currentInputValues.stickX, currentInputValues.stickY);
+							if (newStickAsDpad.up != currentInputValues.stickAsDpad.up)
+								oscSender.sendMessage(getInputOscMessage(inputOSCTags.stickAsDpadUp, newStickAsDpad.up));
+							if (newStickAsDpad.down != currentInputValues.stickAsDpad.down)
+								oscSender.sendMessage(getInputOscMessage(inputOSCTags.stickAsDpadDown, newStickAsDpad.down));
+							if (newStickAsDpad.left != currentInputValues.stickAsDpad.left)
+								oscSender.sendMessage(getInputOscMessage(inputOSCTags.stickAsDpadLeft, newStickAsDpad.left));
+							if (newStickAsDpad.right != currentInputValues.stickAsDpad.right)
+								oscSender.sendMessage(getInputOscMessage(inputOSCTags.stickAsDpadRight, newStickAsDpad.right));
+							currentInputValues.stickAsDpad = newStickAsDpad;
 						}
 						return "";
 					}
 					else {
 						string valueRangeMessage = "from -1.0 to 1.0 ";
 						string valueMessagePolar = "polarCoord:";
+						string valueMessageDpad = "stickAsDpad:";
 						return valueMessagePolar + '\n' +
 							joyconOscAddress + inputOSCTags.stickDistance + '\n' +
 							joyconOscAddress + inputOSCTags.stickAzimuth + '\n' + '\n' +
 							valueRangeMessage + '\n' +
 							joyconOscAddress + inputOSCTags.stickX + '\n' + 
-							joyconOscAddress + inputOSCTags.stickY + '\n';
+							joyconOscAddress + inputOSCTags.stickY + '\n' + '\n' + 
+							valueMessageDpad + '\n' +
+							joyconOscAddress + inputOSCTags.stickAsDpadUp + '\n' +
+							joyconOscAddress + inputOSCTags.stickAsDpadDown + '\n' +
+							joyconOscAddress + inputOSCTags.stickAsDpadLeft + '\n' +
+							joyconOscAddress + inputOSCTags.stickAsDpadRight;
 					}
 				}
 				else if ((mouseClickX > stickPointerCenterX && controllerType == JS_TYPE_JOYCON_LEFT) || (mouseClickX < stickPointerCenterX && controllerType == JS_TYPE_JOYCON_RIGHT)) {
