@@ -372,6 +372,7 @@ void ofApp::checkAllButtonStates() {
 			framesWaited = 0;
 			setupGuiJoyconsList();
 			lastUseVirtualJoyconsValue = useVirtualJoycons;
+			updateJoyconsDrawings();
 		}
 		else if (oscOnly != lastOscOnlyValue) {
 			framesWaited = 0;
@@ -404,6 +405,7 @@ void ofApp::checkAllButtonStates() {
 				virtualJoyconsAddedLabel.operator=(ofToString(numVirtualJoycons));
 			}
 			executeRemoveAVirtualJoycon = false;
+			updateJoyconsDrawings();
 		}
 		else if (removeAllVirtual) {
 			framesWaited = 0;
@@ -417,6 +419,7 @@ void ofApp::checkAllButtonStates() {
 				setupGuiJoyconsList();
 				virtualJoyconsAddedLabel.operator=(ofToString(numVirtualJoycons));
 			}
+			updateJoyconsDrawings();
 		}
 	}
 	else if (framesWaited < framesToWait)
