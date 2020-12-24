@@ -449,8 +449,8 @@ void Joycon:: updateDrawings(int newCelWidth, int newCelHeight, int newCelPosX, 
 	stickPointerRadius = stickTargetRadius / 6;
 	stickPointerCenterX = stickVisualizationCenterX;
 	stickPointerCenterY = stickCenterY;
-	stickAsPolarX = stickPointerCenterX - stickTargetRadius;
-	stickAsPolarY = stickCenterY - (stickTargetRadius + (2 * BORDER));
+	stickAsPolarX = stickPointerCenterX - (stickTargetRadius + BORDER);
+	stickAsPolarY = stickCenterY - (stickTargetRadius + BORDER);
 };
 
 void Joycon:: drawJoycon() {
