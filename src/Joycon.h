@@ -562,12 +562,6 @@ class Joycon {
 			stickTargetArc.setFilled(false);
 			stickTargetArc.close();
 
-			/*stickTargetLines.moveTo(stickVisualizationCenterX, stickCenterY - exceededLineWidth);
-			stickTargetLines.lineTo(stickVisualizationCenterX, stickCenterY + exceededLineWidth);
-			stickTargetLines.moveTo(stickVisualizationCenterX - exceededLineWidth, stickCenterY);
-			stickTargetLines.lineTo(stickVisualizationCenterX + exceededLineWidth, stickCenterY);
-			stickTargetLines.close();*/
-
 			stickTargetLineUp.moveTo(stickVisualizationCenterX, stickCenterY);
 			stickTargetLineUp.lineTo(stickVisualizationCenterX, stickCenterY - exceededLineWidth);
 			stickTargetLineUp.close();

@@ -40,7 +40,7 @@ void ofApp::setup(){
 	guiShortcuts.setup();
 	guiShortcuts.setName("Shortcuts/Help");
 	guiShortcuts.add(sShortcut.setup("s-show/hide Shortcuts    ", sShortcut, guiWidth, guiLineHeight));
-	guiShortcuts.add(cShortcut.setup("c-openGeneralConfig      ", cShortcut, guiWidth, guiLineHeight));
+	//guiShortcuts.add(cShortcut.setup("c-openGeneralConfig      ", cShortcut, guiWidth, guiLineHeight));
 	guiShortcuts.add(gShortcut.setup("g-show/hide GUIControl   ", gShortcut, guiWidth, guiLineHeight));
 	guiShortcuts.add(uShortcut.setup("  u-updateConnected      ", uShortcut, guiWidth, guiLineHeight));
 	guiShortcuts.add(dShortcut.setup("  d-disconnectDisposeAll ", dShortcut, guiWidth, guiLineHeight));
@@ -187,9 +187,9 @@ void ofApp::keyPressed(int key){
 					showShortcutsHelp = false;
 			}
 		break;
-		case 'c':
+		/*case 'c':
 			openGeneralConfigWindow();
-			break;
+			break;*/
 		case 'd':
 			executeDisconnectAndDispose = true;
 			break;
@@ -218,21 +218,6 @@ void ofApp::keyPressed(int key){
 			executeRemoveAVirtualJoycon = true;
 			break;
 	}
-}
-
-//--------------------------------------------------------------
-void ofApp::keyReleased(int key){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseMoved(int x, int y ){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseDragged(int x, int y, int button){
-	
 }
 
 //--------------------------------------------------------------
@@ -302,16 +287,6 @@ void ofApp::mouseReleased(int x, int y, int button){
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseEntered(int x, int y){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseExited(int x, int y){
-
-}
-
-//--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
 	winWidth = w;
 	winHeight = h;
@@ -322,16 +297,6 @@ void ofApp::windowResized(int w, int h){
 	guiJoyconsList.setPosition(BORDER, BORDER);
 	guiShortcuts.setPosition((winWidth / 2) - guiWidth, (winHeight / 2) - (guiShortcuts.getHeight() / 2));
 	guiGraphHelp.setPosition(guiShortcuts.getPosition().x + guiWidth + BORDER, (winHeight / 2) - (guiGraphHelp.getHeight() / 2));
-}
-
-//--------------------------------------------------------------
-void ofApp::gotMessage(ofMessage msg){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){ 
-
 }
 
 void ofApp::exit() {
@@ -432,7 +397,7 @@ void ofApp::instantiateConnectedJoycons() {
 	virtualJoycons = joyconsVec;
 	joyconsVec.clear();
 
-	numDevicesConnected = JslConnectDevices(); //gets the ammount of currently connected devices
+	numDevicesConnected = JslConnectDevices(); 
 	connectedDevicesLabel.operator=(ofToString(numDevicesConnected));
 
 	if (numDevicesConnected > 0) {
@@ -566,11 +531,11 @@ void ofApp::drawGeneralConfigWindow(ofEventArgs &args) {
 }
 
 void ofApp::mousePressedGeneralConfigWindow(ofMouseEventArgs &args) {
-	string a = ofSystemTextBoxDialog("testezim", "respostatestzim");
+	string a = ofSystemTextBoxDialog("test", "resposetest");
 }
 
 void ofApp::openJoyconConfigWindow(Joycon &joyconToConfig) {
-	joyconConfigWindowSettings.title = "Config: " + joyconToConfig.nameOnGUI;
+	joyconConfigWindowSettings.title = "Config Test: " + joyconToConfig.nameOnGUI;
 	joyconConfigWindow = ofCreateWindow(joyconConfigWindowSettings);
 	ofAddListener(joyconConfigWindow->events().draw, this, &ofApp::drawJoyconConfigWindow);
 }
