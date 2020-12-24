@@ -10,4 +10,4 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 
 ---
 
-This software also links to JibbSmart's *JoyShockLibrary*, Copyright 2018-2019 Julian Smart, using the 2.1.0 release provided in https://github.com/JibbSmart/JoyShockLibrary. A copy of JoyShockLibrary's license has been added to the path _/libs_ of this software.
+This software also links to JibbSmart's JoyShockLibrary, Copyright 2018-2019 Julian Smart, using the 2.1.0 release provided in https://github.com/JibbSmart/JoyShockLibrary. A copy of JoyShockLibrary's license has been added to the path _/libs_ of this software.
