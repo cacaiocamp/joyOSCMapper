@@ -9,7 +9,8 @@ void getJslCallback(int joyconId, JOY_SHOCK_STATE lastButtonsStickData, JOY_SHOC
 void ofApp::updateJoyconData(int joyconId, JOY_SHOCK_STATE newButtonsStickData, IMU_STATE newRawIMUData) {
 	int firstPos = (numDevicesConnectedSum - numDevicesConnected);
 	int joyconPosVec = joyconId - firstPos;
-	joyconsVec[joyconPosVec].updateData(newButtonsStickData, newRawIMUData);
+	if(joyconsVec[joyconPosVec].GUIToggle)
+		joyconsVec[joyconPosVec].updateData(newButtonsStickData, newRawIMUData);
 }
 
 //--------------------------------------------------------------
