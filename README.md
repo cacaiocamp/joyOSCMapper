@@ -110,7 +110,7 @@ Right mouse clicks will show the respective OSC address for the input clicked, a
 ![rightclickShot](mdimgs/rightclick.png)
 
 ### Shortcuts/Help
-The shorcuts/help can be un/toggled on the GUIControl. It will show the keyboard shorcuts implemented, as well as the color information for the graphs.
+The shorcuts/help can be un/toggled on the GUIControl. It will show the keyboard shorcuts implemented, as well as the color information for the graphs. All other GUIs can also be un/toggled, with the proper shortcuts.
 
 ## Important notes
 **joyOSCMapper** will allow any number of joycons to be connected (as well as any number of virtual joycons to be created), trying to respond to their inputs on joycons data update rate, **every 15ms/66.67hz**. But, as noted on [this](https://github.com/JibbSmart/JoyShockLibrary#known-and-perceived-issues) part of JoyShockLibrary's README.md: "Some Bluetooth adapters can't keep up with these devices [joycons], resulting in laggy input. This is especially common when more than one device is connected (such as when using a pair of JoyCons). There is nothing JoyShockMapper or JoyShockLibrary can do about this.".
