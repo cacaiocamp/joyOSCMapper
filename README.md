@@ -126,7 +126,7 @@ Not counting the standalone app, I plan to implement two types of configurations
 ## Last words/contact
 This is my first public repository and I might have done something wrong with it, sorry in advance for that! 
 
-I made this program as a way to study openFrameworks and make something that I thought might be usefull (for me and other people). So please, feel free to open issues if you find any bug or want make a sugestion. For any other kind of contact, regarding doubts, comments or if you are using joyOSCMapper and wanna hit me up for a chat, also feel free to contact me by email.
+I made this program as a way to study openFrameworks and make something that I thought might be usefull (for me and other people). So please, feel free to open issues if you find any bug or want make a sugestion. For any other kind of contact, regarding doubts, comments or if you are using **joyOSCMapper** and wanna hit me up for a chat, also feel free to contact me by [email](https://github.com/cacaiocamp).
 
 Last, I'd also like to give credits to [JoyShockLibrary](https://github.com/JibbSmart/JoyShockLibrary) developers, as this program mainly depends on it to work.
 
