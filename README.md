@@ -11,13 +11,13 @@ It is being built with C++/[openFrameworks](https://openframeworks.cc/) and uses
   * **[oscOnly mode](#oscOnly-mode)**
   * **[JoyconsList](#joyconslist)**
   * **[Motion graphs](#motion-graphs)**
-* **[Other functionalities](#backwards-compatibility)**
+* **[Other functionalities](#other-functionalities)**
   * **[Virtual Joycons](#virtual-joycons)**
   * **[Mouse clicks](#mouse-clicks)**
-  * **[Shortcuts/Help](#shortcuts/help)**
+  * **[Shortcuts/Help](#shortcutshelp)**
 * **[Important notes](#important-notes)**
 * **[Future implementations](#future-implementations)**
-* **[Last words/contact](#last-words/contact)**
+* **[Last words/contact](#last-wordscontact)**
 * **[License](#license)**
 
 ## Instalation
