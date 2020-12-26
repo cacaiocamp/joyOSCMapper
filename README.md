@@ -4,7 +4,7 @@
 I've developted it using a Windows 10, with Visual Studio 2017, but, as its built with openFrameworks, it should be easy enough to use it in all the OSs that run this C++ toolkit.
 
 ## Instalation
-With the openFrameworks already downloaded for your IDE, you will first need build a .dll version of JoyShockLibrary for your OS. If you are using a x64 Windows, the .dll and .lib files in the _libs/_ folder are already the ones. If x86, you can get the [latest x86 release of JoyShockLibrary](https://github.com/JibbSmart/JoyShockLibrary/releases).
+With the openFrameworks already downloaded for your IDE, you will first need build a .dll of JoyShockLibrary for your OS. If you are using a x64 Windows, the .dll and .lib files in the _libs/_ folder are already the ones. If x86, you can get the [latest x86 release of JoyShockLibrary](https://github.com/JibbSmart/JoyShockLibrary/releases).
 
 After that, all the files you need are on the _src/_ folder. You will also need to make the link of your project/solution to the folder where the .dll and .lib files are and a openFrameworks app with _ofxOsc_ and _ofxGUI_ addons imported.
 
@@ -64,7 +64,7 @@ With the exception of the motion data, all OSC messages are sent only when a cha
 
 ## Basic functionalities
 ### Connecting joycons
-You only need to connect the joycons over bluetooth to your computer than execute **joyOSCMapper** and the program should manage to connect to them and will automaticaly start to send their respective OSC messages. You can also use two buttons on GUIControl, ```updateConnected``` and ```disconnect&DisposeAll```, to manipulate joycon connections.
+You only need to connect the joycons over bluetooth to your computer than execute **joyOSCMapper** and the program should manage to connect to them, automaticaly starting to draw them and to send their respective OSC messages. You can also use two buttons on GUIControl, ```updateConnected``` and ```disconnect&DisposeAll```, to manipulate joycon connections.
 
 ### oscOnly mode
 When toggled, the oscOnly mode will stop all joycon drawing but will continue to send the OSC messages for the inputs made. You can either un/toggle them by clicking the toggle ```oscOnly``` on GUIControl or sending an OSC message to the address ```/oscOnly```, with 0 or 1 as argument.
@@ -73,7 +73,7 @@ When toggled, the oscOnly mode will stop all joycon drawing but will continue to
 JoyconsList is a _ofxPanel_ GUI that has a toggle for every connected joycon. You can un/toggle the drawing and the OSC messages of each one.
 
 ### Graphs
-The graphs show a collection of the last second of each IMU data collected, in all axes. The color pattern for each axis is: 
+The graphs show a collection of the last second of each IMU data collected, in all axes (1 value is collected for each axis every 15ms, 66.67hz). The color pattern for each axis is: 
 * x = red
 * y = green
 * z = blue
