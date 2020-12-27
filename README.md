@@ -123,7 +123,7 @@ Not counting the standalone app, I plan to implement two types of configurations
 * change osc address, port and tags
 * change minStickStep (the minimum value to send stick data OSC messages)
 * un/toggle the use stick as D-pad/polar coordinates
-* chance stickAsDpadProp (the minimum value to trigger the stickDpad)
+* change stickAsDpadProp (the minimum value to trigger the stickDpad)
 * change IMUVectorsSize (the size of the motion graphs)
 * save and load preferences
 
