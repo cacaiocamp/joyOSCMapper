@@ -140,7 +140,7 @@ void ofApp::update(){
 	if (oscReceiver.hasWaitingMessages()) {
 		ofxOscMessage waitingMsg;
 		oscReceiver.getNextMessage(waitingMsg);
-		if (waitingMsg.getAddress() == "/oscOnly") {
+		if (waitingMsg.getAddress() == DEFAULT_OSCONLY_OSCADDRESS) {
 			oscOnly = waitingMsg.getArgAsInt(0);
 		}
 	}

@@ -49,7 +49,7 @@ class ofApp : public ofBaseApp{
 		ofTrueTypeFont font;
 		stringstream oscOnlyInfo;
 		ofxOscReceiver oscReceiver;
-		int oscReceiverPort = 22222;
+		int oscReceiverPort = DEFAULT_OSCRECEIVE_PORT;
 
 		//guiControl variables
 		ofxPanel guiControl;

@@ -26,8 +26,8 @@ class Joycon {
 
 		int positionOnList;
 		ofTrueTypeFont font; 
-		string oscNetAddress = "127.0.0.1";
-		int oscSendPort = 11111;
+		string oscNetAddress = DEFAULT_OSCSEND_ADDRESS;
+		int oscSendPort = DEFAULT_OSCSEND_PORT;
 		string joyconOscAddress = "";
 		inputOSCTags inputOSCTags;
 
@@ -37,8 +37,8 @@ class Joycon {
 		bool drawCookedIMUData = true;
 		bool useStickAsPolar = true;
 		bool useStickAsDpad = true;
-		float minStickStep = 0.0025;
-		float stickAsDpadProp = 0.2;
+		float minStickStep = DEFAULT_MINSTICKSTEP;
+		float stickAsDpadProp = DEFAULT_MINSTICKASDPADDIST;
 
 		ofPath joyconDrawing;
 		ofPath upXButton;
@@ -85,7 +85,7 @@ class Joycon {
 		vector<float> gravityXValues;
 		vector<float> gravityYValues;
 		vector<float> gravityZValues;
-		int IMUVectorsSize = 67;
+		int IMUVectorsSize = DEFAULT_IMUVECTORSSIZE;
 		int currentFirstPosGraphs = 0; //_n3
 
 		void defineJoyconColor(int guiAlpha);
