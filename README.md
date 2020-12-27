@@ -102,7 +102,7 @@ The graphs show a collection of the last second of each IMU data collected, in a
 ### Virtual joycons
 Virtual joycons are fake joycons used to test **joyOSCMapper** and its interaction with other programs even when without a joycon. Their motion data is randomized every frame, and stick and buttons can be manipulated with mouse clicks, sending respective OSC messages when ```useVirtualJoycons``` is toggled on the GUIControl. For example, when you left click at the up/X button of the first added virtual joycon, the OSC message sent will be ```/vrtjoy0/upX 1.0```.
 
-Toggling ```useVirtualJoycons``` will open another _ofxPanel_ GUI, where you can control/manage de addition and removal of virtual joycons, as well as see the number of virtual joycons created. Virtual joycons also have toggles on JoyconsList
+Toggling ```useVirtualJoycons``` will open another _ofxPanel_ GUI, where you can control/manage the addition and removal of virtual joycons, as well as see the number of virtual joycons created. Virtual joycons also have toggles on JoyconsList.
 ![vrtjoysShot](mdimgs/vrtjoys.png)
 
 ### Mouse clicks
