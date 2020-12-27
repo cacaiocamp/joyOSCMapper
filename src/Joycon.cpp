@@ -81,14 +81,21 @@ inputValues Joycon::getEachInputValue(JOY_SHOCK_STATE newButtonsStickData) {//_n
 	newInputValues.sl = (buttonsData & JSMASK_SL) == JSMASK_SL;
 	newInputValues.sr = (buttonsData & JSMASK_SR) == JSMASK_SR;
 
-	if (useStickAsPolar) {
-		ofVec2f newPolarCoords = getStickAsPolarCoordinates(newInputValues.stickX, newInputValues.stickY);
-		newInputValues.stickDistance = newPolarCoords.x;
-		newInputValues.stickAzimuth = newPolarCoords.y;
+	if (abs(abs(newInputValues.stickX) - abs(currentInputValues.stickX)) >= minStickStep || abs(abs(newInputValues.stickY) - abs(currentInputValues.stickY)) >= minStickStep) {
+		if (useStickAsPolar) {
+			ofVec2f newPolarCoords = getStickAsPolarCoordinates(newInputValues.stickX, newInputValues.stickY);
+			newInputValues.stickDistance = newPolarCoords.x;
+			newInputValues.stickAzimuth = newPolarCoords.y;
+		}
+		if (useStickAsDpad) {
+			stickAsDpad newStickAsDpad = setStickAsDpad(newInputValues.stickX, newInputValues.stickY);
+			newInputValues.stickAsDpad = newStickAsDpad;
+		}
 	}
-	if (useStickAsDpad) {
-		stickAsDpad newStickAsDpad = setStickAsDpad(newInputValues.stickX, newInputValues.stickY);
-		newInputValues.stickAsDpad = newStickAsDpad;
+	else {
+		newInputValues.stickDistance = currentInputValues.stickDistance;
+		newInputValues.stickAzimuth = currentInputValues.stickAzimuth;
+		newInputValues.stickAsDpad = currentInputValues.stickAsDpad;
 	}
 
 	return newInputValues;
@@ -525,7 +532,6 @@ void Joycon:: drawJoycon() {
 		stickTargetArc.setStrokeWidth(3);
 		stickTargetArc.setFilled(false);
 		stickTargetArc.draw();
-
 		stickTargetLineUp.setStrokeColor(getInputColor(currentInputValues.stickAsDpad.up, 100));
 		stickTargetLineUp.setStrokeWidth(1);
 		stickTargetLineUp.setFilled(false);
