@@ -499,7 +499,7 @@ void ofApp::setupGuiJoyconsList(){
 		for(int index = 0; index < joyconsVec.size(); index++){
 			if (!joyconsVec[index].isVirtual || (joyconsVec[index].isVirtual && useVirtualJoycons)) {
 				string joyconGUILabel = joyconsVec[index].nameOnGUI;
-				guiJoyconsList.add(joyconsVec[index].GUIToggle.setup(joyconGUILabel, true, guiWidth, guiLineHeight));
+				guiJoyconsList.add(joyconsVec[index].GUIToggle.setup(joyconGUILabel, joyconsVec[index].GUIToggle, guiWidth, guiLineHeight));
 				joyconsVec[index].GUIToggle.setBackgroundColor(joyconsVec[index].joyconColor);
 			}
 		}
@@ -510,6 +510,7 @@ void ofApp::setupGuiJoyconsList(){
 	}
 
 	numSelectedJoycons = numDevicesConnected;
+	updateJoyconsDrawings();
 }
 
 void ofApp::setGuiWithMessage(ofxPanel& gui, string message) {
