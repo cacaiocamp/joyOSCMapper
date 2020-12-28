@@ -144,10 +144,10 @@ It's also worth to notice that trying to draw too many joycons may result in a f
 Not counting the standalone app, I plan to implement two types of configurations: a general config, and a individual config for each joycon. The ideia here is to let drawing and OSC be configured accordingly to user necessities, changing things like:
 * un/toggle the use/draw raw and/or cooked graphs
 * change osc address, port and tags
-* change minStickStep (the minimum value to send stick data OSC messages)
+* change minStickStep
 * un/toggle the use stick as D-pad/polar coordinates
-* change stickAsDpadProp (the minimum value to trigger the stickDpad)
-* change IMUVectorsSize (the size of the motion graphs)
+* change minStickAsDpadDist
+* change IMUVectorsSize
 * save and load preferences
 
 ## Last words/contact
