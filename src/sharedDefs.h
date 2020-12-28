@@ -4,9 +4,9 @@
 #define DEFAULT_OSCSEND_PORT 11111
 #define DEFAULT_OSCRECEIVE_PORT 22222
 #define DEFAULT_OSCONLY_OSCADDRESS "/oscOnly"
-#define DEFAULT_IMUVECTORSSIZE 67
-#define DEFAULT_MINSTICKSTEP 0.0035
-#define DEFAULT_MINSTICKASDPADDIST 0.2
+#define DEFAULT_IMUVECTORSSIZE 67 //_n1
+#define DEFAULT_MINSTICKSTEP 0.0035 //_n2
+#define DEFAULT_MINSTICKASDPADDIST 0.2 //_n3
 
 #define BORDER 5
 
@@ -78,3 +78,16 @@ struct inputOSCTags
 	string gravY = "/gravY";
 	string gravZ = "/gravZ";
 };
+
+/*
+	n1- change DEFAULT_IMUVECTORSSIZE if you want the graphs to show more than 1 second of each motion 
+		capture axis. Note that increase this too much may cause fps drop,  depending also on the number 
+		of joycons drawing;
+	n2- change DEFAULT_MINSTICKSTEP if you are having any issues with stick precision. The stick values 
+		reported are diferent almost every single report, 'minStickStep' represent the minimum stick 
+		variation to trigger stick OSC messages and drawing;
+	n3- 'minStickAsDpadDist' represent the minimum stick distance (as in polar coordinates) from the center 
+		to trigger stickAsDpad values. For example, with the default value at 0.2, you need to have 
+		'stickX >= 0.2 to trigger' 'stickAsDpad.right true' and 'stickX < 0.2' to 
+		retrigger 'stickAsDpad.right false'.
+*/
