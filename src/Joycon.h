@@ -38,7 +38,7 @@ class Joycon {
 		bool useStickAsPolar = true;
 		bool useStickAsDpad = true;
 		float minStickStep = DEFAULT_MINSTICKSTEP;
-		float stickAsDpadProp = DEFAULT_MINSTICKASDPADDIST;
+		float minStickAsDpadDist = DEFAULT_MINSTICKASDPADDIST;
 
 		ofPath joyconDrawing;
 		ofPath upXButton;
