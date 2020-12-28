@@ -91,7 +91,7 @@ You only need to connect the joycons over bluetooth to your computer than execut
 ### oscOnly mode
 When toggled, the oscOnly mode will stop all joycon drawing but will continue to send the OSC messages for the inputs made. You can either un/toggle them by clicking the toggle ```oscOnly``` on GUIControl or sending an OSC message to the address ```/oscOnly```, with 0 or 1 as argument.
 
-By default, **joyOSCMapper** waits for OSC messages on the port ```22222```.
+By default, **joyOSCMapper** waits for OSC messages at the port ```22222```.
 
 ### JoyconsList
 JoyconsList is a _ofxPanel_ GUI that has a toggle for every connected joycon. You can un/toggle the drawing and the OSC messages of each one.
@@ -129,7 +129,7 @@ The following default values definitions can be found on _sharedDefs.h_:
 #define DEFAULT_MINSTICKASDPADDIST 0.2
 ```
 For now, the only way to change default values is modifying those definitions. The last three deserve some coments:
-* change ```DEFAULT_IMUVECTORSSIZE``` if you want the graphs to show more or lesse than 1 second of each motion capture axis. Note that increase this too much may cause fps drop, depending also on the number of joycons drawing;
+* change ```DEFAULT_IMUVECTORSSIZE``` if you want the graphs to show more or less than 1 second of each motion capture axis. Note that increase this too much may cause fps drop, depending also on the number of joycons drawing;
 * change ```DEFAULT_MINSTICKSTEP``` if you are having any issues with stick precision. The stick values reported are diferent almost every single report, ```Joycon.minStickStep``` represent the minimum stick variation to trigger stick OSC messages and drawing;
 * ```Joycon.minStickAsDpadDist``` represent the minimum stick distance (as in polar coordinates) from the center to trigger _stickAsDpad_ values. For example, with the ```DEFAULT_MINSTICKASDPADDIST``` at ```0.2```, you need to have ```stickX >= 0.2``` to trigger ```stickAsDpad.right 1``` and ```stickX < 0.2``` to retrigger ```stickAsDpad.right 0```.
 
