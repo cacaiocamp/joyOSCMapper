@@ -182,7 +182,7 @@ ofVec2f Joycon::getStickAsPolarCoordinates(float stickX, float stickY) {
 
 stickAsDpad Joycon::setStickAsDpad(float stickX, float stickY) {
 	stickAsDpad newStickAsDpad;
-	if (abs(stickX) > stickAsDpadProp) {
+	if (abs(stickX) > minStickAsDpadDist) {
 		if (stickX < 0) {
 			newStickAsDpad.left = false;
 			newStickAsDpad.right = true;
@@ -196,7 +196,7 @@ stickAsDpad Joycon::setStickAsDpad(float stickX, float stickY) {
 		newStickAsDpad.left = false;
 		newStickAsDpad.right = false;
 	}
-	if (abs(stickY) > stickAsDpadProp) {
+	if (abs(stickY) > minStickAsDpadDist) {
 		if (stickY > 0) {
 			newStickAsDpad.up = true;
 			newStickAsDpad.down = false;
