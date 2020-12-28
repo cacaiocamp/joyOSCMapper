@@ -143,7 +143,7 @@ About that, I made some tests comparing the time response of the first connected
 * 2 with 3 joycons connected, testing lag between first and third, with avarage lags (in ms):  ```113.678``` and ```115.776```;
 * 1 with 3 joycons connected, testing lag between first and second, with avarage lag (in ms): ```120.138```;
 
-The overall test result shows an avarage lag of ```124.979 ms``` between the first and other connected joycon inputs, considering the first one without any lag. The test also **suggests** that, after the first one, _it doesn't realy matter the order or the number of joycons connected, the lag will be quite the same_. I can't really confirm that though, as I don't have any more joycons.
+The overall test result shows an avarage lag of ```124.979 ms``` between the first and other connected joycon inputs, considering the first one without any lag. The test also **suggests** that, after the first one, _it doesn't really matter the order or the number of joycons connected, the lag will be quite the same_. I can't confirm that though, as I don't have any more joycons.
 
 It's also worth to notice that trying to draw too many joycons may result in a fps drop and that may cause more laggy inputs/OSC messages. For those cases (or any other reason to fps drop), the use of _oscOnly mode_ is recomended.
 
