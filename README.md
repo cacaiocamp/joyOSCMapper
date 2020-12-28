@@ -129,9 +129,11 @@ The following default values definitions can be found on _sharedDefs.h_:
 #define DEFAULT_MINSTICKASDPADDIST 0.2
 ```
 For now, the only way to change default values is modifying those definitions. The last three deserve some coments:
-* change ```DEFAULT_IMUVECTORSSIZE``` if you want the graphs to show more or less than 1 second of each motion capture axis. Note that increase this too much may cause fps drop, depending also on the number of joycons drawing;
-* change ```DEFAULT_MINSTICKSTEP``` if you are having any issues with stick precision. The stick values reported are diferent almost every single report, ```Joycon.minStickStep``` represent the minimum stick variation to trigger stick OSC messages and drawing;
+* change ```DEFAULT_IMUVECTORSSIZE``` if you want the graphs to show more or less than 1 second of each motion capture axis. Note that increase this too much may cause fps drop, depending also on the number of joycons being drawn;
+* change ```DEFAULT_MINSTICKSTEP``` if you are having any issues with stick precision. The stick values reported are diferent almost every single report, ```Joycon.minStickStep``` represent the minimum stick variation to trigger stick OSC messages and drawing changes;
 * ```Joycon.minStickAsDpadDist``` represent the minimum stick distance (as in polar coordinates) from the center to trigger _stickAsDpad_ values. For example, with the ```DEFAULT_MINSTICKASDPADDIST``` at ```0.2```, you need to have ```stickX >= 0.2``` to trigger ```stickAsDpad.right 1``` and ```stickX < 0.2``` to retrigger ```stickAsDpad.right 0```.
+
+Check [Future implementations](#future-implementations) section to see the plan to make those and other changes more dynamic.
 
 ## Important notes
 **joyOSCMapper** will allow any number of joycons to be connected (as well as any number of virtual joycons to be created), trying to respond to their inputs on joycons data update rate, **every 15ms/66.67hz**. But, as noted on [this](https://github.com/JibbSmart/JoyShockLibrary#known-and-perceived-issues) part of JoyShockLibrary's README.md: "Some Bluetooth adapters can't keep up with these devices [joycons], resulting in laggy input. This is especially common when more than one device is connected (such as when using a pair of JoyCons). There is nothing JoyShockMapper or JoyShockLibrary can do about this.".
