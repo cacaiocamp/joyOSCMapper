@@ -97,7 +97,7 @@ By default, **joyOSCMapper** waits for OSC messages at the port ```22222```.
 JoyconsList is a _ofxPanel_ GUI that has a toggle for every connected joycon. You can un/toggle the drawing and the OSC messages of each one.
 
 ### Motion graphs
-The graphs show a collection (by default, for onde second) of each IMU data collected, in all axes. The color pattern for each axis is: 
+The graphs show a collection (by default, the collection of the last second values) of each IMU data collected, in all axes. The color pattern for each axis is: 
 * x = red
 * y = green
 * z = blue
