@@ -17,6 +17,7 @@ It is being built with C++/[openFrameworks](https://openframeworks.cc/) and uses
   * **[Virtual Joycons](#virtual-joycons)**
   * **[Mouse clicks](#mouse-clicks)**
   * **[Shortcuts/Help](#shortcutshelp)**
+* **[Default values](#default-values)**
 * **[Important notes](#important-notes)**
 * **[Future implementations](#future-implementations)**
 * **[Last words/contact](#last-wordscontact)**
@@ -81,12 +82,16 @@ The full OSC address is composed with the name of the joycon (/joycon+0..n, base
 
 With the exception of the motion data, all OSC messages are sent only when a change on the input value occurs. The joycons are updated in a 66.67hz frequency, receiving the latest state for all inputs every 15ms. Therefore, thats the same rate in which **joyOSCMapper** can send OSC messages and the ideal fps for the aplication (rounded up to 67).
 
+By default, **joyOSCMapper** sends OSC messages to ```127.0.0.1``` (localhost), to the port ```11111```.
+
 ## Basic functionalities
 ### Connecting joycons
 You only need to connect the joycons over bluetooth to your computer than execute **joyOSCMapper** and the program should manage to connect to them, automaticaly starting to draw them and to send their respective OSC messages. You can also use two _ofxButton_ on GUIControl, ```updateConnected``` and ```disconnect&DisposeAll```, to manipulate joycon connections, as well as a _ofxLabel_ with the number of connected joycons.
 
 ### oscOnly mode
 When toggled, the oscOnly mode will stop all joycon drawing but will continue to send the OSC messages for the inputs made. You can either un/toggle them by clicking the toggle ```oscOnly``` on GUIControl or sending an OSC message to the address ```/oscOnly```, with 0 or 1 as argument.
+
+By default, **joyOSCMapper** waits for OSC messages on the port ```22222```.
 
 ### JoyconsList
 JoyconsList is a _ofxPanel_ GUI that has a toggle for every connected joycon. You can un/toggle the drawing and the OSC messages of each one.
@@ -111,6 +116,22 @@ Right mouse clicks will show the respective OSC address for the input clicked, a
 
 ### Shortcuts/Help
 The shorcuts/help can be un/toggled on the GUIControl. It will show the keyboard shorcuts implemented, as well as the color information for the graphs. All other GUIs can also be un/toggled, with the proper shortcuts.
+
+## Default values
+The following default values definitions can be found on _sharedDefs.h_:
+```
+#define DEFAULT_OSCSEND_ADDRESS "127.0.0.1"
+#define DEFAULT_OSCSEND_PORT 11111
+#define DEFAULT_OSCRECEIVE_PORT 22222
+#define DEFAULT_OSCONLY_OSCADDRESS "/oscOnly"
+#define DEFAULT_IMUVECTORSSIZE 67
+#define DEFAULT_MINSTICKSTEP 0.0035 
+#define DEFAULT_MINSTICKASDPADDIST 0.2
+```
+For now, the only way to change default values is modifying those definitions. The last three deserve some coments:
+* change ```DEFAULT_IMUVECTORSSIZE``` if you want the graphs to show more or lesse than 1 second of each motion capture axis. Note that increase this too much may cause fps drop, depending also on the number of joycons drawing;
+* change ```DEFAULT_MINSTICKSTEP``` if you are having any issues with stick precision. The stick values reported are diferent almost every single report, ```Joycon.minStickStep``` represent the minimum stick variation to trigger stick OSC messages and drawing;
+* ```Joycon.minStickAsDpadDist``` represent the minimum stick distance (as in polar coordinates) from the center to trigger _stickAsDpad_ values. For example, with the ```DEFAULT_MINSTICKASDPADDIST``` at ```0.2```, you need to have ```stickX >= 0.2``` to trigger ```stickAsDpad.right 1``` and ```stickX < 0.2``` to retrigger ```stickAsDpad.right 0```.
 
 ## Important notes
 **joyOSCMapper** will allow any number of joycons to be connected (as well as any number of virtual joycons to be created), trying to respond to their inputs on joycons data update rate, **every 15ms/66.67hz**. But, as noted on [this](https://github.com/JibbSmart/JoyShockLibrary#known-and-perceived-issues) part of JoyShockLibrary's README.md: "Some Bluetooth adapters can't keep up with these devices [joycons], resulting in laggy input. This is especially common when more than one device is connected (such as when using a pair of JoyCons). There is nothing JoyShockMapper or JoyShockLibrary can do about this.".
