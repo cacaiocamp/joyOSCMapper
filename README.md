@@ -138,6 +138,13 @@ Check [Future implementations](#future-implementations) section to see the plan 
 ## Important notes
 **joyOSCMapper** will allow any number of joycons to be connected (as well as any number of virtual joycons to be created), trying to respond to their inputs on joycons data update rate, **every 15ms/66.67hz**. But, as noted on [this](https://github.com/JibbSmart/JoyShockLibrary#known-and-perceived-issues) part of JoyShockLibrary's README.md: "Some Bluetooth adapters can't keep up with these devices [joycons], resulting in laggy input. This is especially common when more than one device is connected (such as when using a pair of JoyCons). There is nothing JoyShockMapper or JoyShockLibrary can do about this.".
 
+About that, I made some tests comparing the time response of the first connected joycon (theoretically with no lag) to other ones (second and third). Each test was made of 500 input changes (250 button presses per test, considering that the input also changes when you release the button) and I made it 6 times (totalizing 2500 input changes):
+* 3 with only 2 joycons connected, resulting in the following avarage lags (in ms): ```138.41```, ```144.958``` and ```116.914```;
+* 2 with 3 joycons connected, testing lag between first and third, with avarage lags (in ms):  ```113.678``` and ```115.776```;
+* 1 with 3 joycons connected, testing lag between first and second, with avarage lag (in ms): ```120.138```;
+
+The overall test result shows an avarage lag of ```124.979 ms``` between the first and other connected joycon inputs. The test also **suggests** that _it doesn't realy matter the order or the number of joycons connected, the lag will be quite the same_. I can't really confirm that though, as I don't have any more joycons.
+
 It's also worth to notice that trying to draw too many joycons may result in a fps drop and that may cause more laggy inputs/OSC messages. For those cases (or any other reason to fps drop), the use of _oscOnly mode_ is recomended.
 
 ## Future implementations
