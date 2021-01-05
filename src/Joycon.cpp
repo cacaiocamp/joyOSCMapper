@@ -5,7 +5,7 @@
 #include "sharedDefs.h"
 #include "Joycon.h"
 
-void Joycon:: Joycon::defineJoyconColor(int guiAlpha) {
+void Joycon::defineJoyconColor(int guiAlpha) {
 	int colorR = (intColor >> 16) & 0x0ff;
 	int colorG = (intColor >> 8) & 0x0ff;
 	int colorB = (intColor) & 0x0ff;
@@ -13,7 +13,7 @@ void Joycon:: Joycon::defineJoyconColor(int guiAlpha) {
 	joyconColor = ofColor(colorR, colorG, colorB, guiAlpha);
 }
 
-void Joycon:: defineJoyconNameOnGUI(int devicesConnectedNumber) {
+void Joycon::defineJoyconNameOnGUI(int devicesConnectedNumber) {
 	string prefix = "joycon";
 	if (isVirtual)
 		prefix = "vrtjoy";
@@ -33,13 +33,13 @@ void Joycon:: defineJoyconNameOnGUI(int devicesConnectedNumber) {
 	joyconOscAddress = "/" + prefix + ofToString(devicesConnectedNumber);
 }
 
-void Joycon:: oscSenderSetup() {
+void Joycon::oscSenderSetup() {
 	bool success = oscSender.setup(oscNetAddress, oscSendPort);
 	if (!success)
 		cout << "Could not connect to the net address " << oscNetAddress << ", with port " << oscSendPort << ";" << endl;
 }
 
-void Joycon:: updateData(JOY_SHOCK_STATE newButtonsStickData, IMU_STATE newRawIMUData) {
+void Joycon::updateData(JOY_SHOCK_STATE newButtonsStickData, IMU_STATE newRawIMUData) {
 	inputValues newInputValues = getEachInputValue(newButtonsStickData);
 	rawIMUData = newRawIMUData;
 	cookedIMUData = JslGetMotionState(deviceId);
@@ -101,7 +101,7 @@ inputValues Joycon::getEachInputValue(JOY_SHOCK_STATE newButtonsStickData) {//_n
 	return newInputValues;
 }
 
-void Joycon:: sendNewInputsAsOSC(inputValues newInputValues) {
+void Joycon::sendNewInputsAsOSC(inputValues newInputValues) {
 	if (!isVirtual) {
 		if (newInputValues.upX != currentInputValues.upX)
 			oscSender.sendMessage(getInputOscMessage(inputOSCTags.upX, newInputValues.upX));
@@ -213,7 +213,7 @@ stickAsDpad Joycon::setStickAsDpad(float stickX, float stickY) {
 	return newStickAsDpad;
 }
 
-void Joycon:: updateGraphsValues() {
+void Joycon::updateGraphsValues() {
 	if (isVirtual) {
 		rawIMUData.gyroX = ofRandom(-MAX_GYRO_VALUE, MAX_GYRO_VALUE);
 		rawIMUData.gyroY = ofRandom(-MAX_GYRO_VALUE, MAX_GYRO_VALUE);
@@ -277,7 +277,7 @@ void Joycon:: updateGraphsValues() {
 	}
 };
 
-void Joycon:: updateDrawings(int newCelWidth, int newCelHeight, int newCelPosX, int newCelPosY) {
+void Joycon::updateDrawings(int newCelWidth, int newCelHeight, int newCelPosX, int newCelPosY) {
 	celWidth = newCelWidth;
 	celHeight = newCelHeight;
 	celPosX = newCelPosX;
@@ -460,7 +460,7 @@ void Joycon:: updateDrawings(int newCelWidth, int newCelHeight, int newCelPosX, 
 	stickAsPolarY = stickCenterY - (stickTargetRadius + BORDER);
 };
 
-void Joycon:: drawJoycon() {
+void Joycon::drawJoycon() {
 	ofFill();
 	ofSetColor(ofColor(joyconColor.r, joyconColor.g, joyconColor.b, 25));
 	ofDrawRectangle(celPosX, celPosY, celWidth, celHeight); //background rect
@@ -620,7 +620,7 @@ void Joycon:: drawJoycon() {
 	font.drawString(nameOnGUI, (celPosX + (2 * BORDER)) + (abs(controllerType - 2) * (celWidth - (nameWidth + (4 * BORDER)))), celPosY + dataGraphPosY);
 }
 
-void Joycon:: draw2DGraph(float posX, float posY, float graphWidth, float graphHeight, vector<float> graphValuesI, vector<float> graphValuesJ, vector<float> graphValuesK, float maxYValue, int numLayers, vector<float> graphValuesW) {
+void Joycon::draw2DGraph(float posX, float posY, float graphWidth, float graphHeight, vector<float> graphValuesI, vector<float> graphValuesJ, vector<float> graphValuesK, float maxYValue, int numLayers, vector<float> graphValuesW) {
 	float xAxisStep = graphWidth / (IMUVectorsSize - 1);
 	float yAxisStep = (graphHeight / 2) / maxYValue;
 	ofVec2f currentGraphPointI;
