@@ -1,7 +1,7 @@
 # joyOSCMapper
 **joyOSCMapper** is suposed to be a easy way to visualize and map joycon inputs (buttons, stick and motion) as [OSC](http://opensoundcontrol.org/introduction-osc) messages, allowing to use and test joycon inputs to control "anything" controlable with OSC. Therefore, this software idea is a simple central program to use joycons with Interactive Music Systems and other art related contexts. 
 
-It is being built with C++/[openFrameworks](https://openframeworks.cc/) and uses JibbSmarts' [JoyShockLibrary](https://github.com/JibbSmart/JoyShockLibrary) to gather the data from the joycons via Bluetooth and the *ofxOsc* addon to convert the data in OSC messages. I'm developting it using a Windows 10, with Visual Studio 2017, but, as its built with openFrameworks, it should be easy enough to use it in every OS that run this C++ toolkit.
+It is being built with C++/[openFrameworks](https://openframeworks.cc/) and uses JibbSmarts' [JoyShockLibrary](https://github.com/JibbSmart/JoyShockLibrary) to gather the data from the joycons via Bluetooth and the _ofxOsc_ addon to convert the data in OSC messages. I'm developting it using a Windows 10, with Visual Studio 2017, but, as its built with openFrameworks, it should be easy enough to use it in every OS that run this C++ toolkit.
 
 ![joyOSCMapperShot](mdimgs/twoyellowjoys.png)
 
@@ -131,7 +131,7 @@ The following default values definitions can be found on _sharedDefs.h_:
 For now, the only way to change default values is modifying those definitions. The last three deserve some coments:
 * change ```DEFAULT_IMUVECTORSSIZE``` if you want the graphs to show more or less than 1 second of each motion capture axis. Note that increase this too much may cause fps drop, depending also on the number of joycons being drawn;
 * change ```DEFAULT_MINSTICKSTEP``` if you are having any issues with stick precision. The stick values reported are diferent almost every single report, ```Joycon.minStickStep``` represent the minimum stick variation to trigger stick OSC messages and drawing changes;
-* ```Joycon.minStickAsDpadDist``` represent the minimum stick distance (as in polar coordinates) from the center to trigger _stickAsDpad_ values. For example, with the ```DEFAULT_MINSTICKASDPADDIST``` at ```0.2```, you need to have ```stickX >= 0.2``` to trigger ```stickAsDpad.right 1``` and ```stickX < 0.2``` to retrigger ```stickAsDpad.right 0```.
+* ```Joycon.minStickAsDpadDist``` represent the minimum _stickX_ and _stickY_ distance from the center to trigger _stickAsDpad_ values. For example, with the ```DEFAULT_MINSTICKASDPADDIST``` at ```0.2```, you need to have ```stickX >= 0.2``` to trigger ```stickAsDpad.right 1``` and ```stickX < 0.2``` to retrigger ```stickAsDpad.right 0```.
 
 Check [Future implementations](#future-implementations) section to see the plan to make those and other changes more dynamic.
 
