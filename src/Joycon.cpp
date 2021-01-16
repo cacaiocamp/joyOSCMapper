@@ -184,12 +184,12 @@ stickAsDpad Joycon::setStickAsDpad(float stickX, float stickY) {
 	stickAsDpad newStickAsDpad;
 	if (abs(stickX) > minStickAsDpadDist) {
 		if (stickX < 0) {
-			newStickAsDpad.left = false;
-			newStickAsDpad.right = true;
-		}
-		else {
 			newStickAsDpad.left = true;
 			newStickAsDpad.right = false;
+		}
+		else {
+			newStickAsDpad.left = false;
+			newStickAsDpad.right = true;
 		}
 	}
 	else {
@@ -446,10 +446,10 @@ void Joycon::updateDrawings(int newCelWidth, int newCelHeight, int newCelPosX, i
 	stickTargetLineDown.lineTo(stickVisualizationCenterX, stickCenterY + exceededLineWidth);
 	stickTargetLineDown.close();
 	stickTargetLineLeft.moveTo(stickVisualizationCenterX, stickCenterY);
-	stickTargetLineLeft.lineTo(stickVisualizationCenterX + exceededLineWidth, stickCenterY);
+	stickTargetLineLeft.lineTo(stickVisualizationCenterX - exceededLineWidth, stickCenterY);
 	stickTargetLineLeft.close();
 	stickTargetLineRight.moveTo(stickVisualizationCenterX, stickCenterY);
-	stickTargetLineRight.lineTo(stickVisualizationCenterX - exceededLineWidth, stickCenterY);
+	stickTargetLineRight.lineTo(stickVisualizationCenterX + exceededLineWidth, stickCenterY);
 	stickTargetLineRight.close();
 
 	stickTargetRadius = visualizationRadius;
