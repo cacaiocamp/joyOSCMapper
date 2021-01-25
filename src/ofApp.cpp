@@ -350,7 +350,7 @@ void ofApp::checkAllButtonStates() {
 		}
 		else if (addVirtualJoycon || executeAddVirtualJoycon) {
 			framesWaited = 0;
-			Joycon newJoycon(-1, joyconsVec.size(), guiColor.a, font);
+			Joycon newJoycon(-1, numVirtualJoycons, guiColor.a, font);
 			joyconsVec.push_back(newJoycon);
 			numVirtualJoycons++;
 			setupGuiJoyconsList();
