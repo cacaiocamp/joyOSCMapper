@@ -654,7 +654,8 @@ void Joycon::drawJoycon() {
 	font.drawString(nameOnGUI, (celPosX + (2 * BORDER)) + (abs(controllerType - 2) * (celWidth - (nameWidth + (4 * BORDER)))), celPosY + dataGraphPosY);
 }
 
-void Joycon::convertQuaternionToEuler(float quatW, float quatX, float quatY, float quatZ) {
+// see: https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles 
+void Joycon::convertQuaternionToEuler(float quatW, float quatX, float quatY, float quatZ) { 
 	// roll (x-axis rotation)
 	float sinr_cosp = 2 * (quatW * quatX + quatY * quatZ);
 	float cosr_cosp = 1 - 2 * (quatX * quatX + quatY * quatY);
