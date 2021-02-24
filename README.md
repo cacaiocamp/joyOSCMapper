@@ -169,4 +169,4 @@ I made this program as a way to study openFrameworks and make something that I t
 Last, I'd also like to give credits to [JoyShockLibrary](https://github.com/JibbSmart/JoyShockLibrary) developers, as this program mainly depends on it to work.
 
 ## License
-**joyOSCMapper** is licensed under the MIT License - see [LICENSE.md](https://github.com/cacaiocamp/joyOSCMapper/LICENSE.md).
+**joyOSCMapper** is licensed under the MIT License - see [LICENSE.md](https://github.com/cacaiocamp/joyOSCMapper/blob/master/LICENSE.md).
