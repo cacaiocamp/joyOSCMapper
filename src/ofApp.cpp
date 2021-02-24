@@ -49,6 +49,7 @@ void ofApp::setup(){
 	guiShortcuts.add(vShortcut.setup("v-un/toggle VirtualJoys  ", vShortcut, guiWidth, guiLineHeight));
 	guiShortcuts.add(aShortcut.setup("  a-addAVirualJoycon     ", aShortcut, guiWidth, guiLineHeight));
 	guiShortcuts.add(rShortcut.setup("  r-removeAVirualJoycon  ", rShortcut, guiWidth, guiLineHeight));
+	guiShortcuts.add(eShortcut.setup("e-un/toggle eulerOrient  ", oShortcut, guiWidth, guiLineHeight));
 	guiShortcuts.add(oShortcut.setup("o-un/toggle oscOnly mode ", oShortcut, guiWidth, guiLineHeight));
 	guiShortcuts.add(leftClickHelp.setup("lClick-test vrtJoy input ", leftClickHelp, guiWidth, guiLineHeight));
 	guiShortcuts.add(rightClickHelp.setup("rClick-check oscAddress ", rightClickHelp, guiWidth, guiLineHeight));
@@ -62,6 +63,7 @@ void ofApp::setup(){
 	vShortcut.setBackgroundColor(guiColor);
 	aShortcut.setBackgroundColor(guiColor);
 	rShortcut.setBackgroundColor(guiColor);
+	eShortcut.setBackgroundColor(guiColor);
 	oShortcut.setBackgroundColor(guiColor);
 	leftClickHelp.setBackgroundColor(guiColor);
 	rightClickHelp.setBackgroundColor(guiColor);
@@ -206,6 +208,9 @@ void ofApp::keyPressed(int key){
 		case 'h':
 			showShortcutsHelp = !showShortcutsHelp;
 			break;
+		case 'e':
+			useEulerOrientation = !useEulerOrientation;
+			break;
 		case 'o':
 			oscOnly = !oscOnly;
 			break;
@@ -339,6 +344,14 @@ void ofApp::checkAllButtonStates() {
 			setupGuiJoyconsList();
 			lastUseVirtualJoyconsValue = useVirtualJoycons;
 			updateJoyconsDrawings();
+		}
+		else if (useEulerOrientation != lastUseEulerOrientationValue) {
+			framesWaited = 0;
+			for (int index = 0; index < joyconsVec.size(); index++) {
+				joyconsVec[index].useEulerOrientation = useEulerOrientation;
+				joyconsVec[index].clearNotUsedGraphValues();
+			}
+			lastUseEulerOrientationValue = useEulerOrientation;
 		}
 		else if (oscOnly != lastOscOnlyValue) {
 			framesWaited = 0;
@@ -475,6 +488,7 @@ void ofApp::setupGuiControl() {
 	guiControl.add(disconnectAndDispose.setup("disconnect&DisposeAll", guiWidth, guiLineHeight));
 	guiControl.add(useVirtualJoycons.setup("useVirtualJoycons", false, guiWidth, guiLineHeight));
 	guiControl.add(connectedDevicesLabel.setup("numConnectedDevices", connectedDevicesLabel, guiWidth, guiLineHeight));
+	guiControl.add(useEulerOrientation.setup("useEulerOrientation", false, guiWidth, guiLineHeight));
 	guiControl.add(oscOnly.setup("oscOnly", false, guiWidth, guiLineHeight));
 	guiControl.add(showShortcutsHelp.setup("shortcuts/help", false, guiWidth, guiLineHeight));
 	connectedDevicesLabel.operator=(ofToString(numDevicesConnected));
@@ -483,8 +497,9 @@ void ofApp::setupGuiControl() {
 	guiControl.setBackgroundColor(guiColor);
 	updateConnected.setBackgroundColor(guiColor);
 	disconnectAndDispose.setBackgroundColor(guiColor);
-	connectedDevicesLabel.setBackgroundColor(guiColor);
 	useVirtualJoycons.setBackgroundColor(guiColor);
+	connectedDevicesLabel.setBackgroundColor(guiColor);
+	useEulerOrientation.setBackgroundColor(guiColor);
 	oscOnly.setBackgroundColor(guiColor);
 	showShortcutsHelp.setBackgroundColor(guiColor);
 }

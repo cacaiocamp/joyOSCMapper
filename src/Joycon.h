@@ -23,6 +23,9 @@ class Joycon {
 		int controllerType; //left(1) or right(2) joycon identifier _n2
 		IMU_STATE rawIMUData = IMU_STATE();
 		MOTION_STATE cookedIMUData = MOTION_STATE();
+		double roll = 0;
+		double pitch = 0;
+		double yaw = 0;
 
 		int positionOnList;
 		ofTrueTypeFont font; 
@@ -30,13 +33,6 @@ class Joycon {
 		int oscSendPort = DEFAULT_OSCSEND_PORT;
 		string joyconOscAddress = "";
 		inputOSCTags inputOSCTags;
-
-		bool useRawIMUData = true;
-		bool useCookedIMUData = true;
-		bool drawRawIMUData = true;
-		bool drawCookedIMUData = true;
-		bool useStickAsPolar = true;
-		bool useStickAsDpad = true;
 		float minStickStep = DEFAULT_MINSTICKSTEP;
 		float minStickAsDpadDist = DEFAULT_MINSTICKASDPADDIST;
 
@@ -85,6 +81,9 @@ class Joycon {
 		vector<float> gravityXValues;
 		vector<float> gravityYValues;
 		vector<float> gravityZValues;
+		vector<float> rollValues;
+		vector<float> pitchValues;
+		vector<float> yawValues;
 		int IMUVectorsSize = DEFAULT_IMUVECTORSSIZE;
 		int currentFirstPosGraphs = 0; //_n3
 
@@ -94,6 +93,7 @@ class Joycon {
 		inputValues getEachInputValue(JOY_SHOCK_STATE newButtonsStickData);
 		ofVec2f getStickAsPolarCoordinates(float stickX, float stickY);
 		stickAsDpad setStickAsDpad(float stickX, float stickY);
+		void convertQuaternionToEuler(float quatW, float quatX, float quatY, float quatZ);
 		void draw2DGraph(float posX, float posY, float graphWidth, float graphHeight, vector<float> graphValuesI, vector<float> graphValuesJ, vector<float> graphValuesK, float maxYValue = 1, int numLayers = 4, vector<float> graphValuesW = vector<float>());
 		ofColor getInputColor(int buttonValue, int baseRGB = BASE_BUTTON_COLOR);
 		bool pointInsidePolylines(vector<ofPolyline> polylinesToCheck, int pointX, int pointY);
@@ -112,6 +112,14 @@ class Joycon {
 		ofColor joyconColor;
 		string nameOnGUI;
 
+		bool useRawIMUData = true;
+		bool useCookedIMUData = true;
+		bool useEulerOrientation = false;
+		bool drawRawIMUData = true;
+		bool drawCookedIMUData = true;
+		bool useStickAsPolar = true;
+		bool useStickAsDpad = true;
+
 		Joycon(int newDeviceId, int devicesConnectedNumber, int guiAlpha, ofTrueTypeFont loadedFont) {
 			deviceId = newDeviceId;
 			positionOnList = devicesConnectedNumber;
@@ -124,7 +132,7 @@ class Joycon {
 			else {
 				intColor = JslGetControllerColour(deviceId);
 				controllerType = JslGetControllerType(deviceId);
-				JslStartContinuousCalibration(deviceId);
+				//JslStartContinuousCalibration(deviceId);
 			}
 
 			defineJoyconColor(guiAlpha);
@@ -147,6 +155,10 @@ class Joycon {
 			gravityXValues.resize(IMUVectorsSize, 0);
 			gravityYValues.resize(IMUVectorsSize, 0);
 			gravityZValues.resize(IMUVectorsSize, 0);
+
+			rollValues.resize(IMUVectorsSize, 0);
+			pitchValues.resize(IMUVectorsSize, 0);
+			yawValues.resize(IMUVectorsSize, 0);
 		};
 
 		void updateData(JOY_SHOCK_STATE newButtonsStickData, IMU_STATE newRawIMUData);
@@ -155,6 +167,7 @@ class Joycon {
 		void updateGraphsValues();
 		void updateDrawings(int newCelWidth, int newCelHeight, int newCelPosX, int newCelPosY);
 		void drawJoycon();
+		void clearNotUsedGraphValues();
 		string checkMouseClick(int mouseClickX, int mouseClickY, int mouseButton);
 };
 

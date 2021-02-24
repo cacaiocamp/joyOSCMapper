@@ -43,6 +43,9 @@ void Joycon::updateData(JOY_SHOCK_STATE newButtonsStickData, IMU_STATE newRawIMU
 	inputValues newInputValues = getEachInputValue(newButtonsStickData);
 	rawIMUData = newRawIMUData;
 	cookedIMUData = JslGetMotionState(deviceId);
+	if (useEulerOrientation) {
+		convertQuaternionToEuler(cookedIMUData.quatW, cookedIMUData.quatX, cookedIMUData.quatY, cookedIMUData.quatZ);
+	}
 	sendNewInputsAsOSC(newInputValues);
 	currentInputValues = newInputValues;
 }
@@ -156,10 +159,17 @@ void Joycon::sendNewInputsAsOSC(inputValues newInputValues) {
 		oscSender.sendMessage(getInputOscMessage(inputOSCTags.raclZ, rawIMUData.accelZ));
 	}
 	if (useCookedIMUData) {
-		oscSender.sendMessage(getInputOscMessage(inputOSCTags.quatW, cookedIMUData.quatW));
-		oscSender.sendMessage(getInputOscMessage(inputOSCTags.quatX, cookedIMUData.quatX));
-		oscSender.sendMessage(getInputOscMessage(inputOSCTags.quatY, cookedIMUData.quatY));
-		oscSender.sendMessage(getInputOscMessage(inputOSCTags.quatZ, cookedIMUData.quatZ));
+		if (useEulerOrientation) {
+			oscSender.sendMessage(getInputOscMessage(inputOSCTags.roll, pitch));
+			oscSender.sendMessage(getInputOscMessage(inputOSCTags.pitch, roll));
+			oscSender.sendMessage(getInputOscMessage(inputOSCTags.yaw, yaw));
+		}
+		else {
+			oscSender.sendMessage(getInputOscMessage(inputOSCTags.quatW, cookedIMUData.quatW));
+			oscSender.sendMessage(getInputOscMessage(inputOSCTags.quatX, cookedIMUData.quatX));
+			oscSender.sendMessage(getInputOscMessage(inputOSCTags.quatY, cookedIMUData.quatY));
+			oscSender.sendMessage(getInputOscMessage(inputOSCTags.quatZ, cookedIMUData.quatZ));
+		}
 		oscSender.sendMessage(getInputOscMessage(inputOSCTags.caclX, cookedIMUData.accelX));
 		oscSender.sendMessage(getInputOscMessage(inputOSCTags.caclY, cookedIMUData.accelY));
 		oscSender.sendMessage(getInputOscMessage(inputOSCTags.caclZ, cookedIMUData.accelZ));
@@ -248,6 +258,13 @@ void Joycon::updateGraphsValues() {
 		gravityXValues[currentFirstPosGraphs] = cookedIMUData.gravX;
 		gravityYValues[currentFirstPosGraphs] = cookedIMUData.gravY;
 		gravityZValues[currentFirstPosGraphs] = cookedIMUData.gravZ;
+
+		if (useEulerOrientation) {
+			convertQuaternionToEuler(cookedIMUData.quatW, cookedIMUData.quatX, cookedIMUData.quatY, cookedIMUData.quatZ);
+			rollValues[currentFirstPosGraphs] = roll;
+			pitchValues[currentFirstPosGraphs] = pitch;
+			yawValues[currentFirstPosGraphs] = yaw;
+		}
 	}
 	else {
 		if (drawRawIMUData) {
@@ -269,6 +286,12 @@ void Joycon::updateGraphsValues() {
 			gravityXValues[currentFirstPosGraphs] = cookedIMUData.gravX;
 			gravityYValues[currentFirstPosGraphs] = cookedIMUData.gravY;
 			gravityZValues[currentFirstPosGraphs] = cookedIMUData.gravZ;
+
+			if (useEulerOrientation) {
+				rollValues[currentFirstPosGraphs] = roll;
+				pitchValues[currentFirstPosGraphs] = pitch;
+				yawValues[currentFirstPosGraphs] = yaw;
+			}
 		}
 	}
 	currentFirstPosGraphs++;
@@ -591,12 +614,23 @@ void Joycon::drawJoycon() {
 			localDataGraphPosX = dataGraphPosX + dataGraphWidth + BORDER;
 		float localDataGraphPosY = dataGraphPosY;
 		float dataGraphHeight = (celHeight - (2 * localDataGraphPosY)) / 3 - BORDER;
-		draw2DGraph(localDataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, quatIValues, quatJValues, quatKValues, 1, 4, quatWValues);
-		ofSetColor(joyconColor);
-		if (font.stringWidth("quatOrientation") < dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
-			ofDrawBitmapString("quatOrientation", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
-		else if (font.stringWidth("quatOrientation") >= dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
-			ofDrawBitmapString("qO", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
+
+		if (useEulerOrientation) {
+			draw2DGraph(localDataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, rollValues, pitchValues, yawValues, PI, 3);
+			ofSetColor(joyconColor);
+			if (font.stringWidth("eulerOrientation") < dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
+				ofDrawBitmapString("eulerOrientation", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
+			else if (font.stringWidth("eulerOrientation") >= dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
+				ofDrawBitmapString("eO", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
+		}
+		else {
+			draw2DGraph(localDataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, quatIValues, quatJValues, quatKValues, 1, 4, quatWValues);
+			ofSetColor(joyconColor);
+			if (font.stringWidth("quatOrientation") < dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
+				ofDrawBitmapString("quatOrientation", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
+			else if (font.stringWidth("quatOrientation") >= dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
+				ofDrawBitmapString("qO", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
+		}
 
 		localDataGraphPosY = localDataGraphPosY + dataGraphHeight + BORDER;
 		draw2DGraph(localDataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, cookedAccelXValues, cookedAccelYValues, cookedAccelZValues, MAX_ACCEL_VALUE, 3);
@@ -618,6 +652,36 @@ void Joycon::drawJoycon() {
 	ofSetColor(ofColor(255, 255, 255, 255));
 	float nameWidth = font.stringWidth(nameOnGUI);
 	font.drawString(nameOnGUI, (celPosX + (2 * BORDER)) + (abs(controllerType - 2) * (celWidth - (nameWidth + (4 * BORDER)))), celPosY + dataGraphPosY);
+}
+
+void Joycon::convertQuaternionToEuler(float quatW, float quatX, float quatY, float quatZ) {
+	// roll (x-axis rotation)
+	float sinr_cosp = 2 * (quatW * quatX + quatY * quatZ);
+	float cosr_cosp = 1 - 2 * (quatX * quatX + quatY * quatY);
+	roll = atan2(sinr_cosp, cosr_cosp);
+
+	// pitch (y-axis rotation)
+	double sinp = 2 * (quatW * quatY - quatZ * quatX);
+	if (std::abs(sinp) >= 1)
+		pitch = copysign(PI / 2, sinp); // use 90 degrees if out of range
+	else
+		pitch = asin(sinp);
+
+	// yaw (z-axis rotation)
+	double siny_cosp = 2 * (quatW * quatZ + quatX * quatY);
+	double cosy_cosp = 1 - 2 * (quatY * quatY + quatZ * quatZ);
+	yaw = atan2(siny_cosp, cosy_cosp);
+}
+
+void Joycon::clearNotUsedGraphValues() {
+	if (useEulerOrientation) {
+		rollValues.clear();
+		pitchValues.clear();
+		yawValues.clear();
+		rollValues.resize(IMUVectorsSize, 0);
+		pitchValues.resize(IMUVectorsSize, 0);
+		yawValues.resize(IMUVectorsSize, 0);
+	}
 }
 
 void Joycon::draw2DGraph(float posX, float posY, float graphWidth, float graphHeight, vector<float> graphValuesI, vector<float> graphValuesJ, vector<float> graphValuesK, float maxYValue, int numLayers, vector<float> graphValuesW) {
@@ -654,14 +718,14 @@ void Joycon::draw2DGraph(float posX, float posY, float graphWidth, float graphHe
 		}
 
 		currentGraphPointI.x = posX + (indexGraph * xAxisStep);
-		currentGraphPointI.y = posY + (graphValuesI[index] * yAxisStep);
+		currentGraphPointI.y = posY - (graphValuesI[index] * yAxisStep);
 		currentGraphPointJ.x = posX + (indexGraph * xAxisStep);
-		currentGraphPointJ.y = posY + (graphValuesJ[index] * yAxisStep);
+		currentGraphPointJ.y = posY - (graphValuesJ[index] * yAxisStep);
 		currentGraphPointK.x = posX + (indexGraph * xAxisStep);
-		currentGraphPointK.y = posY + (graphValuesK[index] * yAxisStep);
+		currentGraphPointK.y = posY - (graphValuesK[index] * yAxisStep);
 		if (numLayers > 3) {
 			currentGraphPointW.x = posX + (indexGraph * xAxisStep);
-			currentGraphPointW.y = posY + (graphValuesW[index] * yAxisStep);
+			currentGraphPointW.y = posY - (graphValuesW[index] * yAxisStep);
 		}
 
 		if (indexGraph != 0) {

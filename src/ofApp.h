@@ -62,6 +62,8 @@ class ofApp : public ofBaseApp{
 		ofxToggle useVirtualJoycons;
 		bool lastUseVirtualJoyconsValue = false;
 		ofxLabel connectedDevicesLabel;
+		ofxToggle useEulerOrientation;
+		bool lastUseEulerOrientationValue = false;
 		ofxToggle oscOnly;
 		bool lastOscOnlyValue = false;
 		ofxToggle showShortcutsHelp;
@@ -91,6 +93,7 @@ class ofApp : public ofBaseApp{
 		ofxLabel vShortcut;
 		ofxLabel aShortcut;
 		ofxLabel rShortcut;
+		ofxLabel eShortcut;
 		ofxLabel oShortcut;
 		ofxLabel leftClickHelp;
 		ofxLabel rightClickHelp;

@@ -77,6 +77,10 @@ struct inputOSCTags
 	string gravX = "/gravX";
 	string gravY = "/gravY";
 	string gravZ = "/gravZ";
+
+	string roll = "/roll";
+	string pitch = "/pitch";
+	string yaw = "/yaw";
 };
 
 /*
