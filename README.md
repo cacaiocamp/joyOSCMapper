@@ -31,12 +31,12 @@ After that, all the files you need are on the _src/_ folder. You will also need 
 For Visual Studio users, the full solution is also provided. I will also try to make a standalone app in the future.
 
 ## OSC data sent
-**joyOSCMapper** takes advantage of most of JoyShockLibrary's functionalities for joycons, mapping buttons, sticks, raw motion (gyroscope and accelerometer) and sensor fusion (orientation in quaternions, acceleroremeter without the effect of gravity and isolated gravity). I also implemented the stick data as polar coordinates and as dpad. This data is collected, drawn in real time and sent via OSC. 
+**joyOSCMapper** takes advantage of most of JoyShockLibrary's functionalities for joycons, mapping buttons, sticks, raw motion (gyroscope and accelerometer) and sensor fusion (orientation in quaternions, acceleroremeter without the effect of gravity and isolated gravity). I also implemented the stick data as polar coordinates and as dpad, as well as a conversion from quaternion to euler orientation. This data is collected, drawn in real time and sent via OSC. 
 
 The full list of the default input OSC tags follows (the name of the buttons are composite to represent both left and right joycons): 
 ```
 struct inputOSCTags
-{ 
+{
 	string upX = "/upX";
 	string downB = "/downB";
 	string leftY = "/leftY";
@@ -48,7 +48,7 @@ struct inputOSCTags
 	string stickClick = "/stickClick";
 	string sr = "/sr";
 	string sl = "/sl";
-  
+
 	string stickX = "/stickX";
 	string stickY = "/stickY";
 	string stickDistance = "/stickDistance";
@@ -71,10 +71,14 @@ struct inputOSCTags
 	string quatZ = "/quatZ";
 	string caclX = "/caclX";
 	string caclY = "/caclY";
-	string caclZ = "/caclZ"; //"cooked" acceleration, without gravity
+	string caclZ = "/caclZ";
 	string gravX = "/gravX";
 	string gravY = "/gravY";
 	string gravZ = "/gravZ";
+
+	string roll = "/roll";
+	string pitch = "/pitch";
+	string yaw = "/yaw";
 };
 ```
 
@@ -138,7 +142,7 @@ Check [Future implementations](#future-implementations) section to see the plan 
 ## Important notes
 **joyOSCMapper** will allow any number of joycons to be connected (as well as any number of virtual joycons to be created), trying to respond to their inputs on joycons data update rate, **every 15ms/66.67hz**. But, as noted on [this](https://github.com/JibbSmart/JoyShockLibrary#known-and-perceived-issues) part of JoyShockLibrary's README.md: "Some Bluetooth adapters can't keep up with these devices [joycons], resulting in laggy input. This is especially common when more than one device is connected (such as when using a pair of JoyCons). There is nothing JoyShockMapper or JoyShockLibrary can do about this.".
 
-About that, I made some tests comparing the time response of the first connected joycon (theoretically with no lag) to other ones (second and third). Each test was made of 500 input changes (250 button presses per test, considering that the input also changes when you release the button) and I made it 6 times (totalizing 2500 input changes):
+About that, I made some tests comparing the time response of the first connected joycon (theoretically with no lag) to other ones (second and third). Each test was made of 500 input changes (250 button presses per test, considering that the input also changes when you release the button) and I made it 6 times (totalizing 3000 input changes):
 * 3 with only 2 joycons connected, resulting in the following avarage lags (in ms): ```138.41```, ```144.958``` and ```116.914```;
 * 2 with 3 joycons connected, testing lag between first and third, with avarage lags (in ms):  ```113.678``` and ```115.776```;
 * 1 with 3 joycons connected, testing lag between first and second, with avarage lag (in ms): ```120.138```;
@@ -165,4 +169,4 @@ I made this program as a way to study openFrameworks and make something that I t
 Last, I'd also like to give credits to [JoyShockLibrary](https://github.com/JibbSmart/JoyShockLibrary) developers, as this program mainly depends on it to work.
 
 ## License
-**joyOSCMapper** is licensed under the MIT License - see LICENSE.md.
+**joyOSCMapper** is licensed under the MIT License - see [LICENSE.md](https://github.com/cacaiocamp/joyOSCMapper/LICENSE.md).
