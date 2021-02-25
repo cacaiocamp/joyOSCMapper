@@ -657,13 +657,13 @@ void Joycon::drawJoycon() {
 // see: https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles 
 void Joycon::convertQuaternionToEuler(float quatW, float quatX, float quatY, float quatZ) { 
 	// roll (x-axis rotation)
-	float sinr_cosp = 2 * ((quatW * quatX) + (quatY * quatZ));
-	float cosr_cosp = 1 - 2 * ((quatX * quatX) + (quatY * quatY));
+	double sinr_cosp = 2 * ((quatW * quatX) + (quatY * quatZ));
+	double cosr_cosp = 1 - 2 * ((quatX * quatX) + (quatY * quatY));
 	roll = atan2(sinr_cosp, cosr_cosp);
 
 	// pitch (y-axis rotation)
 	double sinp = 2 * ((quatW * quatY) - (quatZ * quatX));
-	if (std::abs(sinp) >= 1)
+	if (abs(sinp) >= 1)
 		pitch = copysign(PI / 2, sinp); // use 90 degrees if out of range
 	else
 		pitch = asin(sinp);
