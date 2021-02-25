@@ -688,6 +688,7 @@ void Joycon::clearNotUsedGraphValues() {
 void Joycon::calibrateMotion(bool calibrate) {
 	if (calibrate) {
 		JslResetContinuousCalibration(deviceId);
+		JslStartContinuousCalibration(deviceId);
 	}
 	else {
 		JslPauseContinuousCalibration(deviceId);

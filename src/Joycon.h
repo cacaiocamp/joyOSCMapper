@@ -133,7 +133,6 @@ class Joycon {
 			else {
 				intColor = JslGetControllerColour(deviceId);
 				controllerType = JslGetControllerType(deviceId);
-				//JslStartContinuousCalibration(deviceId);
 			}
 
 			defineJoyconColor(guiAlpha);
