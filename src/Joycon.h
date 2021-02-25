@@ -72,9 +72,9 @@ class Joycon {
 		vector<float> rawAccelYValues;
 		vector<float> rawAccelZValues;
 		vector<float> quatWValues;
-		vector<float> quatIValues;
-		vector<float> quatJValues;
-		vector<float> quatKValues;
+		vector<float> quatXValues;
+		vector<float> quatYValues;
+		vector<float> quatZValues;
 		vector<float> cookedAccelXValues;
 		vector<float> cookedAccelYValues;
 		vector<float> cookedAccelZValues;
@@ -146,9 +146,9 @@ class Joycon {
 			rawAccelYValues.resize(IMUVectorsSize, 0);
 			rawAccelZValues.resize(IMUVectorsSize, 0);
 			quatWValues.resize(IMUVectorsSize, 0);
-			quatIValues.resize(IMUVectorsSize, 0);
-			quatJValues.resize(IMUVectorsSize, 0);
-			quatKValues.resize(IMUVectorsSize, 0);
+			quatXValues.resize(IMUVectorsSize, 0);
+			quatYValues.resize(IMUVectorsSize, 0);
+			quatZValues.resize(IMUVectorsSize, 0);
 			cookedAccelXValues.resize(IMUVectorsSize, 0);
 			cookedAccelYValues.resize(IMUVectorsSize, 0);
 			cookedAccelZValues.resize(IMUVectorsSize, 0);

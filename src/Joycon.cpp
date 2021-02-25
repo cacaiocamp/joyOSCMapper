@@ -249,9 +249,9 @@ void Joycon::updateGraphsValues() {
 		cookedIMUData.gravY = ofRandom(-1, 1);
 		cookedIMUData.gravZ = ofRandom(-1, 1);
 		quatWValues[currentFirstPosGraphs] = cookedIMUData.quatW;
-		quatIValues[currentFirstPosGraphs] = cookedIMUData.quatX;
-		quatJValues[currentFirstPosGraphs] = cookedIMUData.quatY;
-		quatKValues[currentFirstPosGraphs] = cookedIMUData.quatZ;
+		quatXValues[currentFirstPosGraphs] = cookedIMUData.quatX;
+		quatYValues[currentFirstPosGraphs] = cookedIMUData.quatY;
+		quatZValues[currentFirstPosGraphs] = cookedIMUData.quatZ;
 		cookedAccelXValues[currentFirstPosGraphs] = cookedIMUData.accelX;
 		cookedAccelYValues[currentFirstPosGraphs] = cookedIMUData.accelY;
 		cookedAccelZValues[currentFirstPosGraphs] = cookedIMUData.accelZ;
@@ -277,9 +277,9 @@ void Joycon::updateGraphsValues() {
 		}
 		if (drawCookedIMUData) {
 			quatWValues[currentFirstPosGraphs] = cookedIMUData.quatW;
-			quatIValues[currentFirstPosGraphs] = cookedIMUData.quatX;
-			quatJValues[currentFirstPosGraphs] = cookedIMUData.quatY;
-			quatKValues[currentFirstPosGraphs] = cookedIMUData.quatZ;
+			quatXValues[currentFirstPosGraphs] = cookedIMUData.quatX;
+			quatYValues[currentFirstPosGraphs] = cookedIMUData.quatY;
+			quatZValues[currentFirstPosGraphs] = cookedIMUData.quatZ;
 			cookedAccelXValues[currentFirstPosGraphs] = cookedIMUData.accelX;
 			cookedAccelYValues[currentFirstPosGraphs] = cookedIMUData.accelY;
 			cookedAccelZValues[currentFirstPosGraphs] = cookedIMUData.accelZ;
@@ -624,7 +624,7 @@ void Joycon::drawJoycon() {
 				ofDrawBitmapString("eO", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
 		}
 		else {
-			draw2DGraph(localDataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, quatIValues, quatJValues, quatKValues, 1, 4, quatWValues);
+			draw2DGraph(localDataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, quatXValues, quatYValues, quatZValues, 1, 4, quatWValues);
 			ofSetColor(joyconColor);
 			if (font.stringWidth("quatOrientation") < dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
 				ofDrawBitmapString("quatOrientation", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
@@ -695,7 +695,7 @@ void Joycon::calibrateMotion(bool calibrate) {
 	}
 }
 
-void Joycon::draw2DGraph(float posX, float posY, float graphWidth, float graphHeight, vector<float> graphValuesI, vector<float> graphValuesJ, vector<float> graphValuesK, float maxYValue, int numLayers, vector<float> graphValuesW) {
+void Joycon::draw2DGraph(float posX, float posY, float graphWidth, float graphHeight, vector<float> graphValuesX, vector<float> graphValuesY, vector<float> graphValuesZ, float maxYValue, int numLayers, vector<float> graphValuesW) {
 	float xAxisStep = graphWidth / (IMUVectorsSize - 1);
 	float yAxisStep = (graphHeight / 2) / maxYValue;
 	ofVec2f currentGraphPointI;
@@ -729,11 +729,11 @@ void Joycon::draw2DGraph(float posX, float posY, float graphWidth, float graphHe
 		}
 
 		currentGraphPointI.x = posX + (indexGraph * xAxisStep);
-		currentGraphPointI.y = posY - (graphValuesI[index] * yAxisStep);
+		currentGraphPointI.y = posY - (graphValuesX[index] * yAxisStep);
 		currentGraphPointJ.x = posX + (indexGraph * xAxisStep);
-		currentGraphPointJ.y = posY - (graphValuesJ[index] * yAxisStep);
+		currentGraphPointJ.y = posY - (graphValuesY[index] * yAxisStep);
 		currentGraphPointK.x = posX + (indexGraph * xAxisStep);
-		currentGraphPointK.y = posY - (graphValuesK[index] * yAxisStep);
+		currentGraphPointK.y = posY - (graphValuesZ[index] * yAxisStep);
 		if (numLayers > 3) {
 			currentGraphPointW.x = posX + (indexGraph * xAxisStep);
 			currentGraphPointW.y = posY - (graphValuesW[index] * yAxisStep);
