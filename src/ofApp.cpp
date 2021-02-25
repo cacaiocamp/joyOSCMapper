@@ -370,7 +370,7 @@ void ofApp::checkAllButtonStates() {
 		}
 		else if (addVirtualJoycon || executeAddVirtualJoycon) {
 			framesWaited = 0;
-			Joycon newJoycon(-1, numVirtualJoycons, guiColor.a, font);
+			Joycon newJoycon(VIRTUALJOY_DEVICEID, numVirtualJoycons, useEulerOrientation, guiColor.a, font);
 			joyconsVec.push_back(newJoycon);
 			numVirtualJoycons++;
 			setupGuiJoyconsList();
@@ -428,7 +428,7 @@ void ofApp::instantiateConnectedJoycons() {
 		int lastDeviceId = numDevicesConnected + numDevicesConnectedSum - 1;
 		int devicePosition = 0; //the position of the device on 'joyconsVec'
 		for (int deviceId = numDevicesConnectedSum; deviceId <= lastDeviceId; deviceId++, devicePosition++) {
-			joyconsVec.push_back(Joycon(deviceId, devicePosition, guiColor.a, font));
+			joyconsVec.push_back(Joycon(deviceId, devicePosition, useEulerOrientation, guiColor.a, font));
 		}
 	}
 	numDevicesConnectedSum = numDevicesConnected + numDevicesConnectedSum;

@@ -18,7 +18,7 @@
 
 class Joycon {
 	private:
-		int deviceId = -1;
+		int deviceId = VIRTUALJOY_DEVICEID;
 		int intColor = 0xffffff;
 		int controllerType; //left(1) or right(2) joycon identifier _n2
 		IMU_STATE rawIMUData = IMU_STATE();
@@ -120,11 +120,12 @@ class Joycon {
 		bool useStickAsPolar = true;
 		bool useStickAsDpad = true;
 
-		Joycon(int newDeviceId, int devicesConnectedNumber, int guiAlpha, ofTrueTypeFont loadedFont) {
+		Joycon(int newDeviceId, int devicesConnectedNumber, bool eulerOrientation, int guiAlpha, ofTrueTypeFont loadedFont) {
 			deviceId = newDeviceId;
 			positionOnList = devicesConnectedNumber;
+			useEulerOrientation = eulerOrientation;
 			font = loadedFont;
-			if (deviceId == -1) {
+			if (deviceId == VIRTUALJOY_DEVICEID) {
 				isVirtual = true;
 				intColor = ofRandom(0x000000, 0xffffff);
 				controllerType = ofRandom(1, 3);

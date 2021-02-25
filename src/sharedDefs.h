@@ -9,6 +9,7 @@
 #define DEFAULT_MINSTICKASDPADDIST 0.2 //_n3
 
 #define BORDER 5
+#define VIRTUALJOY_DEVICEID -1
 
 struct stickAsDpad {
 	bool up = 0;
