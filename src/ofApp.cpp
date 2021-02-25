@@ -200,6 +200,8 @@ void ofApp::keyPressed(int key){
 			useEulerOrientation = !useEulerOrientation;
 			break;
 		case 'o':
+			oscOnly = !oscOnly;
+			break;
 		case 'g':
 			showGuiControl = !showGuiControl;
 			break;
@@ -211,8 +213,6 @@ void ofApp::keyPressed(int key){
 			break;
 		case 'h':
 			showShortcutsHelp = !showShortcutsHelp;
-			break;
-			oscOnly = !oscOnly;
 			break;
 		case 's':
 			showShortcutsHelp = !showShortcutsHelp;
