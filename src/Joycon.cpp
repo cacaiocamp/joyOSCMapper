@@ -698,13 +698,13 @@ void Joycon::calibrateMotion(bool calibrate) {
 void Joycon::draw2DGraph(float posX, float posY, float graphWidth, float graphHeight, vector<float> graphValuesX, vector<float> graphValuesY, vector<float> graphValuesZ, float maxYValue, int numLayers, vector<float> graphValuesW) {
 	float xAxisStep = graphWidth / (IMUVectorsSize - 1);
 	float yAxisStep = (graphHeight / 2) / maxYValue;
-	ofVec2f currentGraphPointI;
-	ofVec2f currentGraphPointJ;
-	ofVec2f currentGraphPointK;
+	ofVec2f currentGraphPointX;
+	ofVec2f currentGraphPointY;
+	ofVec2f currentGraphPointZ;
 	ofVec2f currentGraphPointW;
-	ofVec2f lastGraphPointI;
-	ofVec2f lastGraphPointJ;
-	ofVec2f lastGraphPointK;
+	ofVec2f lastGraphPointX;
+	ofVec2f lastGraphPointY;
+	ofVec2f lastGraphPointZ;
 	ofVec2f lastGraphPointW;
 
 	ofFill();
@@ -728,12 +728,12 @@ void Joycon::draw2DGraph(float posX, float posY, float graphWidth, float graphHe
 			index = 0;
 		}
 
-		currentGraphPointI.x = posX + (indexGraph * xAxisStep);
-		currentGraphPointI.y = posY - (graphValuesX[index] * yAxisStep);
-		currentGraphPointJ.x = posX + (indexGraph * xAxisStep);
-		currentGraphPointJ.y = posY - (graphValuesY[index] * yAxisStep);
-		currentGraphPointK.x = posX + (indexGraph * xAxisStep);
-		currentGraphPointK.y = posY - (graphValuesZ[index] * yAxisStep);
+		currentGraphPointX.x = posX + (indexGraph * xAxisStep);
+		currentGraphPointX.y = posY - (graphValuesX[index] * yAxisStep);
+		currentGraphPointY.x = posX + (indexGraph * xAxisStep);
+		currentGraphPointY.y = posY - (graphValuesY[index] * yAxisStep);
+		currentGraphPointZ.x = posX + (indexGraph * xAxisStep);
+		currentGraphPointZ.y = posY - (graphValuesZ[index] * yAxisStep);
 		if (numLayers > 3) {
 			currentGraphPointW.x = posX + (indexGraph * xAxisStep);
 			currentGraphPointW.y = posY - (graphValuesW[index] * yAxisStep);
@@ -742,23 +742,23 @@ void Joycon::draw2DGraph(float posX, float posY, float graphWidth, float graphHe
 		if (indexGraph != 0) {
 			ofFill();
 			ofSetColor(GRAPH_RED);
-			ofDrawLine(currentGraphPointI.x, currentGraphPointI.y, lastGraphPointI.x, lastGraphPointI.y);
+			ofDrawLine(currentGraphPointX.x, currentGraphPointX.y, lastGraphPointX.x, lastGraphPointX.y);
 			ofSetColor(GRAPH_GREEN);
-			ofDrawLine(currentGraphPointJ.x, currentGraphPointJ.y, lastGraphPointJ.x, lastGraphPointJ.y);
+			ofDrawLine(currentGraphPointY.x, currentGraphPointY.y, lastGraphPointY.x, lastGraphPointY.y);
 			ofSetColor(GRAPH_BLUE);
-			ofDrawLine(currentGraphPointK.x, currentGraphPointK.y, lastGraphPointK.x, lastGraphPointK.y);
+			ofDrawLine(currentGraphPointZ.x, currentGraphPointZ.y, lastGraphPointZ.x, lastGraphPointZ.y);
 			if (numLayers > 3) {
 				ofSetColor(GRAPH_WHITE);
 				ofDrawLine(currentGraphPointW.x, currentGraphPointW.y, lastGraphPointW.x, lastGraphPointW.y);
 			}
 		}
 
-		lastGraphPointI.x = currentGraphPointI.x;
-		lastGraphPointI.y = currentGraphPointI.y;
-		lastGraphPointJ.x = currentGraphPointJ.x;
-		lastGraphPointJ.y = currentGraphPointJ.y;
-		lastGraphPointK.x = currentGraphPointK.x;
-		lastGraphPointK.y = currentGraphPointK.y;
+		lastGraphPointX.x = currentGraphPointX.x;
+		lastGraphPointX.y = currentGraphPointX.y;
+		lastGraphPointY.x = currentGraphPointY.x;
+		lastGraphPointY.y = currentGraphPointY.y;
+		lastGraphPointZ.x = currentGraphPointZ.x;
+		lastGraphPointZ.y = currentGraphPointZ.y;
 		if (numLayers > 3) {
 			lastGraphPointW.x = currentGraphPointW.x;
 			lastGraphPointW.y = currentGraphPointW.y;
