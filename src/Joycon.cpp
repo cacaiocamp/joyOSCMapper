@@ -657,20 +657,20 @@ void Joycon::drawJoycon() {
 // see: https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles 
 void Joycon::convertQuaternionToEuler(float quatW, float quatX, float quatY, float quatZ) { 
 	// roll (x-axis rotation)
-	float sinr_cosp = 2 * (quatW * quatX + quatY * quatZ);
-	float cosr_cosp = 1 - 2 * (quatX * quatX + quatY * quatY);
+	float sinr_cosp = 2 * ((quatW * quatX) + (quatY * quatZ));
+	float cosr_cosp = 1 - 2 * ((quatX * quatX) + (quatY * quatY));
 	roll = atan2(sinr_cosp, cosr_cosp);
 
 	// pitch (y-axis rotation)
-	double sinp = 2 * (quatW * quatY - quatZ * quatX);
+	double sinp = 2 * ((quatW * quatY) - (quatZ * quatX));
 	if (std::abs(sinp) >= 1)
 		pitch = copysign(PI / 2, sinp); // use 90 degrees if out of range
 	else
 		pitch = asin(sinp);
 
 	// yaw (z-axis rotation)
-	double siny_cosp = 2 * (quatW * quatZ + quatX * quatY);
-	double cosy_cosp = 1 - 2 * (quatY * quatY + quatZ * quatZ);
+	double siny_cosp = 2 * ((quatW * quatZ) + (quatX * quatY));
+	double cosy_cosp = 1 - 2 * ((quatY * quatY) + (quatZ * quatZ));
 	yaw = atan2(siny_cosp, cosy_cosp);
 }
 
@@ -682,6 +682,15 @@ void Joycon::clearNotUsedGraphValues() {
 		rollValues.resize(IMUVectorsSize, 0);
 		pitchValues.resize(IMUVectorsSize, 0);
 		yawValues.resize(IMUVectorsSize, 0);
+	}
+}
+
+void Joycon::calibrateMotion(bool calibrate) {
+	if (calibrate) {
+		JslResetContinuousCalibration(deviceId);
+	}
+	else {
+		JslPauseContinuousCalibration(deviceId);
 	}
 }
 

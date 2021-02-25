@@ -353,6 +353,13 @@ void ofApp::checkAllButtonStates() {
 			}
 			lastUseEulerOrientationValue = useEulerOrientation;
 		}
+		else if (calibrateJoycons != lastCalibrateJoyconsValue) {
+			framesWaited = 0;
+			for (int index = 0; index < numDevicesConnected; index++) {
+				joyconsVec[index].calibrateMotion(calibrateJoycons);
+			}
+			lastCalibrateJoyconsValue = calibrateJoycons;
+		}
 		else if (oscOnly != lastOscOnlyValue) {
 			framesWaited = 0;
 			lastOscOnlyValue = oscOnly;
@@ -489,6 +496,7 @@ void ofApp::setupGuiControl() {
 	guiControl.add(useVirtualJoycons.setup("useVirtualJoycons", false, guiWidth, guiLineHeight));
 	guiControl.add(connectedDevicesLabel.setup("numConnectedDevices", connectedDevicesLabel, guiWidth, guiLineHeight));
 	guiControl.add(useEulerOrientation.setup("useEulerOrientation", false, guiWidth, guiLineHeight));
+	guiControl.add(calibrateJoycons.setup("calibrateJoycons", false, guiWidth, guiLineHeight));
 	guiControl.add(oscOnly.setup("oscOnly", false, guiWidth, guiLineHeight));
 	guiControl.add(showShortcutsHelp.setup("shortcuts/help", false, guiWidth, guiLineHeight));
 	connectedDevicesLabel.operator=(ofToString(numDevicesConnected));
@@ -500,6 +508,7 @@ void ofApp::setupGuiControl() {
 	useVirtualJoycons.setBackgroundColor(guiColor);
 	connectedDevicesLabel.setBackgroundColor(guiColor);
 	useEulerOrientation.setBackgroundColor(guiColor);
+	calibrateJoycons.setBackgroundColor(guiColor);
 	oscOnly.setBackgroundColor(guiColor);
 	showShortcutsHelp.setBackgroundColor(guiColor);
 }

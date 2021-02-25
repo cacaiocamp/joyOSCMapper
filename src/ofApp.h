@@ -64,6 +64,8 @@ class ofApp : public ofBaseApp{
 		ofxLabel connectedDevicesLabel;
 		ofxToggle useEulerOrientation;
 		bool lastUseEulerOrientationValue = false;
+		ofxToggle calibrateJoycons;
+		bool lastCalibrateJoyconsValue = false;
 		ofxToggle oscOnly;
 		bool lastOscOnlyValue = false;
 		ofxToggle showShortcutsHelp;

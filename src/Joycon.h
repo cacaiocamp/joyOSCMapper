@@ -167,6 +167,7 @@ class Joycon {
 		void updateGraphsValues();
 		void updateDrawings(int newCelWidth, int newCelHeight, int newCelPosX, int newCelPosY);
 		void drawJoycon();
+		void calibrateMotion(bool calibrate);
 		void clearNotUsedGraphValues();
 		string checkMouseClick(int mouseClickX, int mouseClickY, int mouseButton);
 };
