@@ -866,11 +866,20 @@ string Joycon::checkMouseClick(int mouseClickX, int mouseClickY, int mouseButton
 				float cokIMUGraphWidth = (celHeight - (2 * dataGraphPosY)) / 3 - BORDER;
 				string valueRangeMessage = "from -1.0 to 1.0 ";
 				if (mouseClickY >= localDataGraphPosY && mouseClickY <= localDataGraphPosY + cokIMUGraphWidth) {
-					return "quaternions " + valueRangeMessage + '\n' +
-						joyconOscAddress + inputOSCTags.quatW + '\n' +
-						joyconOscAddress + inputOSCTags.quatX + '\n' +
-						joyconOscAddress + inputOSCTags.quatY + '\n' +
-						joyconOscAddress + inputOSCTags.quatZ;
+					if (useEulerOrientation) {
+						valueRangeMessage = "from -PI to PI ";
+						return valueRangeMessage + '\n' +
+							joyconOscAddress + inputOSCTags.roll + '\n' +
+							joyconOscAddress + inputOSCTags.pitch + '\n' +
+							joyconOscAddress + inputOSCTags.yaw;
+					}
+					else {
+						return "quaternions " + valueRangeMessage + '\n' +
+							joyconOscAddress + inputOSCTags.quatW + '\n' +
+							joyconOscAddress + inputOSCTags.quatX + '\n' +
+							joyconOscAddress + inputOSCTags.quatY + '\n' +
+							joyconOscAddress + inputOSCTags.quatZ;
+					}
 				}
 				else if (mouseClickY >= localDataGraphPosY + cokIMUGraphWidth && mouseClickY <= localDataGraphPosY + (2 * cokIMUGraphWidth)) {
 					return "from " + ofToString(-1 * MAX_ACCEL_VALUE) + " to " + ofToString(MAX_ACCEL_VALUE) + " g" + '\n' +
