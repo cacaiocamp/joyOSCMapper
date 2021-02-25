@@ -41,7 +41,6 @@ void ofApp::setup(){
 	guiShortcuts.setup();
 	guiShortcuts.setName("Shortcuts/Help");
 	guiShortcuts.add(sShortcut.setup("s-show/hide Shortcuts    ", sShortcut, guiWidth, guiLineHeight));
-	//guiShortcuts.add(cShortcut.setup("c-openGeneralConfig      ", cShortcut, guiWidth, guiLineHeight));
 	guiShortcuts.add(gShortcut.setup("g-show/hide GUIControl   ", gShortcut, guiWidth, guiLineHeight));
 	guiShortcuts.add(uShortcut.setup("  u-updateConnected      ", uShortcut, guiWidth, guiLineHeight));
 	guiShortcuts.add(dShortcut.setup("  d-disconnectDisposeAll ", dShortcut, guiWidth, guiLineHeight));
@@ -50,12 +49,12 @@ void ofApp::setup(){
 	guiShortcuts.add(aShortcut.setup("  a-addAVirualJoycon     ", aShortcut, guiWidth, guiLineHeight));
 	guiShortcuts.add(rShortcut.setup("  r-removeAVirualJoycon  ", rShortcut, guiWidth, guiLineHeight));
 	guiShortcuts.add(eShortcut.setup("e-un/toggle eulerOrient  ", oShortcut, guiWidth, guiLineHeight));
+	guiShortcuts.add(cShortcut.setup("c-calibrateJoycons       ", cShortcut, guiWidth, guiLineHeight));
 	guiShortcuts.add(oShortcut.setup("o-un/toggle oscOnly mode ", oShortcut, guiWidth, guiLineHeight));
 	guiShortcuts.add(leftClickHelp.setup("lClick-test vrtJoy input ", leftClickHelp, guiWidth, guiLineHeight));
 	guiShortcuts.add(rightClickHelp.setup("rClick-check oscAddress ", rightClickHelp, guiWidth, guiLineHeight));
 	guiShortcuts.setBackgroundColor(guiColor);
 	sShortcut.setBackgroundColor(guiColor);
-	cShortcut.setBackgroundColor(guiColor);
 	dShortcut.setBackgroundColor(guiColor);
 	gShortcut.setBackgroundColor(guiColor);
 	jShortcut.setBackgroundColor(guiColor);
@@ -64,6 +63,7 @@ void ofApp::setup(){
 	aShortcut.setBackgroundColor(guiColor);
 	rShortcut.setBackgroundColor(guiColor);
 	eShortcut.setBackgroundColor(guiColor);
+	cShortcut.setBackgroundColor(guiColor);
 	oShortcut.setBackgroundColor(guiColor);
 	leftClickHelp.setBackgroundColor(guiColor);
 	rightClickHelp.setBackgroundColor(guiColor);
@@ -190,12 +190,16 @@ void ofApp::keyPressed(int key){
 					showShortcutsHelp = false;
 			}
 		break;
-		/*case 'c':
-			openGeneralConfigWindow();
-			break;*/
+		case 'c':
+			calibrateJoycons = !calibrateJoycons;
+			break;
 		case 'd':
 			executeDisconnectAndDispose = true;
 			break;
+		case 'e':
+			useEulerOrientation = !useEulerOrientation;
+			break;
+		case 'o':
 		case 'g':
 			showGuiControl = !showGuiControl;
 			break;
@@ -208,10 +212,6 @@ void ofApp::keyPressed(int key){
 		case 'h':
 			showShortcutsHelp = !showShortcutsHelp;
 			break;
-		case 'e':
-			useEulerOrientation = !useEulerOrientation;
-			break;
-		case 'o':
 			oscOnly = !oscOnly;
 			break;
 		case 's':

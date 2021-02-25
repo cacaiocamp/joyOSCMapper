@@ -87,7 +87,6 @@ class ofApp : public ofBaseApp{
 		//guiShortcuts variables
 		ofxPanel guiShortcuts;
 		ofxLabel sShortcut;
-		ofxLabel cShortcut;
 		ofxLabel dShortcut;
 		ofxLabel gShortcut;
 		ofxLabel jShortcut;
@@ -96,6 +95,7 @@ class ofApp : public ofBaseApp{
 		ofxLabel aShortcut;
 		ofxLabel rShortcut;
 		ofxLabel eShortcut;
+		ofxLabel cShortcut;
 		ofxLabel oShortcut;
 		ofxLabel leftClickHelp;
 		ofxLabel rightClickHelp;
