@@ -9,7 +9,7 @@ void getJslCallback(int joyconId, JOY_SHOCK_STATE lastButtonsStickData, JOY_SHOC
 void ofApp::updateJoyconData(int joyconId, JOY_SHOCK_STATE newButtonsStickData, IMU_STATE newRawIMUData) {
 	int firstPos = (numDevicesConnectedSum - numDevicesConnected);
 	int joyconPosVec = joyconId - firstPos;
-	if(joyconsVec[joyconPosVec].GUIToggle)
+	if (joyconsVec[joyconPosVec].GUIToggle)
 		joyconsVec[joyconPosVec].updateData(newButtonsStickData, newRawIMUData);
 }
 
@@ -430,10 +430,11 @@ void ofApp::instantiateConnectedJoycons() {
 		for (int deviceId = numDevicesConnectedSum; deviceId <= lastDeviceId; deviceId++, devicePosition++) {
 			joyconsVec.push_back(Joycon(deviceId, devicePosition, useEulerOrientation, guiColor.a, font));
 		}
-	}
-	numDevicesConnectedSum = numDevicesConnected + numDevicesConnectedSum;
 
-	JslSetCallback(&getJslCallback); //_n2
+		numDevicesConnectedSum = numDevicesConnected + numDevicesConnectedSum;
+
+		JslSetCallback(&getJslCallback); //_n2
+	}
 
 	if (virtualJoycons.size() > 0) { //_n3
 		for (int index = 0; index < virtualJoycons.size(); index++) {
