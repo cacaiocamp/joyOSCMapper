@@ -10,11 +10,12 @@ It is being built with C++/[openFrameworks](https://openframeworks.cc/) and uses
 * **[OSC data sent](#osc-data-sent)**
 * **[Basic functionalities](#basic-functionalities)**
   * **[Connecting joycons](#connecting-joycons)**
-  * **[oscOnly mode](#oscOnly-mode)**
+  * **[Calibration](#calibration)**
   * **[JoyconsList](#joyconslist)**
   * **[Motion graphs](#motion-graphs)**
 * **[Other functionalities](#other-functionalities)**
   * **[Virtual Joycons](#virtual-joycons)**
+  * **[oscOnly mode](#oscOnly-mode)**
   * **[Mouse clicks](#mouse-clicks)**
   * **[Shortcuts/Help](#shortcutshelp)**
 * **[Default values](#default-values)**
@@ -92,10 +93,11 @@ By default, **joyOSCMapper** sends OSC messages to ```127.0.0.1``` (localhost), 
 ### Connecting joycons
 You only need to connect the joycons over bluetooth to your computer than execute **joyOSCMapper** and the program should manage to connect to them, automaticaly starting to draw them and to send their respective OSC messages. You can also use two _ofxButton_ on GUIControl, ```updateConnected``` and ```disconnect&DisposeAll```, to manipulate joycon connections, as well as a _ofxLabel_ with the number of connected joycons.
 
-### oscOnly mode
-When toggled, the oscOnly mode will stop all joycon drawing but will continue to send the OSC messages for the inputs made. You can either un/toggle them by clicking the toggle ```oscOnly``` on GUIControl or sending an OSC message to the address ```/oscOnly```, with 0 or 1 as argument.
-
-By default, **joyOSCMapper** waits for OSC messages at the port ```22222```.
+### Calibration
+JoyShockLibrary also provides some functions to calibrate the joycon motion data. This is recommended to be done every time **joyOSCMapper** aplication is restarted. To do so, as said in [JoyShockMapper](https://github.com/JibbSmart/JoyShockMapper), you must:
+* Place all the real connected joycons on a still surface;
+* Toggle ```calibrateJoycons``` on GUIControl;
+* Wait a couple of seconds and untoggle the ```calibrateJoycons```;
 
 ### JoyconsList
 JoyconsList is a _ofxPanel_ GUI that has a toggle for every connected joycon. You can un/toggle the drawing and the OSC messages of each one.
@@ -107,12 +109,19 @@ The graphs show a collection (by default, the collection of the last second valu
 * z = blue
 * w = white (used on the quaternion orientation)
 
+If you want to use the orientation in euler angles instead of the quaternion one provided by JoyShockLibrary, toggle ```useEulerOrientation``` on GUIControl.
+
 ## Other functionalities
 ### Virtual joycons
 Virtual joycons are fake joycons used to test **joyOSCMapper** and its interaction with other programs even when without a joycon. Their motion data is randomized every frame, and stick and buttons can be manipulated with mouse clicks, sending respective OSC messages when ```useVirtualJoycons``` is toggled on the GUIControl. For example, when you left click at the up/X button of the first added virtual joycon, the OSC message sent will be ```/vrtjoy0/upX 1.0```.
 
 Toggling ```useVirtualJoycons``` will open another _ofxPanel_ GUI, where you can control/manage the addition and removal of virtual joycons, as well as see the number of virtual joycons created. Virtual joycons also have toggles on JoyconsList.
 ![vrtjoysShot](mdimgs/vrtjoys.png)
+
+### oscOnly mode
+When toggled, the oscOnly mode will stop all joycon drawing but will continue to send the OSC messages for the inputs made. You can either un/toggle them by clicking the toggle ```oscOnly``` on GUIControl or sending an OSC message to the address ```/oscOnly```, with 0 or 1 as argument.
+
+By default, **joyOSCMapper** waits for OSC messages at the port ```22222```.
 
 ### Mouse clicks
 Right mouse clicks will show the respective OSC address for the input clicked, as well as the range of values for non boolean inputs. The left clicks will activate joycons buttons and stick on virtual joycons, while doing the same as right clicks on real connected joycons.
