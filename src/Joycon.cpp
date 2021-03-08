@@ -186,6 +186,16 @@ ofxOscMessage Joycon::getInputOscMessage(string inputAddress, float inputValue) 
 	return inputMessage;
 };
 
+void Joycon::sendJoyconTypeAndColorAsOsc() {
+	ofxOscMessage inputMessage;
+	inputMessage.setAddress(joyconOscAddress + DEFAULT_SENDJOYCONTYPEANDCOLOR_OSCADDRESS);
+	inputMessage.addIntArg(controllerType);
+	inputMessage.addStringArg(
+		ofToString(ofToHex(joyconColor.r)) + ofToString(ofToHex(joyconColor.g)) + ofToString(ofToHex(joyconColor.b))
+	);
+	oscSender.sendMessage(inputMessage);
+}
+
 ofVec2f Joycon::getStickAsPolarCoordinates(float stickX, float stickY) {
 	return ofVec2f(sqrt(pow(stickX, 2) + pow(stickY, 2)), atan2(stickY, stickX));
 }

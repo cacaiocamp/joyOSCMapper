@@ -145,6 +145,15 @@ void ofApp::update(){
 		if (waitingMsg.getAddress() == DEFAULT_OSCONLY_OSCADDRESS) {
 			oscOnly = waitingMsg.getArgAsInt(0);
 		}
+		else if (waitingMsg.getAddress() == DEFAULT_GETJOYCONTYPEANDCOLOR_OSCADDRESS) {
+			int joyconIndexOnVec = waitingMsg.getArgAsInt(0);
+			if (joyconIndexOnVec < joyconsVec.size()) {
+				joyconsVec[joyconIndexOnVec].sendJoyconTypeAndColorAsOsc();
+			}
+			else {
+				cout << "Index for getJoyconTypeAndColor out of joyconsVec size" << endl;
+			}
+		}
 	}
 }
 

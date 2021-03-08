@@ -163,6 +163,7 @@ class Joycon {
 
 		void updateData(JOY_SHOCK_STATE newButtonsStickData, IMU_STATE newRawIMUData);
 		void sendNewInputsAsOSC(inputValues newInputValues);
+		void sendJoyconTypeAndColorAsOsc();
 		ofxOscMessage getInputOscMessage(string inputAddress, float inputValue);
 		void updateGraphsValues();
 		void updateDrawings(int newCelWidth, int newCelHeight, int newCelPosX, int newCelPosY);
