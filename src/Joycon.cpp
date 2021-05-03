@@ -164,12 +164,12 @@ void Joycon::sendNewInputsAsOSC(inputValues newInputValues) {
 			oscSender.sendMessage(getInputOscMessage(inputOSCTags.pitch, roll));
 			oscSender.sendMessage(getInputOscMessage(inputOSCTags.yaw, yaw));
 		}
-		else {
-			oscSender.sendMessage(getInputOscMessage(inputOSCTags.quatW, cookedIMUData.quatW));
-			oscSender.sendMessage(getInputOscMessage(inputOSCTags.quatX, cookedIMUData.quatX));
-			oscSender.sendMessage(getInputOscMessage(inputOSCTags.quatY, cookedIMUData.quatY));
-			oscSender.sendMessage(getInputOscMessage(inputOSCTags.quatZ, cookedIMUData.quatZ));
-		}
+
+		oscSender.sendMessage(getInputOscMessage(inputOSCTags.quatW, cookedIMUData.quatW));
+		oscSender.sendMessage(getInputOscMessage(inputOSCTags.quatX, cookedIMUData.quatX));
+		oscSender.sendMessage(getInputOscMessage(inputOSCTags.quatY, cookedIMUData.quatY));
+		oscSender.sendMessage(getInputOscMessage(inputOSCTags.quatZ, cookedIMUData.quatZ));
+		
 		oscSender.sendMessage(getInputOscMessage(inputOSCTags.caclX, cookedIMUData.accelX));
 		oscSender.sendMessage(getInputOscMessage(inputOSCTags.caclY, cookedIMUData.accelY));
 		oscSender.sendMessage(getInputOscMessage(inputOSCTags.caclZ, cookedIMUData.accelZ));
@@ -602,6 +602,11 @@ void Joycon::drawJoycon() {
 	if (drawRawIMUData && dataGraphWidth >= celWidth * 1 / 5) {
 		float localDataGraphPosY = dataGraphPosY;
 		float dataGraphHeight = (celHeight / 2) - localDataGraphPosY - BORDER;
+		
+		if (enoughSpaceForCookedGraph && useEulerOrientation && drawCookedIMUData) {
+			dataGraphHeight = (celHeight - (2 * localDataGraphPosY)) / 3 - BORDER;
+		}
+
 		draw2DGraph(dataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, gyroXValues, gyroYValues, gyroZValues, MAX_GYRO_VALUE, 3);
 		ofSetColor(joyconColor);
 		if (font.stringWidth("angularVelocity") < dataGraphWidth && font.stringHeight("V") < dataGraphHeight)
@@ -616,6 +621,17 @@ void Joycon::drawJoycon() {
 			ofDrawBitmapString("rawAccelerometer", dataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
 		else if (font.stringWidth("rawAccelerometer") >= dataGraphWidth && font.stringHeight("A") < dataGraphHeight)
 			ofDrawBitmapString("rA", dataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
+
+		if (enoughSpaceForCookedGraph && useEulerOrientation && drawCookedIMUData) {
+			localDataGraphPosY = localDataGraphPosY + dataGraphHeight + BORDER;
+
+			draw2DGraph(dataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, quatXValues, quatYValues, quatZValues, 1, 4, quatWValues);
+			ofSetColor(joyconColor);
+			if (font.stringWidth("quatOrientation") < dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
+				ofDrawBitmapString("quatOrientation", dataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
+			else if (font.stringWidth("quatOrientation") >= dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
+				ofDrawBitmapString("qO", dataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
+		}
 	}
 
 	if (drawCookedIMUData && enoughSpaceForCookedGraph) {
@@ -625,24 +641,27 @@ void Joycon::drawJoycon() {
 		float localDataGraphPosY = dataGraphPosY;
 		float dataGraphHeight = (celHeight - (2 * localDataGraphPosY)) / 3 - BORDER;
 
-		if (useEulerOrientation) {
-			draw2DGraph(localDataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, rollValues, pitchValues, yawValues, PI, 3);
-			ofSetColor(joyconColor);
-			if (font.stringWidth("eulerOrientation") < dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
-				ofDrawBitmapString("eulerOrientation", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
-			else if (font.stringWidth("eulerOrientation") >= dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
-				ofDrawBitmapString("eO", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
-		}
-		else {
+		if (!useEulerOrientation) {
 			draw2DGraph(localDataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, quatXValues, quatYValues, quatZValues, 1, 4, quatWValues);
 			ofSetColor(joyconColor);
 			if (font.stringWidth("quatOrientation") < dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
 				ofDrawBitmapString("quatOrientation", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
 			else if (font.stringWidth("quatOrientation") >= dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
 				ofDrawBitmapString("qO", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
+
+			localDataGraphPosY = localDataGraphPosY + dataGraphHeight + BORDER;
+		}
+		else if (useEulerOrientation && !drawRawIMUData) {
+			draw2DGraph(localDataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, rollValues, pitchValues, yawValues, PI, 3);
+			ofSetColor(joyconColor);
+			if (font.stringWidth("eulerOrientation") < dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
+				ofDrawBitmapString("eulerOrientation", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
+			else if (font.stringWidth("eulerOrientation") >= dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
+				ofDrawBitmapString("eO", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
+
+			localDataGraphPosY = localDataGraphPosY + dataGraphHeight + BORDER;
 		}
 
-		localDataGraphPosY = localDataGraphPosY + dataGraphHeight + BORDER;
 		draw2DGraph(localDataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, cookedAccelXValues, cookedAccelYValues, cookedAccelZValues, MAX_ACCEL_VALUE, 3);
 		ofSetColor(joyconColor);
 		if (font.stringWidth("accel-gravity") < dataGraphWidth && font.stringHeight("A") < dataGraphHeight)
@@ -657,6 +676,16 @@ void Joycon::drawJoycon() {
 			ofDrawBitmapString("gravity", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
 		else if (font.stringWidth("gravity") >= dataGraphWidth && font.stringHeight("G") < dataGraphHeight)
 			ofDrawBitmapString("grav", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
+
+		if(useEulerOrientation && drawRawIMUData){
+			localDataGraphPosY = localDataGraphPosY + dataGraphHeight + BORDER;
+			draw2DGraph(localDataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, rollValues, pitchValues, yawValues, PI, 3);
+			ofSetColor(joyconColor);
+			if (font.stringWidth("eulerOrientation") < dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
+				ofDrawBitmapString("eulerOrientation", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
+			else if (font.stringWidth("eulerOrientation") >= dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
+				ofDrawBitmapString("eO", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
+		}
 	}
 
 	ofSetColor(ofColor(255, 255, 255, 255));
