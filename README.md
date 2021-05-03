@@ -17,6 +17,7 @@ It is being built with C++/[openFrameworks](https://openframeworks.cc/) and uses
   * **[Virtual Joycons](#virtual-joycons)**
   * **[oscOnly mode](#oscOnly-mode)**
   * **[Mouse clicks](#mouse-clicks)**
+  * **[Get joycon type and color](#get-joycon-type-and-color)**
   * **[Shortcuts/Help](#shortcutshelp)**
 * **[Default values](#default-values)**
 * **[Important notes](#important-notes)**
@@ -83,7 +84,7 @@ struct inputOSCTags
 };
 ```
 
-The full OSC address is composed with the name of the joycon (/joycon+0..n, based on the order of connection) added with the OSC tag of the input pressed, followed by the argument with the value of the input. So, for example, if I press the up/X button on the first joycon connected the full OSC message sent will be ```/joycon0/upX 1.0```.
+The full input OSC messages are composed with the name of the joycon (/joycon+0..n, based on the order of connection) added with the OSC tag of the input pressed, followed by the argument with the value of the input. So, for example, if I press the up/X button on the first joycon connected the full OSC message sent will be ```/joycon0/upX 1.0```.
 
 With the exception of the motion data, all OSC messages are sent only when a change on the input value occurs. The joycons are updated in a 66.67hz frequency, receiving the latest state for all inputs every 15ms. Therefore, thats the same rate in which **joyOSCMapper** can send OSC messages and the ideal fps for the aplication (rounded up to 67).
 
@@ -126,6 +127,13 @@ By default, **joyOSCMapper** waits for OSC messages at the port ```22222```.
 ### Mouse clicks
 Right mouse clicks will show the respective OSC address for the input clicked, as well as the range of values for non boolean inputs. The left clicks will activate joycons buttons and stick on virtual joycons, while doing the same as right clicks on real connected joycons.
 ![rightclickShot](mdimgs/rightclick.png)
+
+### Get joycon type and color
+By sending a OSC message with the tag ```/getJoyconTypeAndColor``` followed the index of a joycon (that can be checked on JoyconsList) as an integer argument, you can get the type and color of a disered joycon, that will be sent as a single OSC message. The type is sent as an integer (```1``` for left and ```2``` for right, following JoyShockLibrary definitions) and the color as a string containing a hexadecimal, following the RGB pattern.
+
+This OSC message will be sent to the osc send address and is composed by the name of the joycon (/joycon+0..n, based on the order of connection) added with the OSC tag ```/sendJoyconTypeAndColor``` and followed by the type and color, respectvely. 
+
+For example, if I wanted to get the type and color of the first connected joycon, I would send to **joyOSCMapper** the following OSC message: ```/getJoyconTypeAndColor 0```. Considering this is a left and non-virtual white joycon (white in RGB is ```255, 255, 255```), **joyOSCMapper** would send back the following message ```/joycon0/sendJoyconTypeAndColor 1 ffffff```.
 
 ### Shortcuts/Help
 The shorcuts/help can be un/toggled on the GUIControl. It will show the keyboard shorcuts implemented, as well as the color information for the graphs. All other GUIs can also be un/toggled, with the proper shortcuts.
