@@ -137,9 +137,11 @@ The following default values definitions can be found on _sharedDefs.h_:
 #define DEFAULT_OSCSEND_PORT 11111
 #define DEFAULT_OSCRECEIVE_PORT 22222
 #define DEFAULT_OSCONLY_OSCADDRESS "/oscOnly"
-#define DEFAULT_IMUVECTORSSIZE 67
-#define DEFAULT_MINSTICKSTEP 0.0035 
-#define DEFAULT_MINSTICKASDPADDIST 0.2
+#define DEFAULT_GETJOYCONTYPEANDCOLOR_OSCADDRESS "/getJoyconTypeAndColor"
+#define DEFAULT_SENDJOYCONTYPEANDCOLOR_OSCADDRESS "/sendJoyconTypeAndColor"
+#define DEFAULT_IMUVECTORSSIZE 67 //_n1
+#define DEFAULT_MINSTICKSTEP 0.0035 //_n2
+#define DEFAULT_MINSTICKASDPADDIST 0.2 //_n3
 ```
 For now, the only way to change default values is modifying those definitions. The last three deserve some coments:
 * change ```DEFAULT_IMUVECTORSSIZE``` if you want the graphs to show more or less than 1 second of each motion capture axis. Note that increase this too much may cause fps drop, depending also on the number of joycons being drawn;
