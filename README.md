@@ -170,7 +170,7 @@ The overall test result shows an avarage lag of ```124.979 ms``` between the fir
 
 It's also worth to notice that trying to draw too many joycons may result in a fps drop and that may cause more laggy inputs/OSC messages. For those cases (or any other reason to fps drop), the use of _oscOnly mode_ is recomended.
 
-Also, comments have been added to the code in a way similar to a "foot note". A line with a comment ```nX```, with X being any natural number, indicates that in the bottom of a file there is a note, with the same name, about the indicated line. I tried to put as less comments as possible, as a way to force me to right the better understandble code I could.
+Also, comments have been added to the code in a way similar to a "foot note". A line with a comment ```_nX```, with X being any natural number, indicates that in the bottom of this file there is a foot note, with the same name, about the indicated line. I tried to put as less comments as possible, as a way to force me to write the better understandble code I could.
 
 ## Future implementations
 Not counting the standalone app, I plan to implement two types of configurations: a general config, and a individual config for each joycon. The ideia here is to let drawing and OSC be configured accordingly to user necessities, changing things like:
