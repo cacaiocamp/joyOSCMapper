@@ -43,8 +43,8 @@ void Joycon::updateData(JOY_SHOCK_STATE newButtonsStickData, IMU_STATE newRawIMU
 	inputValues newInputValues = getEachInputValue(newButtonsStickData);
 	rawIMUData = newRawIMUData;
 	cookedIMUData = JslGetMotionState(deviceId); 
-	currentQuaternion = ofQuaternion(cookedIMUData.quatX, cookedIMUData.quatY, cookedIMUData.quatZ, cookedIMUData.quatW);
 	if (useEulerOrientation) {
+		currentQuaternion = ofQuaternion(cookedIMUData.quatX, cookedIMUData.quatY, cookedIMUData.quatZ, cookedIMUData.quatW);
 		currentEuler = currentQuaternion.getEuler();
 	}
 	sendNewInputsAsOSC(newInputValues);
@@ -162,8 +162,8 @@ void Joycon::sendNewInputsAsOSC(inputValues newInputValues) {
 	if (useCookedIMUData) {
 		if (useEulerOrientation) {
 			oscSender.sendMessage(getInputOscMessage(inputOSCTags.roll, currentEuler.x));
-			oscSender.sendMessage(getInputOscMessage(inputOSCTags.pitch, currentEuler.y));
-			oscSender.sendMessage(getInputOscMessage(inputOSCTags.yaw, currentEuler.z));
+			oscSender.sendMessage(getInputOscMessage(inputOSCTags.yaw, currentEuler.y));
+			oscSender.sendMessage(getInputOscMessage(inputOSCTags.pitch, currentEuler.z));
 		}
 
 		oscSender.sendMessage(getInputOscMessage(inputOSCTags.quatW, cookedIMUData.quatW));
@@ -253,7 +253,6 @@ void Joycon::updateGraphsValues() {
 		cookedIMUData.quatX = ofRandom(-1, 1);
 		cookedIMUData.quatY = ofRandom(-1, 1);
 		cookedIMUData.quatZ = ofRandom(-1, 1);
-		currentQuaternion = ofQuaternion(cookedIMUData.quatX, cookedIMUData.quatY, cookedIMUData.quatZ, cookedIMUData.quatW);
 		cookedIMUData.accelX = ofRandom(-MAX_ACCEL_VALUE, MAX_ACCEL_VALUE);
 		cookedIMUData.accelY = ofRandom(-MAX_ACCEL_VALUE, MAX_ACCEL_VALUE);
 		cookedIMUData.accelZ = ofRandom(-MAX_ACCEL_VALUE, MAX_ACCEL_VALUE);
@@ -272,7 +271,9 @@ void Joycon::updateGraphsValues() {
 		gravityZValues[currentFirstPosGraphs] = cookedIMUData.gravZ;
 
 		if (useEulerOrientation) {
+			currentQuaternion = ofQuaternion(cookedIMUData.quatX, cookedIMUData.quatY, cookedIMUData.quatZ, cookedIMUData.quatW);
 			currentEuler = currentQuaternion.getEuler();
+
 			rollValues[currentFirstPosGraphs] = currentEuler.x;
 			yawValues[currentFirstPosGraphs] = currentEuler.y;
 			pitchValues[currentFirstPosGraphs] = currentEuler.z;
