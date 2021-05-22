@@ -129,7 +129,7 @@ Right mouse clicks will show the respective OSC address for the input clicked, a
 ![rightclickShot](mdimgs/rightclick.png)
 
 ### Get joycon type and color
-By sending a OSC message with the tag ```/getJoyconTypeAndColor``` followed the index of a joycon (that can be checked on JoyconsList) as an integer argument, you can get the type and color of a disered joycon, that will be sent as a single OSC message. The type is sent as an integer (```1``` for left and ```2``` for right, following JoyShockLibrary definitions) and the color as a string containing a hexadecimal, following the RGB pattern.
+By sending a OSC message with the tag ```/getJoyconTypeAndColor``` followed by the index of a joycon (that can be checked on JoyconsList) as an integer argument, you can get the type and color of a disered joycon, that will be sent as a single OSC message. The type is sent as an integer (```1``` for left and ```2``` for right, following JoyShockLibrary definitions) and the color as a string containing a hexadecimal, following the RGB pattern.
 
 This OSC message will be sent to the osc send address and is composed by the name of the joycon (/joycon+0..n, based on the order of connection) added with the OSC tag ```/sendJoyconTypeAndColor``` and followed by the type and color, respectvely. 
 
@@ -169,6 +169,8 @@ About that, I made some tests comparing the time response of the first connected
 The overall test result shows an avarage lag of ```124.979 ms``` between the first and other connected joycon inputs, considering the first one without any lag. The test also **suggests** that, after the first one, _it doesn't really matter the order or the number of joycons connected, the lag will be quite the same_. I can't confirm that though, as I don't have any more joycons.
 
 It's also worth to notice that trying to draw too many joycons may result in a fps drop and that may cause more laggy inputs/OSC messages. For those cases (or any other reason to fps drop), the use of _oscOnly mode_ is recomended.
+
+Also, comments have been added to the code in a way similar to a "foot note". A line with a comment ```nX```, with X being any natural number, indicates that in the bottom of a file there is a note, with the same name, about the indicated line. I tried to put as less comments as possible, as a way to force me to right the better understandble code I could.
 
 ## Future implementations
 Not counting the standalone app, I plan to implement two types of configurations: a general config, and a individual config for each joycon. The ideia here is to let drawing and OSC be configured accordingly to user necessities, changing things like:
