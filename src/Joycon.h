@@ -23,9 +23,8 @@ class Joycon {
 		int controllerType; //left(1) or right(2) joycon identifier _n2
 		IMU_STATE rawIMUData = IMU_STATE();
 		MOTION_STATE cookedIMUData = MOTION_STATE();
-		double roll = 0;
-		double pitch = 0;
-		double yaw = 0;
+		ofQuaternion currentQuaternion;
+		ofVec3f currentEuler;
 
 		int positionOnList;
 		ofTrueTypeFont font; 

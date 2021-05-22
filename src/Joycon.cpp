@@ -42,9 +42,10 @@ void Joycon::oscSenderSetup() {
 void Joycon::updateData(JOY_SHOCK_STATE newButtonsStickData, IMU_STATE newRawIMUData) {
 	inputValues newInputValues = getEachInputValue(newButtonsStickData);
 	rawIMUData = newRawIMUData;
-	cookedIMUData = JslGetMotionState(deviceId);
+	cookedIMUData = JslGetMotionState(deviceId); 
+	currentQuaternion = ofQuaternion(cookedIMUData.quatX, cookedIMUData.quatY, cookedIMUData.quatZ, cookedIMUData.quatW);
 	if (useEulerOrientation) {
-		convertQuaternionToEuler(cookedIMUData.quatW, cookedIMUData.quatX, cookedIMUData.quatY, cookedIMUData.quatZ);
+		currentEuler = currentQuaternion.getEuler();
 	}
 	sendNewInputsAsOSC(newInputValues);
 	currentInputValues = newInputValues;
@@ -160,9 +161,9 @@ void Joycon::sendNewInputsAsOSC(inputValues newInputValues) {
 	}
 	if (useCookedIMUData) {
 		if (useEulerOrientation) {
-			oscSender.sendMessage(getInputOscMessage(inputOSCTags.roll, pitch));
-			oscSender.sendMessage(getInputOscMessage(inputOSCTags.pitch, roll));
-			oscSender.sendMessage(getInputOscMessage(inputOSCTags.yaw, yaw));
+			oscSender.sendMessage(getInputOscMessage(inputOSCTags.roll, currentEuler.x));
+			oscSender.sendMessage(getInputOscMessage(inputOSCTags.pitch, currentEuler.y));
+			oscSender.sendMessage(getInputOscMessage(inputOSCTags.yaw, currentEuler.z));
 		}
 
 		oscSender.sendMessage(getInputOscMessage(inputOSCTags.quatW, cookedIMUData.quatW));
@@ -252,6 +253,7 @@ void Joycon::updateGraphsValues() {
 		cookedIMUData.quatX = ofRandom(-1, 1);
 		cookedIMUData.quatY = ofRandom(-1, 1);
 		cookedIMUData.quatZ = ofRandom(-1, 1);
+		currentQuaternion = ofQuaternion(cookedIMUData.quatX, cookedIMUData.quatY, cookedIMUData.quatZ, cookedIMUData.quatW);
 		cookedIMUData.accelX = ofRandom(-MAX_ACCEL_VALUE, MAX_ACCEL_VALUE);
 		cookedIMUData.accelY = ofRandom(-MAX_ACCEL_VALUE, MAX_ACCEL_VALUE);
 		cookedIMUData.accelZ = ofRandom(-MAX_ACCEL_VALUE, MAX_ACCEL_VALUE);
@@ -270,10 +272,10 @@ void Joycon::updateGraphsValues() {
 		gravityZValues[currentFirstPosGraphs] = cookedIMUData.gravZ;
 
 		if (useEulerOrientation) {
-			convertQuaternionToEuler(cookedIMUData.quatW, cookedIMUData.quatX, cookedIMUData.quatY, cookedIMUData.quatZ);
-			rollValues[currentFirstPosGraphs] = roll;
-			pitchValues[currentFirstPosGraphs] = pitch;
-			yawValues[currentFirstPosGraphs] = yaw;
+			currentEuler = currentQuaternion.getEuler();
+			rollValues[currentFirstPosGraphs] = currentEuler.x;
+			yawValues[currentFirstPosGraphs] = currentEuler.y;
+			pitchValues[currentFirstPosGraphs] = currentEuler.z;
 		}
 	}
 	else {
@@ -298,9 +300,9 @@ void Joycon::updateGraphsValues() {
 			gravityZValues[currentFirstPosGraphs] = cookedIMUData.gravZ;
 
 			if (useEulerOrientation) {
-				rollValues[currentFirstPosGraphs] = roll;
-				pitchValues[currentFirstPosGraphs] = pitch;
-				yawValues[currentFirstPosGraphs] = yaw;
+				rollValues[currentFirstPosGraphs] = currentEuler.x;
+				yawValues[currentFirstPosGraphs] = currentEuler.y;
+				pitchValues[currentFirstPosGraphs] = currentEuler.z;
 			}
 		}
 	}
@@ -679,7 +681,7 @@ void Joycon::drawJoycon() {
 
 		if(useEulerOrientation && drawRawIMUData){
 			localDataGraphPosY = localDataGraphPosY + dataGraphHeight + BORDER;
-			draw2DGraph(localDataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, rollValues, pitchValues, yawValues, PI, 3);
+			draw2DGraph(localDataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, rollValues, pitchValues, yawValues, 180, 3);
 			ofSetColor(joyconColor);
 			if (font.stringWidth("eulerOrientation") < dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
 				ofDrawBitmapString("eulerOrientation", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
@@ -691,26 +693,6 @@ void Joycon::drawJoycon() {
 	ofSetColor(ofColor(255, 255, 255, 255));
 	float nameWidth = font.stringWidth(nameOnGUI);
 	font.drawString(nameOnGUI, (celPosX + (2 * BORDER)) + (abs(controllerType - 2) * (celWidth - (nameWidth + (4 * BORDER)))), celPosY + dataGraphPosY);
-}
-
-// see: https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles 
-void Joycon::convertQuaternionToEuler(float quatW, float quatX, float quatY, float quatZ) { 
-	// roll (x-axis rotation)
-	double sinr_cosp = 2 * ((quatW * quatX) + (quatY * quatZ));
-	double cosr_cosp = 1 - 2 * ((quatX * quatX) + (quatY * quatY));
-	roll = atan2(sinr_cosp, cosr_cosp);
-
-	// pitch (y-axis rotation)
-	double sinp = 2 * ((quatW * quatY) - (quatZ * quatX));
-	if (abs(sinp) >= 1)
-		pitch = copysign(PI / 2, sinp); // use 90 degrees if out of range
-	else
-		pitch = asin(sinp);
-
-	// yaw (z-axis rotation)
-	double siny_cosp = 2 * ((quatW * quatZ) + (quatX * quatY));
-	double cosy_cosp = 1 - 2 * ((quatY * quatY) + (quatZ * quatZ));
-	yaw = atan2(siny_cosp, cosy_cosp);
 }
 
 void Joycon::clearNotUsedGraphValues() {
