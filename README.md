@@ -110,7 +110,7 @@ The graphs show a collection (by default, the collection of the last second valu
 * z = blue
 * w = white (used on the quaternion orientation)
 
-If you want to use the orientation in euler angles instead of the quaternion one provided by JoyShockLibrary, toggle ```useEulerOrientation``` on GUIControl.
+If you want to use the orientation in euler angles instead of the quaternion one provided by JoyShockLibrary, toggle ```useEulerOrientation``` on GUIControl. The quaternion to euler orientation convertion is made with [_ofQuaternion.getEuler()_](https://github.com/openframeworks/openFrameworks/blob/master/libs/openFrameworks/math/ofQuaternion.cpp) function.
 
 ## Other functionalities
 ### Virtual joycons
