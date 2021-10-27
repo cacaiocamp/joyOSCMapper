@@ -1,7 +1,7 @@
 # joyOSCMapper
 **joyOSCMapper** is suposed to be a easy way to visualize and map joycon inputs (buttons, stick and motion) as [OSC](http://opensoundcontrol.org/introduction-osc) messages, allowing to use and test joycon inputs to control "anything" controlable with OSC. Therefore, this software idea is a simple central program to use joycons with Interactive Music Systems and other art related contexts. 
 
-It is being built with C++/[openFrameworks](https://openframeworks.cc/) and uses JibbSmarts' [JoyShockLibrary](https://github.com/JibbSmart/JoyShockLibrary) to gather the data from the joycons via Bluetooth and the _ofxOsc_ addon to convert the data in OSC messages. I'm developting it using a Windows 10, with Visual Studio 2017, but, as its built with openFrameworks, it should be easy enough to use it in every OS that run this C++ toolkit.
+It is being built with C++/[openFrameworks](https://openframeworks.cc/) and uses JibbSmarts' [JoyShockLibrary](https://github.com/JibbSmart/JoyShockLibrary) to gather the data from the joycons via Bluetooth and the _ofxOsc_ addon to convert the data in OSC messages. I'm developing it using a Windows 10, with Visual Studio 2017, but, as its built with openFrameworks, it should be easy enough to use it in any OS that runs this C++ toolkit.
 
 ![joyOSCMapperShot](mdimgs/twoyellowjoys.png)
 
@@ -26,7 +26,7 @@ It is being built with C++/[openFrameworks](https://openframeworks.cc/) and uses
 * **[License](#license)**
 
 ## Instalation
-With the openFrameworks already downloaded for your IDE, you will first need to build a .dll of JoyShockLibrary for your OS. If you are using a x64 Windows, the .dll and .lib files in the _libs/_ folder are already the ones. If x86, you can get the [latest x86 release of JoyShockLibrary](https://github.com/JibbSmart/JoyShockLibrary/releases).
+With the openFrameworks already downloaded for your IDE, you will first need to build a .dll of JoyShockLibrary for your OS. If you are using a x64 Windows, the .dll and .lib files in the _libs/_ folder are already the right ones. If x86, you can get the [latest x86 release of JoyShockLibrary](https://github.com/JibbSmart/JoyShockLibrary/releases).
 
 After that, all the files you need are on the _src/_ folder. You will also need to make the link of your project/solution to the folder where the .dll and .lib files are and a openFrameworks app with _ofxOsc_ and _ofxGUI_ addons imported.
 
