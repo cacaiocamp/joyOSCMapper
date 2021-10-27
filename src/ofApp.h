@@ -62,12 +62,12 @@ class ofApp : public ofBaseApp{
 		ofxToggle useVirtualJoycons;
 		bool lastUseVirtualJoyconsValue = false;
 		ofxLabel connectedDevicesLabel;
-		ofxToggle useEulerOrientation;
-		bool lastUseEulerOrientationValue = false;
 		ofxToggle calibrateJoycons;
 		bool lastCalibrateJoyconsValue = false;
 		ofxToggle oscOnly;
 		bool lastOscOnlyValue = false;
+		ofxToggle showGUIGraphConfig;
+		bool lastShowGUIGraphConfigValue = false;
 		ofxToggle showShortcutsHelp;
 		bool lastShowShortcutsHelpValue = false;
 
@@ -84,6 +84,16 @@ class ofApp : public ofBaseApp{
 		ofxButton removeAllVirtual;
 		ofxLabel virtualJoyconsAddedLabel;
 
+		//guiGraphConfig variables
+		ofxPanel guiGraphConfig;
+		ofxSlider<int> vectorSizeSlider;
+		ofxToggle useEulerOrientation;
+		bool lastUseEulerOrientationValue = false;
+		ofxToggle useRawIMUData;
+		bool lastUseRawIMUDataValue = false;
+		ofxToggle useCookedIMUData;
+		bool lastUseCookedIMUDataValue = false;
+
 		//guiShortcuts variables
 		ofxPanel guiShortcuts;
 		ofxLabel sShortcut;
@@ -94,9 +104,12 @@ class ofApp : public ofBaseApp{
 		ofxLabel vShortcut;
 		ofxLabel aShortcut;
 		ofxLabel rShortcut;
-		ofxLabel eShortcut;
 		ofxLabel cShortcut;
 		ofxLabel oShortcut;
+		ofxLabel xShortcut;
+		ofxLabel qShortcut;
+		ofxLabel wShortcut;
+		ofxLabel eShortcut;
 		ofxLabel leftClickHelp;
 		ofxLabel rightClickHelp;
 		bool showGuiShortcuts = false;

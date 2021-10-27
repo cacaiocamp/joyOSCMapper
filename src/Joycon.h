@@ -92,7 +92,6 @@ class Joycon {
 		inputValues getEachInputValue(JOY_SHOCK_STATE newButtonsStickData);
 		ofVec2f getStickAsPolarCoordinates(float stickX, float stickY);
 		stickAsDpad setStickAsDpad(float stickX, float stickY);
-		void convertQuaternionToEuler(float quatW, float quatX, float quatY, float quatZ);
 		void draw2DGraph(float posX, float posY, float graphWidth, float graphHeight, vector<float> graphValuesI, vector<float> graphValuesJ, vector<float> graphValuesK, float maxYValue = 1, int numLayers = 4, vector<float> graphValuesW = vector<float>());
 		ofColor getInputColor(int buttonValue, int baseRGB = BASE_BUTTON_COLOR);
 		bool pointInsidePolylines(vector<ofPolyline> polylinesToCheck, int pointX, int pointY);
@@ -114,8 +113,6 @@ class Joycon {
 		bool useRawIMUData = true;
 		bool useCookedIMUData = true;
 		bool useEulerOrientation = false;
-		bool drawRawIMUData = true;
-		bool drawCookedIMUData = true;
 		bool useStickAsPolar = true;
 		bool useStickAsDpad = true;
 
@@ -160,16 +157,16 @@ class Joycon {
 			yawValues.resize(IMUVectorsSize, 0);
 		};
 
-		void updateData(JOY_SHOCK_STATE newButtonsStickData, IMU_STATE newRawIMUData);
-		void sendNewInputsAsOSC(inputValues newInputValues);
+		void updateData(JOY_SHOCK_STATE newButtonsStickData, IMU_STATE newRawIMUData, bool sendRawIMUData = true, bool sendCookedIMUData = true);
+		void sendNewInputsAsOSC(inputValues newInputValues, bool sendRawIMUData = true, bool sendCookedIMUData = true);
 		void sendJoyconTypeAndColorAsOsc();
 		ofxOscMessage getInputOscMessage(string inputAddress, float inputValue);
-		void updateGraphsValues();
+		void updateGraphsValues(bool drawRawIMUData = true, bool drawCookedIMUData = true);
 		void updateDrawings(int newCelWidth, int newCelHeight, int newCelPosX, int newCelPosY);
-		void drawJoycon();
+		void drawJoycon(bool drawRawIMUData = true, bool drawCookedIMUData = true);
 		void calibrateMotion(bool calibrate);
 		void clearNotUsedGraphValues();
-		string checkMouseClick(int mouseClickX, int mouseClickY, int mouseButton);
+		string checkMouseClick(int mouseClickX, int mouseClickY, int mouseButton, bool drawRawIMUData = true, bool drawCookedIMUData = true);
 };
 
 /*

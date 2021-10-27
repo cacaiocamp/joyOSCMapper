@@ -39,7 +39,7 @@ void Joycon::oscSenderSetup() {
 		cout << "Could not connect to the net address " << oscNetAddress << ", with port " << oscSendPort << ";" << endl;
 }
 
-void Joycon::updateData(JOY_SHOCK_STATE newButtonsStickData, IMU_STATE newRawIMUData) {
+void Joycon::updateData(JOY_SHOCK_STATE newButtonsStickData, IMU_STATE newRawIMUData, bool sendRawIMUData, bool sendCookedIMUData) {
 	inputValues newInputValues = getEachInputValue(newButtonsStickData);
 	rawIMUData = newRawIMUData;
 	cookedIMUData = JslGetMotionState(deviceId); 
@@ -47,7 +47,7 @@ void Joycon::updateData(JOY_SHOCK_STATE newButtonsStickData, IMU_STATE newRawIMU
 		currentQuaternion = ofQuaternion(cookedIMUData.quatX, cookedIMUData.quatY, cookedIMUData.quatZ, cookedIMUData.quatW);
 		currentEuler = currentQuaternion.getEuler();
 	}
-	sendNewInputsAsOSC(newInputValues);
+	sendNewInputsAsOSC(newInputValues, sendRawIMUData, sendCookedIMUData);
 	currentInputValues = newInputValues;
 }
 
@@ -105,7 +105,7 @@ inputValues Joycon::getEachInputValue(JOY_SHOCK_STATE newButtonsStickData) {//_n
 	return newInputValues;
 }
 
-void Joycon::sendNewInputsAsOSC(inputValues newInputValues) {
+void Joycon::sendNewInputsAsOSC(inputValues newInputValues, bool sendRawIMUData, bool sendCookedIMUData) {
 	if (!isVirtual) {
 		if (newInputValues.upX != currentInputValues.upX)
 			oscSender.sendMessage(getInputOscMessage(inputOSCTags.upX, newInputValues.upX));
@@ -151,7 +151,7 @@ void Joycon::sendNewInputsAsOSC(inputValues newInputValues) {
 		}
 	}
 
-	if (useRawIMUData) {
+	if (sendRawIMUData) {
 		oscSender.sendMessage(getInputOscMessage(inputOSCTags.gyroX, rawIMUData.gyroX));
 		oscSender.sendMessage(getInputOscMessage(inputOSCTags.gyroY, rawIMUData.gyroY));
 		oscSender.sendMessage(getInputOscMessage(inputOSCTags.gyroZ, rawIMUData.gyroZ));
@@ -159,7 +159,7 @@ void Joycon::sendNewInputsAsOSC(inputValues newInputValues) {
 		oscSender.sendMessage(getInputOscMessage(inputOSCTags.raclY, rawIMUData.accelY));
 		oscSender.sendMessage(getInputOscMessage(inputOSCTags.raclZ, rawIMUData.accelZ));
 	}
-	if (useCookedIMUData) {
+	if (sendCookedIMUData) {
 		if (useEulerOrientation) {
 			oscSender.sendMessage(getInputOscMessage(inputOSCTags.roll, currentEuler.x));
 			oscSender.sendMessage(getInputOscMessage(inputOSCTags.yaw, currentEuler.y));
@@ -234,7 +234,7 @@ stickAsDpad Joycon::setStickAsDpad(float stickX, float stickY) {
 	return newStickAsDpad;
 }
 
-void Joycon::updateGraphsValues() {
+void Joycon::updateGraphsValues(bool drawRawIMUData, bool drawCookedIMUData) {
 	if (isVirtual) {
 		rawIMUData.gyroX = ofRandom(-MAX_GYRO_VALUE, MAX_GYRO_VALUE);
 		rawIMUData.gyroY = ofRandom(-MAX_GYRO_VALUE, MAX_GYRO_VALUE);
@@ -496,7 +496,7 @@ void Joycon::updateDrawings(int newCelWidth, int newCelHeight, int newCelPosX, i
 	stickAsPolarY = stickCenterY - (stickTargetRadius + BORDER);
 };
 
-void Joycon::drawJoycon() {
+void Joycon::drawJoycon(bool drawRawIMUData, bool drawCookedIMUData) {
 	ofFill();
 	ofSetColor(ofColor(joyconColor.r, joyconColor.g, joyconColor.b, 25));
 	ofDrawRectangle(celPosX, celPosY, celWidth, celHeight); //background rect
@@ -654,16 +654,6 @@ void Joycon::drawJoycon() {
 
 			localDataGraphPosY = localDataGraphPosY + dataGraphHeight + BORDER;
 		}
-		else if (useEulerOrientation && !drawRawIMUData) {
-			draw2DGraph(localDataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, rollValues, pitchValues, yawValues, PI, 3);
-			ofSetColor(joyconColor);
-			if (font.stringWidth("eulerOrientation") < dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
-				ofDrawBitmapString("eulerOrientation", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
-			else if (font.stringWidth("eulerOrientation") >= dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
-				ofDrawBitmapString("eO", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
-
-			localDataGraphPosY = localDataGraphPosY + dataGraphHeight + BORDER;
-		}
 
 		draw2DGraph(localDataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, cookedAccelXValues, cookedAccelYValues, cookedAccelZValues, MAX_ACCEL_VALUE, 3);
 		ofSetColor(joyconColor);
@@ -680,9 +670,9 @@ void Joycon::drawJoycon() {
 		else if (font.stringWidth("gravity") >= dataGraphWidth && font.stringHeight("G") < dataGraphHeight)
 			ofDrawBitmapString("grav", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
 
-		if(useEulerOrientation && drawRawIMUData){
+		if(useEulerOrientation){
 			localDataGraphPosY = localDataGraphPosY + dataGraphHeight + BORDER;
-			draw2DGraph(localDataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, rollValues, pitchValues, yawValues, 180, 3);
+			draw2DGraph(localDataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, rollValues, pitchValues, yawValues, 360, 3);
 			ofSetColor(joyconColor);
 			if (font.stringWidth("eulerOrientation") < dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
 				ofDrawBitmapString("eulerOrientation", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
@@ -793,7 +783,7 @@ ofColor Joycon::getInputColor(int buttonValue, int baseRGB) {
 	return inputColor;
 };
 
-string Joycon::checkMouseClick(int mouseClickX, int mouseClickY, int mouseButton) {
+string Joycon::checkMouseClick(int mouseClickX, int mouseClickY, int mouseButton, bool drawRawIMUData, bool drawCookedIMUData) {
 	bool insideJoycon = pointInsidePolylines(joyconDrawing.getOutline(), mouseClickX, mouseClickY);
 
 	if (insideJoycon) {
@@ -868,33 +858,55 @@ string Joycon::checkMouseClick(int mouseClickX, int mouseClickY, int mouseButton
 				return mouseClickAction(mouseButton, currentInputValues.sr, inputOSCTags.sr);
 		}
 		else {
-			if (mouseClickX >= dataGraphPosX && mouseClickX <= dataGraphPosX + dataGraphWidth) {
+			if (drawRawIMUData && (
+				(drawCookedIMUData && mouseClickX >= dataGraphPosX && mouseClickX <= dataGraphPosX + dataGraphWidth) 
+				|| (!drawCookedIMUData && mouseClickX >= dataGraphPosX && mouseClickX <= dataGraphPosX + (2*dataGraphWidth)))) {
+
 				float localDataGraphPosY = celPosY + dataGraphPosY;
-				float rawIMUGraphWidth = (celHeight / 2) - dataGraphPosY - BORDER;
-				if (mouseClickY >= localDataGraphPosY && mouseClickY <= localDataGraphPosY + rawIMUGraphWidth) {
+				float rawIMUGraphHeight = 0;
+
+				if (drawCookedIMUData && useEulerOrientation) {
+					rawIMUGraphHeight = (celHeight - (2 * dataGraphPosY)) / 3 - BORDER;
+				}
+				else {
+					rawIMUGraphHeight = (celHeight / 2) - dataGraphPosY - BORDER;
+				}
+
+				if (mouseClickY >= localDataGraphPosY && mouseClickY <= localDataGraphPosY + rawIMUGraphHeight) {
 					return "from " + ofToString(-1 * MAX_GYRO_VALUE) + " to " + ofToString(MAX_GYRO_VALUE) + " dps" + '\n' +
 						joyconOscAddress + inputOSCTags.gyroX + '\n' +
 						joyconOscAddress + inputOSCTags.gyroY + '\n' +
 						joyconOscAddress + inputOSCTags.gyroZ;
 				}
-				else if (mouseClickY >= localDataGraphPosY + rawIMUGraphWidth && mouseClickY <= localDataGraphPosY + (2 * rawIMUGraphWidth)) {
+				else if (mouseClickY >= localDataGraphPosY + rawIMUGraphHeight && mouseClickY <= localDataGraphPosY + (2 * rawIMUGraphHeight)) {
 					return "from " + ofToString(-1 * MAX_ACCEL_VALUE) + " to " + ofToString(MAX_ACCEL_VALUE) + " g" + '\n' +
 						joyconOscAddress + inputOSCTags.raclX + '\n' +
 						joyconOscAddress + inputOSCTags.raclY + '\n' +
 						joyconOscAddress + inputOSCTags.raclZ;
 				}
+				else if (drawCookedIMUData && useEulerOrientation && mouseClickY >= localDataGraphPosY + (2 * rawIMUGraphHeight) && mouseClickY <= localDataGraphPosY + (3 * rawIMUGraphHeight) + BORDER) {
+					string valueRangeMessage = "from PI to PI ";
+					return "quaternions " + valueRangeMessage + '\n' +
+						joyconOscAddress + inputOSCTags.quatW + '\n' +
+						joyconOscAddress + inputOSCTags.quatX + '\n' +
+						joyconOscAddress + inputOSCTags.quatY + '\n' +
+						joyconOscAddress + inputOSCTags.quatZ;
+				}
 			}
-			else if (mouseClickX >= dataGraphPosX + dataGraphWidth && mouseClickX <= dataGraphPosX + (2 * dataGraphWidth)) {
+			else if (drawCookedIMUData && (
+				(drawRawIMUData && mouseClickX >= dataGraphPosX + dataGraphWidth && mouseClickX <= dataGraphPosX + (2 * dataGraphWidth))
+				|| (!drawRawIMUData && mouseClickX >= dataGraphPosX && mouseClickX <= dataGraphPosX + (2 * dataGraphWidth)))) {
+
 				float localDataGraphPosY = celPosY + dataGraphPosY;
-				float cokIMUGraphWidth = (celHeight - (2 * dataGraphPosY)) / 3 - BORDER;
+				float cokIMUGraphHeight = (celHeight - (2 * dataGraphPosY)) / 3 - BORDER;
 				string valueRangeMessage = "from -1.0 to 1.0 ";
-				if (mouseClickY >= localDataGraphPosY && mouseClickY <= localDataGraphPosY + cokIMUGraphWidth) {
+
+				if (mouseClickY >= localDataGraphPosY && mouseClickY <= localDataGraphPosY + cokIMUGraphHeight) {
 					if (useEulerOrientation) {
-						valueRangeMessage = "from -PI to PI ";
-						return valueRangeMessage + '\n' +
-							joyconOscAddress + inputOSCTags.roll + '\n' +
-							joyconOscAddress + inputOSCTags.pitch + '\n' +
-							joyconOscAddress + inputOSCTags.yaw;
+						return "from " + ofToString(-1 * MAX_ACCEL_VALUE) + " to " + ofToString(MAX_ACCEL_VALUE) + " g" + '\n' +
+							joyconOscAddress + inputOSCTags.caclX + '\n' +
+							joyconOscAddress + inputOSCTags.caclY + '\n' +
+							joyconOscAddress + inputOSCTags.caclZ;
 					}
 					else {
 						return "quaternions " + valueRangeMessage + '\n' +
@@ -904,17 +916,34 @@ string Joycon::checkMouseClick(int mouseClickX, int mouseClickY, int mouseButton
 							joyconOscAddress + inputOSCTags.quatZ;
 					}
 				}
-				else if (mouseClickY >= localDataGraphPosY + cokIMUGraphWidth && mouseClickY <= localDataGraphPosY + (2 * cokIMUGraphWidth)) {
-					return "from " + ofToString(-1 * MAX_ACCEL_VALUE) + " to " + ofToString(MAX_ACCEL_VALUE) + " g" + '\n' +
-						joyconOscAddress + inputOSCTags.caclX + '\n' +
-						joyconOscAddress + inputOSCTags.caclY + '\n' +
-						joyconOscAddress + inputOSCTags.caclZ;
+				else if (mouseClickY >= localDataGraphPosY + cokIMUGraphHeight && mouseClickY <= localDataGraphPosY + (2 * cokIMUGraphHeight)) {
+					if (useEulerOrientation) {
+						return valueRangeMessage + '\n' +
+							joyconOscAddress + inputOSCTags.gravX + '\n' +
+							joyconOscAddress + inputOSCTags.gravY + '\n' +
+							joyconOscAddress + inputOSCTags.gravZ;
+					}
+					else {
+						return "from " + ofToString(-1 * MAX_ACCEL_VALUE) + " to " + ofToString(MAX_ACCEL_VALUE) + " g" + '\n' +
+							joyconOscAddress + inputOSCTags.caclX + '\n' +
+							joyconOscAddress + inputOSCTags.caclY + '\n' +
+							joyconOscAddress + inputOSCTags.caclZ;
+					}
 				}
-				else if (mouseClickY >= localDataGraphPosY + (2 * cokIMUGraphWidth) && mouseClickY <= localDataGraphPosY + (3 * cokIMUGraphWidth) + BORDER) {
-					return valueRangeMessage + '\n' +
-						joyconOscAddress + inputOSCTags.gravX + '\n' +
-						joyconOscAddress + inputOSCTags.gravY + '\n' +
-						joyconOscAddress + inputOSCTags.gravZ;
+				else if (mouseClickY >= localDataGraphPosY + (2 * cokIMUGraphHeight) && mouseClickY <= localDataGraphPosY + (3 * cokIMUGraphHeight) + BORDER) {
+					if (useEulerOrientation) {
+						valueRangeMessage = "from -2PI to 2PI ";
+						return valueRangeMessage + '\n' +
+							joyconOscAddress + inputOSCTags.roll + '\n' +
+							joyconOscAddress + inputOSCTags.pitch + '\n' +
+							joyconOscAddress + inputOSCTags.yaw;
+					}
+					else {
+						return valueRangeMessage + '\n' +
+							joyconOscAddress + inputOSCTags.gravX + '\n' +
+							joyconOscAddress + inputOSCTags.gravY + '\n' +
+							joyconOscAddress + inputOSCTags.gravZ;
+					}
 				}
 			}
 		}

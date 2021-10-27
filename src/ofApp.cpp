@@ -10,7 +10,7 @@ void ofApp::updateJoyconData(int joyconId, JOY_SHOCK_STATE newButtonsStickData, 
 	int firstPos = (numDevicesConnectedSum - numDevicesConnected);
 	int joyconPosVec = joyconId - firstPos;
 	if (joyconsVec[joyconPosVec].GUIToggle)
-		joyconsVec[joyconPosVec].updateData(newButtonsStickData, newRawIMUData);
+		joyconsVec[joyconPosVec].updateData(newButtonsStickData, newRawIMUData, useRawIMUData, useCookedIMUData);
 }
 
 //--------------------------------------------------------------
@@ -48,9 +48,12 @@ void ofApp::setup(){
 	guiShortcuts.add(vShortcut.setup("v-un/toggle VirtualJoys  ", vShortcut, guiWidth, guiLineHeight));
 	guiShortcuts.add(aShortcut.setup("  a-addAVirualJoycon     ", aShortcut, guiWidth, guiLineHeight));
 	guiShortcuts.add(rShortcut.setup("  r-removeAVirualJoycon  ", rShortcut, guiWidth, guiLineHeight));
-	guiShortcuts.add(eShortcut.setup("e-un/toggle eulerOrient  ", oShortcut, guiWidth, guiLineHeight));
 	guiShortcuts.add(cShortcut.setup("c-calibrateJoycons       ", cShortcut, guiWidth, guiLineHeight));
 	guiShortcuts.add(oShortcut.setup("o-un/toggle oscOnly mode ", oShortcut, guiWidth, guiLineHeight));
+	guiShortcuts.add(xShortcut.setup("x-show/hide GUIGraphConf ", xShortcut, guiWidth, guiLineHeight));
+	guiShortcuts.add(qShortcut.setup("  q-useRawIMUData        ", qShortcut, guiWidth, guiLineHeight));
+	guiShortcuts.add(wShortcut.setup("  w-useCookedIMUData     ", wShortcut, guiWidth, guiLineHeight));
+	guiShortcuts.add(eShortcut.setup("  e-useEulerOrientation  ", eShortcut, guiWidth, guiLineHeight));
 	guiShortcuts.add(leftClickHelp.setup("lClick-test vrtJoy input ", leftClickHelp, guiWidth, guiLineHeight));
 	guiShortcuts.add(rightClickHelp.setup("rClick-check oscAddress ", rightClickHelp, guiWidth, guiLineHeight));
 	guiShortcuts.setBackgroundColor(guiColor);
@@ -62,9 +65,12 @@ void ofApp::setup(){
 	vShortcut.setBackgroundColor(guiColor);
 	aShortcut.setBackgroundColor(guiColor);
 	rShortcut.setBackgroundColor(guiColor);
-	eShortcut.setBackgroundColor(guiColor);
 	cShortcut.setBackgroundColor(guiColor);
 	oShortcut.setBackgroundColor(guiColor);
+	xShortcut.setBackgroundColor(guiColor);
+	qShortcut.setBackgroundColor(guiColor);
+	wShortcut.setBackgroundColor(guiColor);
+	eShortcut.setBackgroundColor(guiColor);
 	leftClickHelp.setBackgroundColor(guiColor);
 	rightClickHelp.setBackgroundColor(guiColor);
 
@@ -94,8 +100,22 @@ void ofApp::setup(){
 	virtualJoyconsAddedLabel.setBackgroundColor(guiColor);
 	guiConfigVirtualJoycons.setPosition(guiControl.getPosition().x - guiWidth - BORDER, BORDER);
 
+	guiGraphConfig.setup();
+	guiGraphConfig.setName("GUIGraphConfig");
+	guiGraphConfig.add(vectorSizeSlider.setup("imuVectorSize", DEFAULT_IMUVECTORSSIZE, 30, 670, guiWidth, guiLineHeight));
+	guiGraphConfig.add(useRawIMUData.setup("useRawIMUData", true, guiWidth, guiLineHeight));
+	guiGraphConfig.add(useCookedIMUData.setup("useCookedIMUData", true, guiWidth, guiLineHeight));
+	guiGraphConfig.add(useEulerOrientation.setup("useEulerOrientation", false, guiWidth, guiLineHeight));
+	guiGraphConfig.setBackgroundColor(guiColor);
+	vectorSizeSlider.setBackgroundColor(guiColor);
+	useEulerOrientation.setBackgroundColor(guiColor);
+	useRawIMUData.setBackgroundColor(guiColor);
+	useCookedIMUData.setBackgroundColor(guiColor);
+	guiGraphConfig.setPosition(winWidth - guiWidth - BORDER, winHeight - (5 * guiLineHeight) - BORDER);
+
 	if (numDevicesConnected == 0) {
 		showShortcutsHelp = true;
+		showGUIGraphConfig = false;
 	}
 
 	winWidthProportion = 4;
@@ -127,7 +147,7 @@ void ofApp::update(){
 		for (int index = 0; index < joyconsVec.size(); index++) {
 			if (joyconsVec[index].GUIToggle && (!joyconsVec[index].isVirtual || (joyconsVec[index].isVirtual && useVirtualJoycons))) {
 				selectedJoyconsCount++;
-				joyconsVec[index].updateGraphsValues();
+				joyconsVec[index].updateGraphsValues(useRawIMUData, useRawIMUData);
 				if (joyconsVec[index].isVirtual)
 					joyconsVec[index].sendNewInputsAsOSC(joyconsVec[index].currentInputValues);
 			}
@@ -162,7 +182,7 @@ void ofApp::draw() {
 	if (!oscOnly) {
 		for each (Joycon joycon in joyconsVec) {
 			if (joycon.GUIToggle && (!joycon.isVirtual || (joycon.isVirtual && useVirtualJoycons))) {
-				joycon.drawJoycon();
+				joycon.drawJoycon(useRawIMUData, useCookedIMUData);
 			}
 		}
 	}
@@ -175,6 +195,9 @@ void ofApp::draw() {
 
 	if (showGuiJoyconsList)
 		guiJoyconsList.draw(); 
+
+	if (showGUIGraphConfig)
+		guiGraphConfig.draw();
 
 	if (showShortcutsHelp && showGuiControl) {
 		guiShortcuts.draw();
@@ -205,9 +228,6 @@ void ofApp::keyPressed(int key){
 		case 'd':
 			executeDisconnectAndDispose = true;
 			break;
-		case 'e':
-			useEulerOrientation = !useEulerOrientation;
-			break;
 		case 'o':
 			oscOnly = !oscOnly;
 			break;
@@ -232,6 +252,24 @@ void ofApp::keyPressed(int key){
 		case 'r':
 			executeRemoveAVirtualJoycon = true;
 			break;
+		case 'x':
+			showGUIGraphConfig = !showGUIGraphConfig;
+			break;
+		case 'q':
+			useRawIMUData = !useRawIMUData;
+			break;
+		case 'w':
+			useCookedIMUData = !useCookedIMUData;
+			if (useCookedIMUData == false) {
+				useEulerOrientation = false;
+			}
+			break;
+		case 'e':
+			useEulerOrientation = !useEulerOrientation;
+			if (useEulerOrientation == true) {
+				useCookedIMUData = true;
+			}
+			break;
 	}
 }
 
@@ -247,7 +285,7 @@ void ofApp::mousePressed(int x, int y, int button){
 
 	if (joyconCelPressedIndex >= 0) {
 		if (button == OF_MOUSE_BUTTON_LEFT && joyconsVec[joyconCelPressedIndex].isVirtual) {
-			clickedButtonOscTag = joyconsVec[joyconCelPressedIndex].checkMouseClick(x, y, button);
+			clickedButtonOscTag = joyconsVec[joyconCelPressedIndex].checkMouseClick(x, y, button, useRawIMUData, useCookedIMUData);
 			if (joyconsVec[joyconCelPressedIndex].clickedInputPointer != NULL) {
 				joyconsVec[joyconCelPressedIndex].oscSender.sendMessage(
 					joyconsVec[joyconCelPressedIndex].getInputOscMessage(
@@ -258,7 +296,7 @@ void ofApp::mousePressed(int x, int y, int button){
 			}
 		}
 		else{
-			clickedButtonOscMessage = joyconsVec[joyconCelPressedIndex].checkMouseClick(x, y, button);
+			clickedButtonOscMessage = joyconsVec[joyconCelPressedIndex].checkMouseClick(x, y, button, useRawIMUData, useCookedIMUData);
 			int messageWidth = font.stringWidth(clickedButtonOscMessage);
 			if (x + messageWidth < winWidth)
 				clickedButtonPos.x = x;
@@ -372,6 +410,10 @@ void ofApp::checkAllButtonStates() {
 		else if (oscOnly != lastOscOnlyValue) {
 			framesWaited = 0;
 			lastOscOnlyValue = oscOnly;
+		}
+		else if (showGUIGraphConfig != lastShowGUIGraphConfigValue) {
+			framesWaited = 0;
+			lastShowGUIGraphConfigValue = showGUIGraphConfig;
 		}
 		else if (showShortcutsHelp != lastShowShortcutsHelpValue) {
 			framesWaited = 0;
@@ -505,9 +547,9 @@ void ofApp::setupGuiControl() {
 	guiControl.add(disconnectAndDispose.setup("disconnect&DisposeAll", guiWidth, guiLineHeight));
 	guiControl.add(useVirtualJoycons.setup("useVirtualJoycons", false, guiWidth, guiLineHeight));
 	guiControl.add(connectedDevicesLabel.setup("numConnectedDevices", connectedDevicesLabel, guiWidth, guiLineHeight));
-	guiControl.add(useEulerOrientation.setup("useEulerOrientation", false, guiWidth, guiLineHeight));
 	guiControl.add(calibrateJoycons.setup("calibrateJoycons", false, guiWidth, guiLineHeight));
 	guiControl.add(oscOnly.setup("oscOnly", false, guiWidth, guiLineHeight));
+	guiControl.add(showGUIGraphConfig.setup("graphConfig", false, guiWidth, guiLineHeight));
 	guiControl.add(showShortcutsHelp.setup("shortcuts/help", false, guiWidth, guiLineHeight));
 	connectedDevicesLabel.operator=(ofToString(numDevicesConnected));
 	guiControl.setPosition(winWidth - guiWidth - BORDER, BORDER);
@@ -517,9 +559,9 @@ void ofApp::setupGuiControl() {
 	disconnectAndDispose.setBackgroundColor(guiColor);
 	useVirtualJoycons.setBackgroundColor(guiColor);
 	connectedDevicesLabel.setBackgroundColor(guiColor);
-	useEulerOrientation.setBackgroundColor(guiColor);
 	calibrateJoycons.setBackgroundColor(guiColor);
 	oscOnly.setBackgroundColor(guiColor);
+	showGUIGraphConfig.setBackgroundColor(guiColor);
 	showShortcutsHelp.setBackgroundColor(guiColor);
 }
 
