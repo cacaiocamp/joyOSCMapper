@@ -110,7 +110,9 @@ The graphs show a collection (by default, the collection of the last second valu
 * z = blue
 * w = white (used on the quaternion orientation)
 
-If you want to use the orientation in euler angles instead of the quaternion one provided by JoyShockLibrary, toggle ```useEulerOrientation``` on GUIControl. The quaternion to euler orientation convertion is made with [_ofQuaternion.getEuler()_](https://github.com/openframeworks/openFrameworks/blob/master/libs/openFrameworks/math/ofQuaternion.cpp) function.
+If you want to use the orientation in euler angles instead of the quaternion one provided by JoyShockLibrary, toggle ```useEulerOrientation``` on GUIGraphConfig. The quaternion to euler orientation convertion is made with [_ofQuaternion.getEuler()_](https://github.com/openframeworks/openFrameworks/blob/master/libs/openFrameworks/math/ofQuaternion.cpp) function.
+
+It is also possible to un/toggle the use of raw and cooked IMU graphs on GUIGraphConfig, as well as change the size of the graphs with the _imuVectorSize_ slider. Note that increasing the graphs size too much may cause fps drop, depending also on the number of joycons being drawn.
 
 ## Other functionalities
 ### Virtual joycons
@@ -152,7 +154,7 @@ The following default values definitions can be found on _sharedDefs.h_:
 #define DEFAULT_MINSTICKASDPADDIST 0.2 //_n3
 ```
 For now, the only way to change default values is modifying those definitions. The last three deserve some coments:
-* change ```DEFAULT_IMUVECTORSSIZE``` if you want the graphs to show more or less than 1 second of each motion capture axis. Note that increase this too much may cause fps drop, depending also on the number of joycons being drawn;
+* change ```DEFAULT_IMUVECTORSSIZE``` if you want to change the range of the _imuVectorSize_ slider on GUIGraphControl. The values of the slider range from ```DEFAULT_IMUVECTORSSIZE / 2``` to ```10 * DEFAULT_IMUVECTORSSIZE```;
 * change ```DEFAULT_MINSTICKSTEP``` if you are having any issues with stick precision. The stick values reported are diferent almost every single report, ```Joycon.minStickStep``` represent the minimum stick variation to trigger stick OSC messages and drawing changes;
 * ```Joycon.minStickAsDpadDist``` represent the minimum _stickX_ and _stickY_ distance from the center to trigger _stickAsDpad_ values. For example, with the ```DEFAULT_MINSTICKASDPADDIST``` at ```0.2```, you need to have ```stickX >= 0.2``` to trigger ```stickAsDpad.right 1``` and ```stickX < 0.2``` to retrigger ```stickAsDpad.right 0```.
 
