@@ -112,7 +112,7 @@ The graphs show a collection (by default, the collection of the last second valu
 
 If you want to use the orientation in euler angles instead of the quaternion one provided by JoyShockLibrary, toggle ```useEulerOrientation``` on GUIGraphConfig. The quaternion to euler orientation convertion is made with [_ofQuaternion.getEuler()_](https://github.com/openframeworks/openFrameworks/blob/master/libs/openFrameworks/math/ofQuaternion.cpp) function.
 
-It is also possible to un/toggle the use of raw and cooked IMU graphs on GUIGraphConfig, as well as change the size of the graphs with the _imuVectorSize_ slider. Note that increasing the graphs size too much may cause fps drop, depending also on the number of joycons being drawn.
+It is also possible to un/toggle the use of raw and cooked IMU graphs on GUIGraphConfig, as well as change the size of the graphs with the ```imuVectorSize``` _ofxSlider_. Note that increasing the graphs size too much may cause fps drop, depending also on the number of joycons being drawn.
 
 ## Other functionalities
 ### Virtual joycons
