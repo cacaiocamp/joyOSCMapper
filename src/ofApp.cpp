@@ -350,6 +350,7 @@ void ofApp::windowResized(int w, int h){
 	guiJoyconsList.setPosition(BORDER, BORDER);
 	guiShortcuts.setPosition((winWidth / 2) - guiWidth, (winHeight / 2) - (guiShortcuts.getHeight() / 2));
 	guiGraphHelp.setPosition(guiShortcuts.getPosition().x + guiWidth + BORDER, (winHeight / 2) - (guiGraphHelp.getHeight() / 2));
+	guiGraphConfig.setPosition(winWidth - guiWidth - BORDER, winHeight - (5 * guiLineHeight) - BORDER);
 }
 
 void ofApp::exit() {
