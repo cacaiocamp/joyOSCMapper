@@ -86,7 +86,8 @@ class ofApp : public ofBaseApp{
 
 		//guiGraphConfig variables
 		ofxPanel guiGraphConfig;
-		ofxSlider<int> vectorSizeSlider;
+		ofxSlider<int> imuVectorSizeSlider;
+		int lastImuVectorSize = DEFAULT_IMUVECTORSSIZE;
 		ofxToggle useEulerOrientation;
 		bool lastUseEulerOrientationValue = false;
 		ofxToggle useRawIMUData;

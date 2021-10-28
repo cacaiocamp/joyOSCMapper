@@ -164,6 +164,7 @@ class Joycon {
 		void updateGraphsValues(bool drawRawIMUData = true, bool drawCookedIMUData = true);
 		void updateDrawings(int newCelWidth, int newCelHeight, int newCelPosX, int newCelPosY);
 		void drawJoycon(bool drawRawIMUData = true, bool drawCookedIMUData = true);
+		void changeIMUVectorsSize(int newVectorSize);
 		void calibrateMotion(bool calibrate);
 		void clearNotUsedGraphValues();
 		string checkMouseClick(int mouseClickX, int mouseClickY, int mouseButton, bool drawRawIMUData = true, bool drawCookedIMUData = true);

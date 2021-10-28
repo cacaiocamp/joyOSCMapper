@@ -102,12 +102,12 @@ void ofApp::setup(){
 
 	guiGraphConfig.setup();
 	guiGraphConfig.setName("GUIGraphConfig");
-	guiGraphConfig.add(vectorSizeSlider.setup("imuVectorSize", DEFAULT_IMUVECTORSSIZE, 30, 670, guiWidth, guiLineHeight));
+	guiGraphConfig.add(imuVectorSizeSlider.setup("imuVectorSize", DEFAULT_IMUVECTORSSIZE, int(DEFAULT_IMUVECTORSSIZE/2), DEFAULT_IMUVECTORSSIZE * 10, guiWidth, guiLineHeight));
 	guiGraphConfig.add(useRawIMUData.setup("useRawIMUData", true, guiWidth, guiLineHeight));
 	guiGraphConfig.add(useCookedIMUData.setup("useCookedIMUData", true, guiWidth, guiLineHeight));
 	guiGraphConfig.add(useEulerOrientation.setup("useEulerOrientation", false, guiWidth, guiLineHeight));
 	guiGraphConfig.setBackgroundColor(guiColor);
-	vectorSizeSlider.setBackgroundColor(guiColor);
+	imuVectorSizeSlider.setBackgroundColor(guiColor);
 	useEulerOrientation.setBackgroundColor(guiColor);
 	useRawIMUData.setBackgroundColor(guiColor);
 	useCookedIMUData.setBackgroundColor(guiColor);
@@ -132,7 +132,7 @@ void ofApp::setup(){
 	joyconConfigWindowSettings.setSize(screenWidth - hMargin, screenHeight - vMargin);
 	joyconConfigWindowSettings.setPosition(ofVec2f(hMargin / 2, vMargin / 2));
 
-	oscOnlyInfo << "The oscOnly mode is on. All joycon drawings have stoped," << '\n' << " but their respective OSC messages are still being sent.";
+	oscOnlyInfo << "The oscOnly mode is on. All joycon drawings have stoped," << '\n' << " but their respective OSC messages are still being sent." << endl;
 	oscReceiver.setup(oscReceiverPort);
 }
 
@@ -461,6 +461,14 @@ void ofApp::checkAllButtonStates() {
 	}
 	else if (framesWaited < framesToWait)
 		framesWaited++;
+
+	if (lastImuVectorSize != imuVectorSizeSlider) {
+		for (int index = 0; index <= joyconsVec.size() - 1; index++) {
+			joyconsVec[index].changeIMUVectorsSize(imuVectorSizeSlider);
+		}
+
+		lastImuVectorSize = imuVectorSizeSlider;
+	}
 }
 
 void ofApp::instantiateConnectedJoycons() {

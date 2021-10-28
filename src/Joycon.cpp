@@ -686,6 +686,258 @@ void Joycon::drawJoycon(bool drawRawIMUData, bool drawCookedIMUData) {
 	font.drawString(nameOnGUI, (celPosX + (2 * BORDER)) + (abs(controllerType - 2) * (celWidth - (nameWidth + (4 * BORDER)))), celPosY + dataGraphPosY);
 }
 
+void Joycon::changeIMUVectorsSize(int newSize) {
+	int lastVectorsSize = IMUVectorsSize;
+	int newSizeDif = newSize - lastVectorsSize;
+
+	IMUVectorsSize = newSize;
+
+	if (newSizeDif < 0) {
+		int numValuesToEraseFromBegin = 0;
+		newSizeDif = newSizeDif * (-1);
+
+		if (currentFirstPosGraphs + 1 + newSizeDif > lastVectorsSize) {
+			numValuesToEraseFromBegin = currentFirstPosGraphs + 1 + newSizeDif - lastVectorsSize;
+
+			if (currentFirstPosGraphs != lastVectorsSize - 1) {
+				vector<float>::iterator eraseIterator = gyroXValues.begin();
+				gyroXValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
+
+				eraseIterator = gyroYValues.begin();
+				gyroYValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
+
+				eraseIterator = gyroZValues.begin();
+				gyroZValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
+
+				eraseIterator = rawAccelXValues.begin();
+				rawAccelXValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
+
+				eraseIterator = rawAccelYValues.begin();
+				rawAccelYValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
+
+				eraseIterator = rawAccelZValues.begin();
+				rawAccelZValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
+
+				eraseIterator = quatWValues.begin();
+				quatWValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
+
+				eraseIterator = quatXValues.begin();
+				quatXValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
+
+				eraseIterator = quatYValues.begin();
+				quatYValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
+
+				eraseIterator = quatZValues.begin();
+				quatZValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
+
+				eraseIterator = cookedAccelXValues.begin();
+				cookedAccelXValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
+
+				eraseIterator = cookedAccelYValues.begin();
+				cookedAccelYValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
+
+				eraseIterator = cookedAccelZValues.begin();
+				cookedAccelZValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
+
+				eraseIterator = gravityXValues.begin();
+				gravityXValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
+
+				eraseIterator = gravityYValues.begin();
+				gravityYValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
+
+				eraseIterator = gravityZValues.begin();
+				gravityZValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
+
+				eraseIterator = rollValues.begin();
+				rollValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
+
+				eraseIterator = pitchValues.begin();
+				pitchValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
+
+				eraseIterator = yawValues.begin();
+				yawValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
+			}
+
+			vector<float>::iterator eraseIterator = gyroXValues.begin();
+			gyroXValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
+
+			eraseIterator = gyroYValues.begin();
+			gyroYValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
+
+			eraseIterator = gyroZValues.begin();
+			gyroZValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
+
+			eraseIterator = rawAccelXValues.begin();
+			rawAccelXValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
+
+			eraseIterator = rawAccelYValues.begin();
+			rawAccelYValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
+
+			eraseIterator = rawAccelZValues.begin();
+			rawAccelZValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
+
+			eraseIterator = quatWValues.begin();
+			quatWValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
+
+			eraseIterator = quatXValues.begin();
+			quatXValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
+
+			eraseIterator = quatYValues.begin();
+			quatYValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
+
+			eraseIterator = quatZValues.begin();
+			quatZValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
+
+			eraseIterator = cookedAccelXValues.begin();
+			cookedAccelXValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
+
+			eraseIterator = cookedAccelYValues.begin();
+			cookedAccelYValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
+
+			eraseIterator = cookedAccelZValues.begin();
+			cookedAccelZValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
+
+			eraseIterator = gravityXValues.begin();
+			gravityXValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
+
+			eraseIterator = gravityYValues.begin();
+			gravityYValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
+
+			eraseIterator = gravityZValues.begin();
+			gravityZValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
+
+			eraseIterator = rollValues.begin();
+			rollValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
+
+			eraseIterator = pitchValues.begin();
+			pitchValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
+
+			eraseIterator = yawValues.begin();
+			yawValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
+
+			currentFirstPosGraphs = 0;
+		}
+		else {
+			vector<float>::iterator eraseIterator = gyroXValues.begin();
+			gyroXValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
+
+			eraseIterator = gyroYValues.begin();
+			gyroYValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
+
+			eraseIterator = gyroZValues.begin();
+			gyroZValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
+
+			eraseIterator = rawAccelXValues.begin();
+			rawAccelXValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
+
+			eraseIterator = rawAccelYValues.begin();
+			rawAccelYValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
+
+			eraseIterator = rawAccelZValues.begin();
+			rawAccelZValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
+
+			eraseIterator = quatWValues.begin();
+			quatWValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
+
+			eraseIterator = quatXValues.begin();
+			quatXValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
+
+			eraseIterator = quatYValues.begin();
+			quatYValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
+
+			eraseIterator = quatZValues.begin();
+			quatZValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
+
+			eraseIterator = cookedAccelXValues.begin();
+			cookedAccelXValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
+
+			eraseIterator = cookedAccelYValues.begin();
+			cookedAccelYValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
+
+			eraseIterator = cookedAccelZValues.begin();
+			cookedAccelZValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
+
+			eraseIterator = gravityXValues.begin();
+			gravityXValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
+
+			eraseIterator = gravityYValues.begin();
+			gravityYValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
+
+			eraseIterator = gravityZValues.begin();
+			gravityZValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
+
+			eraseIterator = rollValues.begin();
+			rollValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
+
+			eraseIterator = pitchValues.begin();
+			pitchValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
+
+			eraseIterator = yawValues.begin();
+			yawValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
+		}
+
+		if (currentFirstPosGraphs > IMUVectorsSize - 1) {
+			currentFirstPosGraphs = 0;
+		}
+	}
+	else {
+		vector<float>::iterator insertIterator = gyroXValues.begin();
+		gyroXValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
+
+		insertIterator = gyroYValues.begin();
+		gyroYValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
+
+		insertIterator = gyroZValues.begin();
+		gyroZValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
+
+		insertIterator = rawAccelXValues.begin();
+		rawAccelXValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
+
+		insertIterator = rawAccelYValues.begin();
+		rawAccelYValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
+
+		insertIterator = rawAccelZValues.begin();
+		rawAccelZValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
+
+		insertIterator = quatWValues.begin();
+		quatWValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
+
+		insertIterator = quatXValues.begin();
+		quatXValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
+
+		insertIterator = quatYValues.begin();
+		quatYValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
+
+		insertIterator = quatZValues.begin();
+		quatZValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
+
+		insertIterator = cookedAccelXValues.begin();
+		cookedAccelXValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
+
+		insertIterator = cookedAccelYValues.begin();
+		cookedAccelYValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
+
+		insertIterator = cookedAccelZValues.begin();
+		cookedAccelZValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
+
+		insertIterator = gravityXValues.begin();
+		gravityXValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
+
+		insertIterator = gravityYValues.begin();
+		gravityYValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
+
+		insertIterator = gravityZValues.begin();
+		gravityZValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
+
+		insertIterator = rollValues.begin();
+		rollValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
+		insertIterator = pitchValues.begin();
+		pitchValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
+		insertIterator = yawValues.begin();
+		yawValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
+	}
+}
+
 void Joycon::clearNotUsedGraphValues() {
 	if (useEulerOrientation) {
 		rollValues.clear();
@@ -979,7 +1231,7 @@ string Joycon::mouseClickAction(int mouseButton, bool &joyconButton, string joyc
 	n2- this if - else section sets the variables used to draw the joycon, changing positions based on controller type
 		(that's why some ofPaths have a composite name);
 	n3- the logic on the 2D graph construction is kind of diferent from a common 'for' loop.The ideia here is to make
-		the new IMU value added each frame to the vectors always apear on the end of the 2D graph.For that, it reads
+		the new IMU value added each frame to the vectors always apear on the end of the 2D graph. For that, it reads
 		the vectors from position 'currentFirstPosGraphs' to 'currentFirstPosGraphs-1', changing 'currentFirstPosGraphs'
 		every frame to 'the index where was added the new IMU value in the vector' + 1.
 */
