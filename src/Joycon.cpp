@@ -242,12 +242,8 @@ void Joycon::updateGraphsValues(bool drawRawIMUData, bool drawCookedIMUData) {
 		rawIMUData.accelX = ofRandom(-MAX_ACCEL_VALUE, MAX_ACCEL_VALUE);
 		rawIMUData.accelY = ofRandom(-MAX_ACCEL_VALUE, MAX_ACCEL_VALUE);
 		rawIMUData.accelZ = ofRandom(-MAX_ACCEL_VALUE, MAX_ACCEL_VALUE);
-		gyroXValues[currentFirstPosGraphs] = rawIMUData.gyroX;
-		gyroYValues[currentFirstPosGraphs] = rawIMUData.gyroY;
-		gyroZValues[currentFirstPosGraphs] = rawIMUData.gyroZ;
-		rawAccelXValues[currentFirstPosGraphs] = rawIMUData.accelX;
-		rawAccelYValues[currentFirstPosGraphs] = rawIMUData.accelY;
-		rawAccelZValues[currentFirstPosGraphs] = rawIMUData.accelZ;
+		gyroValues[currentFirstPosGraphs].set(rawIMUData.gyroX, rawIMUData.gyroY, rawIMUData.gyroZ);
+		rawAccelValues[currentFirstPosGraphs].set(rawIMUData.accelX, rawIMUData.accelY, rawIMUData.accelZ);
 
 		cookedIMUData.quatW = ofRandom(-1, 1);
 		cookedIMUData.quatX = ofRandom(-1, 1);
@@ -260,50 +256,30 @@ void Joycon::updateGraphsValues(bool drawRawIMUData, bool drawCookedIMUData) {
 		cookedIMUData.gravY = ofRandom(-1, 1);
 		cookedIMUData.gravZ = ofRandom(-1, 1);
 		quatWValues[currentFirstPosGraphs] = cookedIMUData.quatW;
-		quatXValues[currentFirstPosGraphs] = cookedIMUData.quatX;
-		quatYValues[currentFirstPosGraphs] = cookedIMUData.quatY;
-		quatZValues[currentFirstPosGraphs] = cookedIMUData.quatZ;
-		cookedAccelXValues[currentFirstPosGraphs] = cookedIMUData.accelX;
-		cookedAccelYValues[currentFirstPosGraphs] = cookedIMUData.accelY;
-		cookedAccelZValues[currentFirstPosGraphs] = cookedIMUData.accelZ;
-		gravityXValues[currentFirstPosGraphs] = cookedIMUData.gravX;
-		gravityYValues[currentFirstPosGraphs] = cookedIMUData.gravY;
-		gravityZValues[currentFirstPosGraphs] = cookedIMUData.gravZ;
+		quatValues[currentFirstPosGraphs].set(cookedIMUData.quatX, cookedIMUData.quatY, cookedIMUData.quatZ);
+		cookedAccelValues[currentFirstPosGraphs].set(cookedIMUData.accelX, cookedIMUData.accelY, cookedIMUData.accelZ);
+		gravityValues[currentFirstPosGraphs].set(cookedIMUData.gravX, cookedIMUData.gravY, cookedIMUData.gravZ);
 
 		if (useEulerOrientation) {
 			currentQuaternion = ofQuaternion(cookedIMUData.quatX, cookedIMUData.quatY, cookedIMUData.quatZ, cookedIMUData.quatW);
 			currentEuler = currentQuaternion.getEuler();
 
-			rollValues[currentFirstPosGraphs] = currentEuler.x;
-			yawValues[currentFirstPosGraphs] = currentEuler.y;
-			pitchValues[currentFirstPosGraphs] = currentEuler.z;
+			eulerValues[currentFirstPosGraphs].set(currentEuler.x, currentEuler.y, currentEuler.z);
 		}
 	}
 	else {
 		if (drawRawIMUData) {
-			gyroXValues[currentFirstPosGraphs] = rawIMUData.gyroX;
-			gyroYValues[currentFirstPosGraphs] = rawIMUData.gyroY;
-			gyroZValues[currentFirstPosGraphs] = rawIMUData.gyroZ;
-			rawAccelXValues[currentFirstPosGraphs] = rawIMUData.accelX;
-			rawAccelYValues[currentFirstPosGraphs] = rawIMUData.accelY;
-			rawAccelZValues[currentFirstPosGraphs] = rawIMUData.accelZ;
+			gyroValues[currentFirstPosGraphs].set(rawIMUData.gyroX, rawIMUData.gyroY, rawIMUData.gyroZ);
+			rawAccelValues[currentFirstPosGraphs].set(rawIMUData.accelX, rawIMUData.accelY, rawIMUData.accelZ);
 		}
 		if (drawCookedIMUData) {
 			quatWValues[currentFirstPosGraphs] = cookedIMUData.quatW;
-			quatXValues[currentFirstPosGraphs] = cookedIMUData.quatX;
-			quatYValues[currentFirstPosGraphs] = cookedIMUData.quatY;
-			quatZValues[currentFirstPosGraphs] = cookedIMUData.quatZ;
-			cookedAccelXValues[currentFirstPosGraphs] = cookedIMUData.accelX;
-			cookedAccelYValues[currentFirstPosGraphs] = cookedIMUData.accelY;
-			cookedAccelZValues[currentFirstPosGraphs] = cookedIMUData.accelZ;
-			gravityXValues[currentFirstPosGraphs] = cookedIMUData.gravX;
-			gravityYValues[currentFirstPosGraphs] = cookedIMUData.gravY;
-			gravityZValues[currentFirstPosGraphs] = cookedIMUData.gravZ;
+			quatValues[currentFirstPosGraphs].set(cookedIMUData.quatX, cookedIMUData.quatY, cookedIMUData.quatZ);
+			cookedAccelValues[currentFirstPosGraphs].set(cookedIMUData.accelX, cookedIMUData.accelY, cookedIMUData.accelZ);
+			gravityValues[currentFirstPosGraphs].set(cookedIMUData.gravX, cookedIMUData.gravY, cookedIMUData.gravZ);
 
 			if (useEulerOrientation) {
-				rollValues[currentFirstPosGraphs] = currentEuler.x;
-				yawValues[currentFirstPosGraphs] = currentEuler.y;
-				pitchValues[currentFirstPosGraphs] = currentEuler.z;
+				eulerValues[currentFirstPosGraphs].set(currentEuler.x, currentEuler.y, currentEuler.z);
 			}
 		}
 	}
@@ -610,7 +586,7 @@ void Joycon::drawJoycon(bool drawRawIMUData, bool drawCookedIMUData) {
 			dataGraphHeight = (celHeight - (2 * localDataGraphPosY)) / 3 - BORDER;
 		}
 
-		draw2DGraph(dataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, gyroXValues, gyroYValues, gyroZValues, MAX_GYRO_VALUE, 3);
+		draw2DGraph(dataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, gyroValues, MAX_GYRO_VALUE);
 		ofSetColor(joyconColor);
 		if (font.stringWidth("angularVelocity") < dataGraphWidth && font.stringHeight("V") < dataGraphHeight)
 			ofDrawBitmapString("angularVelocity", dataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
@@ -618,7 +594,7 @@ void Joycon::drawJoycon(bool drawRawIMUData, bool drawCookedIMUData) {
 			ofDrawBitmapString("aV", dataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
 
 		localDataGraphPosY = localDataGraphPosY + dataGraphHeight + BORDER;
-		draw2DGraph(dataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, rawAccelXValues, rawAccelYValues, rawAccelZValues, MAX_ACCEL_VALUE, 3);
+		draw2DGraph(dataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, rawAccelValues, MAX_ACCEL_VALUE);
 		ofSetColor(joyconColor);
 		if (font.stringWidth("rawAccelerometer") < dataGraphWidth && font.stringHeight("A") < dataGraphHeight)
 			ofDrawBitmapString("rawAccelerometer", dataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
@@ -628,7 +604,7 @@ void Joycon::drawJoycon(bool drawRawIMUData, bool drawCookedIMUData) {
 		if (enoughSpaceForCookedGraph && useEulerOrientation && drawCookedIMUData) {
 			localDataGraphPosY = localDataGraphPosY + dataGraphHeight + BORDER;
 
-			draw2DGraph(dataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, quatXValues, quatYValues, quatZValues, 1, 4, quatWValues);
+			draw2DGraph(dataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, quatValues, 1, 4, quatWValues);
 			ofSetColor(joyconColor);
 			if (font.stringWidth("quatOrientation") < dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
 				ofDrawBitmapString("quatOrientation", dataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
@@ -645,7 +621,7 @@ void Joycon::drawJoycon(bool drawRawIMUData, bool drawCookedIMUData) {
 		float dataGraphHeight = (celHeight - (2 * localDataGraphPosY)) / 3 - BORDER;
 
 		if (!useEulerOrientation) {
-			draw2DGraph(localDataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, quatXValues, quatYValues, quatZValues, 1, 4, quatWValues);
+			draw2DGraph(localDataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, quatValues, 1, 4, quatWValues);
 			ofSetColor(joyconColor);
 			if (font.stringWidth("quatOrientation") < dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
 				ofDrawBitmapString("quatOrientation", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
@@ -655,7 +631,7 @@ void Joycon::drawJoycon(bool drawRawIMUData, bool drawCookedIMUData) {
 			localDataGraphPosY = localDataGraphPosY + dataGraphHeight + BORDER;
 		}
 
-		draw2DGraph(localDataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, cookedAccelXValues, cookedAccelYValues, cookedAccelZValues, MAX_ACCEL_VALUE, 3);
+		draw2DGraph(localDataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, cookedAccelValues, MAX_ACCEL_VALUE);
 		ofSetColor(joyconColor);
 		if (font.stringWidth("accel-gravity") < dataGraphWidth && font.stringHeight("A") < dataGraphHeight)
 			ofDrawBitmapString("accel-gravity", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
@@ -663,7 +639,7 @@ void Joycon::drawJoycon(bool drawRawIMUData, bool drawCookedIMUData) {
 			ofDrawBitmapString("rA-g", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
 
 		localDataGraphPosY = localDataGraphPosY + dataGraphHeight + BORDER;
-		draw2DGraph(localDataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, gravityXValues, gravityYValues, gravityZValues, 1, 3);
+		draw2DGraph(localDataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, gravityValues, 1);
 		ofSetColor(joyconColor);
 		if (font.stringWidth("gravity") < dataGraphWidth && font.stringHeight("G") < dataGraphHeight)
 			ofDrawBitmapString("gravity", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
@@ -672,7 +648,7 @@ void Joycon::drawJoycon(bool drawRawIMUData, bool drawCookedIMUData) {
 
 		if(useEulerOrientation){
 			localDataGraphPosY = localDataGraphPosY + dataGraphHeight + BORDER;
-			draw2DGraph(localDataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, rollValues, pitchValues, yawValues, 360, 3);
+			draw2DGraph(localDataGraphPosX, celPosY + localDataGraphPosY, dataGraphWidth, dataGraphHeight, eulerValues, 360);
 			ofSetColor(joyconColor);
 			if (font.stringWidth("eulerOrientation") < dataGraphWidth && font.stringHeight("O") < dataGraphHeight)
 				ofDrawBitmapString("eulerOrientation", localDataGraphPosX, celPosY + localDataGraphPosY + BORDER * 2);
@@ -700,180 +676,69 @@ void Joycon::changeIMUVectorsSize(int newSize) {
 			numValuesToEraseFromBegin = currentFirstPosGraphs + 1 + newSizeDif - lastVectorsSize;
 
 			if (currentFirstPosGraphs != lastVectorsSize - 1) {
-				vector<float>::iterator eraseIterator = gyroXValues.begin();
-				gyroXValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
+				vector<ofVec3f>::iterator eraseIterator = gyroValues.begin();
+				gyroValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
 
-				eraseIterator = gyroYValues.begin();
-				gyroYValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
+				eraseIterator = rawAccelValues.begin();
+				rawAccelValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
 
-				eraseIterator = gyroZValues.begin();
-				gyroZValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
+				vector<float>::iterator quatWEraseIterator = quatWValues.begin();
+				quatWValues.erase(quatWEraseIterator + currentFirstPosGraphs + 1, quatWEraseIterator + lastVectorsSize);
+				eraseIterator = quatValues.begin();
+				quatValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
 
-				eraseIterator = rawAccelXValues.begin();
-				rawAccelXValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
+				eraseIterator = cookedAccelValues.begin();
+				cookedAccelValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
 
-				eraseIterator = rawAccelYValues.begin();
-				rawAccelYValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
+				eraseIterator = gravityValues.begin();
+				gravityValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
 
-				eraseIterator = rawAccelZValues.begin();
-				rawAccelZValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
-
-				eraseIterator = quatWValues.begin();
-				quatWValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
-
-				eraseIterator = quatXValues.begin();
-				quatXValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
-
-				eraseIterator = quatYValues.begin();
-				quatYValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
-
-				eraseIterator = quatZValues.begin();
-				quatZValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
-
-				eraseIterator = cookedAccelXValues.begin();
-				cookedAccelXValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
-
-				eraseIterator = cookedAccelYValues.begin();
-				cookedAccelYValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
-
-				eraseIterator = cookedAccelZValues.begin();
-				cookedAccelZValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
-
-				eraseIterator = gravityXValues.begin();
-				gravityXValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
-
-				eraseIterator = gravityYValues.begin();
-				gravityYValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
-
-				eraseIterator = gravityZValues.begin();
-				gravityZValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
-
-				eraseIterator = rollValues.begin();
-				rollValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
-
-				eraseIterator = pitchValues.begin();
-				pitchValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
-
-				eraseIterator = yawValues.begin();
-				yawValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
+				eraseIterator = eulerValues.begin();
+				eulerValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + lastVectorsSize);
 			}
 
-			vector<float>::iterator eraseIterator = gyroXValues.begin();
-			gyroXValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
+			vector<ofVec3f>::iterator eraseIterator = gyroValues.begin();
+			gyroValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
 
-			eraseIterator = gyroYValues.begin();
-			gyroYValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
+			eraseIterator = rawAccelValues.begin();
+			rawAccelValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
 
-			eraseIterator = gyroZValues.begin();
-			gyroZValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
+			vector<float>::iterator quatWEraseIterator = quatWValues.begin();
+			quatWValues.erase(quatWEraseIterator, quatWEraseIterator + numValuesToEraseFromBegin);
+			eraseIterator = quatValues.begin();
+			quatValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
 
-			eraseIterator = rawAccelXValues.begin();
-			rawAccelXValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
+			eraseIterator = cookedAccelValues.begin();
+			cookedAccelValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
 
-			eraseIterator = rawAccelYValues.begin();
-			rawAccelYValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
+			eraseIterator = gravityValues.begin();
+			gravityValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
 
-			eraseIterator = rawAccelZValues.begin();
-			rawAccelZValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
-
-			eraseIterator = quatWValues.begin();
-			quatWValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
-
-			eraseIterator = quatXValues.begin();
-			quatXValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
-
-			eraseIterator = quatYValues.begin();
-			quatYValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
-
-			eraseIterator = quatZValues.begin();
-			quatZValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
-
-			eraseIterator = cookedAccelXValues.begin();
-			cookedAccelXValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
-
-			eraseIterator = cookedAccelYValues.begin();
-			cookedAccelYValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
-
-			eraseIterator = cookedAccelZValues.begin();
-			cookedAccelZValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
-
-			eraseIterator = gravityXValues.begin();
-			gravityXValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
-
-			eraseIterator = gravityYValues.begin();
-			gravityYValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
-
-			eraseIterator = gravityZValues.begin();
-			gravityZValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
-
-			eraseIterator = rollValues.begin();
-			rollValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
-
-			eraseIterator = pitchValues.begin();
-			pitchValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
-
-			eraseIterator = yawValues.begin();
-			yawValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
+			eraseIterator = eulerValues.begin();
+			eulerValues.erase(eraseIterator, eraseIterator + numValuesToEraseFromBegin);
 
 			currentFirstPosGraphs = 0;
 		}
 		else {
-			vector<float>::iterator eraseIterator = gyroXValues.begin();
-			gyroXValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
+			vector<ofVec3f>::iterator eraseIterator = gyroValues.begin();
+			gyroValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
 
-			eraseIterator = gyroYValues.begin();
-			gyroYValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
+			eraseIterator = rawAccelValues.begin();
+			rawAccelValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
 
-			eraseIterator = gyroZValues.begin();
-			gyroZValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
+			vector<float>::iterator quatWEraseIterator = quatWValues.begin();
+			quatWValues.erase(quatWEraseIterator + currentFirstPosGraphs + 1, quatWEraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
+			eraseIterator = quatValues.begin();
+			quatValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
 
-			eraseIterator = rawAccelXValues.begin();
-			rawAccelXValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
+			eraseIterator = cookedAccelValues.begin();
+			cookedAccelValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
 
-			eraseIterator = rawAccelYValues.begin();
-			rawAccelYValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
+			eraseIterator = gravityValues.begin();
+			gravityValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
 
-			eraseIterator = rawAccelZValues.begin();
-			rawAccelZValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
-
-			eraseIterator = quatWValues.begin();
-			quatWValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
-
-			eraseIterator = quatXValues.begin();
-			quatXValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
-
-			eraseIterator = quatYValues.begin();
-			quatYValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
-
-			eraseIterator = quatZValues.begin();
-			quatZValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
-
-			eraseIterator = cookedAccelXValues.begin();
-			cookedAccelXValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
-
-			eraseIterator = cookedAccelYValues.begin();
-			cookedAccelYValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
-
-			eraseIterator = cookedAccelZValues.begin();
-			cookedAccelZValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
-
-			eraseIterator = gravityXValues.begin();
-			gravityXValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
-
-			eraseIterator = gravityYValues.begin();
-			gravityYValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
-
-			eraseIterator = gravityZValues.begin();
-			gravityZValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
-
-			eraseIterator = rollValues.begin();
-			rollValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
-
-			eraseIterator = pitchValues.begin();
-			pitchValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
-
-			eraseIterator = yawValues.begin();
-			yawValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
+			eraseIterator = eulerValues.begin();
+			eulerValues.erase(eraseIterator + currentFirstPosGraphs + 1, eraseIterator + currentFirstPosGraphs + 1 + newSizeDif);
 		}
 
 		if (currentFirstPosGraphs > IMUVectorsSize - 1) {
@@ -881,71 +746,32 @@ void Joycon::changeIMUVectorsSize(int newSize) {
 		}
 	}
 	else {
-		vector<float>::iterator insertIterator = gyroXValues.begin();
-		gyroXValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
+		vector<ofVec3f>::iterator insertIterator = gyroValues.begin();
+		gyroValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, ofVec3f(0, 0, 0));
 
-		insertIterator = gyroYValues.begin();
-		gyroYValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
+		insertIterator = rawAccelValues.begin();
+		rawAccelValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, ofVec3f(0, 0, 0));
 
-		insertIterator = gyroZValues.begin();
-		gyroZValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
+		vector<float>::iterator quatWInsertIterator = quatWValues.begin();
+		quatWValues.insert(quatWInsertIterator + currentFirstPosGraphs, newSizeDif, 0);
+		insertIterator = quatValues.begin();
+		quatValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, ofVec3f(0, 0, 0));
 
-		insertIterator = rawAccelXValues.begin();
-		rawAccelXValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
+		insertIterator = cookedAccelValues.begin();
+		cookedAccelValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, ofVec3f(0, 0, 0));
 
-		insertIterator = rawAccelYValues.begin();
-		rawAccelYValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
+		insertIterator = gravityValues.begin();
+		gravityValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, ofVec3f(0, 0, 0));
 
-		insertIterator = rawAccelZValues.begin();
-		rawAccelZValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
-
-		insertIterator = quatWValues.begin();
-		quatWValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
-
-		insertIterator = quatXValues.begin();
-		quatXValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
-
-		insertIterator = quatYValues.begin();
-		quatYValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
-
-		insertIterator = quatZValues.begin();
-		quatZValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
-
-		insertIterator = cookedAccelXValues.begin();
-		cookedAccelXValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
-
-		insertIterator = cookedAccelYValues.begin();
-		cookedAccelYValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
-
-		insertIterator = cookedAccelZValues.begin();
-		cookedAccelZValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
-
-		insertIterator = gravityXValues.begin();
-		gravityXValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
-
-		insertIterator = gravityYValues.begin();
-		gravityYValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
-
-		insertIterator = gravityZValues.begin();
-		gravityZValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
-
-		insertIterator = rollValues.begin();
-		rollValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
-		insertIterator = pitchValues.begin();
-		pitchValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
-		insertIterator = yawValues.begin();
-		yawValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, 0);
+		insertIterator = eulerValues.begin();
+		eulerValues.insert(insertIterator + currentFirstPosGraphs, newSizeDif, ofVec3f(0, 0, 0));
 	}
 }
 
 void Joycon::clearNotUsedGraphValues() {
 	if (useEulerOrientation) {
-		rollValues.clear();
-		pitchValues.clear();
-		yawValues.clear();
-		rollValues.resize(IMUVectorsSize, 0);
-		pitchValues.resize(IMUVectorsSize, 0);
-		yawValues.resize(IMUVectorsSize, 0);
+		eulerValues.clear();
+		eulerValues.resize(IMUVectorsSize, ofVec3f(0, 0, 0));
 	}
 }
 
@@ -959,7 +785,7 @@ void Joycon::calibrateMotion(bool calibrate) {
 	}
 }
 
-void Joycon::draw2DGraph(float posX, float posY, float graphWidth, float graphHeight, vector<float> graphValuesX, vector<float> graphValuesY, vector<float> graphValuesZ, float maxYValue, int numLayers, vector<float> graphValuesW) {
+void Joycon::draw2DGraph(float posX, float posY, float graphWidth, float graphHeight, vector<ofVec3f> graphValues, float maxYValue, int numLayers, vector<float> graphValuesW) {
 	float xAxisStep = graphWidth / (IMUVectorsSize - 1);
 	float yAxisStep = (graphHeight / 2) / maxYValue;
 	ofVec2f currentGraphPointX;
@@ -993,11 +819,11 @@ void Joycon::draw2DGraph(float posX, float posY, float graphWidth, float graphHe
 		}
 
 		currentGraphPointX.x = posX + (indexGraph * xAxisStep);
-		currentGraphPointX.y = posY - (graphValuesX[index] * yAxisStep);
+		currentGraphPointX.y = posY - (graphValues[index].x * yAxisStep);
 		currentGraphPointY.x = posX + (indexGraph * xAxisStep);
-		currentGraphPointY.y = posY - (graphValuesY[index] * yAxisStep);
+		currentGraphPointY.y = posY - (graphValues[index].y * yAxisStep);
 		currentGraphPointZ.x = posX + (indexGraph * xAxisStep);
-		currentGraphPointZ.y = posY - (graphValuesZ[index] * yAxisStep);
+		currentGraphPointZ.y = posY - (graphValues[index].z * yAxisStep);
 		if (numLayers > 3) {
 			currentGraphPointW.x = posX + (indexGraph * xAxisStep);
 			currentGraphPointW.y = posY - (graphValuesW[index] * yAxisStep);

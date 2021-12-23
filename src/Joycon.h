@@ -64,25 +64,14 @@ class Joycon {
 		float dataGraphPosX = 0;
 		float dataGraphPosY = 0;
 		float dataGraphWidth = 0;
-		vector<float> gyroXValues;
-		vector<float> gyroYValues;
-		vector<float> gyroZValues;
-		vector<float> rawAccelXValues;
-		vector<float> rawAccelYValues;
-		vector<float> rawAccelZValues;
+
+		vector<ofVec3f> gyroValues;
+		vector<ofVec3f> rawAccelValues;
 		vector<float> quatWValues;
-		vector<float> quatXValues;
-		vector<float> quatYValues;
-		vector<float> quatZValues;
-		vector<float> cookedAccelXValues;
-		vector<float> cookedAccelYValues;
-		vector<float> cookedAccelZValues;
-		vector<float> gravityXValues;
-		vector<float> gravityYValues;
-		vector<float> gravityZValues;
-		vector<float> rollValues;
-		vector<float> pitchValues;
-		vector<float> yawValues;
+		vector<ofVec3f> quatValues;
+		vector<ofVec3f> cookedAccelValues;
+		vector<ofVec3f> gravityValues;
+		vector<ofVec3f> eulerValues;
 		int IMUVectorsSize = DEFAULT_IMUVECTORSSIZE;
 		int currentFirstPosGraphs = 0; //_n3
 
@@ -92,7 +81,7 @@ class Joycon {
 		inputValues getEachInputValue(JOY_SHOCK_STATE newButtonsStickData);
 		ofVec2f getStickAsPolarCoordinates(float stickX, float stickY);
 		stickAsDpad setStickAsDpad(float stickX, float stickY);
-		void draw2DGraph(float posX, float posY, float graphWidth, float graphHeight, vector<float> graphValuesI, vector<float> graphValuesJ, vector<float> graphValuesK, float maxYValue = 1, int numLayers = 4, vector<float> graphValuesW = vector<float>());
+		void draw2DGraph(float posX, float posY, float graphWidth, float graphHeight, vector<ofVec3f> graphValues, float maxYValue, int numLayers = 3, vector<float> graphValuesW = vector<float>());
 		ofColor getInputColor(int buttonValue, int baseRGB = BASE_BUTTON_COLOR);
 		bool pointInsidePolylines(vector<ofPolyline> polylinesToCheck, int pointX, int pointY);
 		string mouseClickAction(int mouseButton, bool &joyconButton, string joyconButtonOSCTag);
@@ -135,26 +124,13 @@ class Joycon {
 			defineJoyconNameOnGUI(devicesConnectedNumber);
 			oscSenderSetup();
 
-			gyroXValues.resize(IMUVectorsSize, 0);
-			gyroYValues.resize(IMUVectorsSize, 0);
-			gyroZValues.resize(IMUVectorsSize, 0);
-			rawAccelXValues.resize(IMUVectorsSize, 0);
-			rawAccelYValues.resize(IMUVectorsSize, 0);
-			rawAccelZValues.resize(IMUVectorsSize, 0);
+			gyroValues.resize(IMUVectorsSize, ofVec3f(0, 0, 0));
+			rawAccelValues.resize(IMUVectorsSize, ofVec3f(0, 0, 0));
 			quatWValues.resize(IMUVectorsSize, 0);
-			quatXValues.resize(IMUVectorsSize, 0);
-			quatYValues.resize(IMUVectorsSize, 0);
-			quatZValues.resize(IMUVectorsSize, 0);
-			cookedAccelXValues.resize(IMUVectorsSize, 0);
-			cookedAccelYValues.resize(IMUVectorsSize, 0);
-			cookedAccelZValues.resize(IMUVectorsSize, 0);
-			gravityXValues.resize(IMUVectorsSize, 0);
-			gravityYValues.resize(IMUVectorsSize, 0);
-			gravityZValues.resize(IMUVectorsSize, 0);
-
-			rollValues.resize(IMUVectorsSize, 0);
-			pitchValues.resize(IMUVectorsSize, 0);
-			yawValues.resize(IMUVectorsSize, 0);
+			quatValues.resize(IMUVectorsSize, ofVec4f(0, 0, 0, 0));
+			cookedAccelValues.resize(IMUVectorsSize, ofVec3f(0, 0, 0));
+			gravityValues.resize(IMUVectorsSize, ofVec3f(0, 0, 0));
+			eulerValues.resize(IMUVectorsSize, ofVec3f(0, 0, 0));
 		};
 
 		void updateData(JOY_SHOCK_STATE newButtonsStickData, IMU_STATE newRawIMUData, bool sendRawIMUData = true, bool sendCookedIMUData = true);
