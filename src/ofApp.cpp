@@ -147,7 +147,7 @@ void ofApp::update(){
 		for (int index = 0; index < joyconsVec.size(); index++) {
 			if (joyconsVec[index].GUIToggle && (!joyconsVec[index].isVirtual || (joyconsVec[index].isVirtual && useVirtualJoycons))) {
 				selectedJoyconsCount++;
-				joyconsVec[index].updateGraphsValues(useRawIMUData, useRawIMUData);
+				joyconsVec[index].updateGraphsValues(useRawIMUData, useCookedIMUData);
 				if (joyconsVec[index].isVirtual)
 					joyconsVec[index].sendNewInputsAsOSC(joyconsVec[index].currentInputValues);
 			}
