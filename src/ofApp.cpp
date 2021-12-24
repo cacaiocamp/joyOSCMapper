@@ -16,6 +16,7 @@ void ofApp::updateJoyconData(int joyconId, JOY_SHOCK_STATE newButtonsStickData, 
 //--------------------------------------------------------------
 void ofApp::setup(){
 	joyOSCMapperPointer = this;//_n1
+	font.load(OF_TTF_MONO, 10);
 
 	int screenWidth = ofGetScreenWidth();
 	int screenHeight = ofGetScreenHeight();
@@ -32,7 +33,6 @@ void ofApp::setup(){
 	ofBackground(10);
 	ofSetFrameRate(67);
 	ofSetVerticalSync(false);
-	font.load(OF_TTF_MONO, 10);
 
 	setupGuiControl();
 	instantiateConnectedJoycons();
@@ -488,7 +488,8 @@ void ofApp::instantiateConnectedJoycons() {
 		int lastDeviceId = numDevicesConnected + numDevicesConnectedSum - 1;
 		int devicePosition = 0; //the position of the device on 'joyconsVec'
 		for (int deviceId = numDevicesConnectedSum; deviceId <= lastDeviceId; deviceId++, devicePosition++) {
-			joyconsVec.push_back(Joycon(deviceId, devicePosition, useEulerOrientation, guiColor.a, font));
+			Joycon newJoycon(deviceId, devicePosition, useEulerOrientation, guiColor.a, font);
+			joyconsVec.push_back(newJoycon);
 		}
 
 		numDevicesConnectedSum = numDevicesConnected + numDevicesConnectedSum;
