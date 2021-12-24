@@ -268,19 +268,16 @@ void Joycon::updateGraphsValues(bool drawRawIMUData, bool drawCookedIMUData) {
 		}
 	}
 	else {
-		if (drawRawIMUData) {
-			gyroValues[currentFirstPosGraphs].set(rawIMUData.gyroX, rawIMUData.gyroY, rawIMUData.gyroZ);
-			rawAccelValues[currentFirstPosGraphs].set(rawIMUData.accelX, rawIMUData.accelY, rawIMUData.accelZ);
-		}
-		if (drawCookedIMUData) {
-			quatWValues[currentFirstPosGraphs] = cookedIMUData.quatW;
-			quatValues[currentFirstPosGraphs].set(cookedIMUData.quatX, cookedIMUData.quatY, cookedIMUData.quatZ);
-			cookedAccelValues[currentFirstPosGraphs].set(cookedIMUData.accelX, cookedIMUData.accelY, cookedIMUData.accelZ);
-			gravityValues[currentFirstPosGraphs].set(cookedIMUData.gravX, cookedIMUData.gravY, cookedIMUData.gravZ);
+		gyroValues[currentFirstPosGraphs].set(rawIMUData.gyroX, rawIMUData.gyroY, rawIMUData.gyroZ);
+		rawAccelValues[currentFirstPosGraphs].set(rawIMUData.accelX, rawIMUData.accelY, rawIMUData.accelZ);
 
-			if (useEulerOrientation) {
-				eulerValues[currentFirstPosGraphs].set(currentEuler.x, currentEuler.y, currentEuler.z);
-			}
+		quatWValues[currentFirstPosGraphs] = cookedIMUData.quatW;
+		quatValues[currentFirstPosGraphs].set(cookedIMUData.quatX, cookedIMUData.quatY, cookedIMUData.quatZ);
+		cookedAccelValues[currentFirstPosGraphs].set(cookedIMUData.accelX, cookedIMUData.accelY, cookedIMUData.accelZ);
+		gravityValues[currentFirstPosGraphs].set(cookedIMUData.gravX, cookedIMUData.gravY, cookedIMUData.gravZ);
+
+		if (useEulerOrientation) {
+			eulerValues[currentFirstPosGraphs].set(currentEuler.x, currentEuler.y, currentEuler.z);
 		}
 	}
 	currentFirstPosGraphs++;
