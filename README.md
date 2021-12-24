@@ -3,7 +3,7 @@
 
 It is being built with C++/[openFrameworks](https://openframeworks.cc/) and uses JibbSmarts' [JoyShockLibrary](https://github.com/JibbSmart/JoyShockLibrary) to gather the data from the joycons via Bluetooth and the _ofxOsc_ addon to convert the data in OSC messages. I'm developing it using a Windows 10, with Visual Studio 2017, but, as its built with openFrameworks, it should be easy enough to use it in any OS that runs this C++ toolkit.
 
-![joyOSCMapperShot](mdimgs/twoyellowjoys.png)
+![joyOSCMapperShot](mdimgs/generalImg.png)
 
 ## Contents
 * **[Instalation](#instalation)**
