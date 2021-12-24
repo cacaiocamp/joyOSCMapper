@@ -18,19 +18,20 @@ void Joycon::defineJoyconNameOnGUI(int devicesConnectedNumber) {
 	if (isVirtual)
 		prefix = "vrtjoy";
 
+	nameOnGUI = prefix + ofToString(devicesConnectedNumber);
 	switch (controllerType) {
 	case JS_TYPE_JOYCON_LEFT:
-		nameOnGUI = prefix + "(L)" + ofToString(devicesConnectedNumber);
+		nameOnGUI = nameOnGUI + "(L)";
 		break;
 	case JS_TYPE_JOYCON_RIGHT:
-		nameOnGUI = prefix + "(R)" + ofToString(devicesConnectedNumber);
+		nameOnGUI = nameOnGUI + "(R)";
 		break;
 	default:
-		nameOnGUI = prefix + "(?)" + ofToString(devicesConnectedNumber);
+		nameOnGUI = nameOnGUI + "(?)";
 		break;
 	}
 
-	joyconOscAddress = "/" + prefix + ofToString(devicesConnectedNumber);
+	joyconOscAddress = "/" + nameOnGUI;
 }
 
 void Joycon::oscSenderSetup() {
