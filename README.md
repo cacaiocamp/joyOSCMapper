@@ -6,7 +6,8 @@ It is being built with C++/[openFrameworks](https://openframeworks.cc/) and uses
 ![joyOSCMapperShot](mdimgs/generalImg.png)
 
 ## Contents
-* **[Instalation](#instalation)**
+* **[Releases](#releases)**
+* **[Usage for devs](#usage-for-devs)**
 * **[OSC data sent](#osc-data-sent)**
 * **[Basic functionalities](#basic-functionalities)**
   * **[Connecting joycons](#connecting-joycons)**
@@ -25,12 +26,15 @@ It is being built with C++/[openFrameworks](https://openframeworks.cc/) and uses
 * **[Last words/contact](#last-wordscontact)**
 * **[License](#license)**
 
-## Instalation
+## Releases
+The releases of **joyOSCMapper** can be found [here](https://github.com/cacaiocamp/joyOSCMapper/releases). The only dependency to run the application is the Visual C++ Redistributable package for Visual Studio 2017, that can be found [here](https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170).
+
+## Usage for Devs
 With the openFrameworks already downloaded for your IDE, you will first need to build a .dll of JoyShockLibrary for your OS. If you are using a x64 Windows, the .dll and .lib files in the _libs/_ folder are already the right ones. If x86, you can get the [latest x86 release of JoyShockLibrary](https://github.com/JibbSmart/JoyShockLibrary/releases).
 
 After that, all the files you need are on the _src/_ folder. You will also need to make the link of your project/solution to the folder where the .dll and .lib files are and a openFrameworks app with _ofxOsc_ and _ofxGUI_ addons imported.
 
-For Visual Studio users, the full solution is also provided. I will also try to make a standalone app in the future.
+For Visual Studio users, the full solution is also provided.
 
 ## OSC data sent
 **joyOSCMapper** takes advantage of most of JoyShockLibrary's functionalities for joycons, mapping buttons, sticks, raw motion (gyroscope and accelerometer) and sensor fusion (orientation in quaternions, acceleroremeter without the effect of gravity and isolated gravity). I also implemented the stick data as polar coordinates and as dpad, as well as a conversion from quaternion to euler orientation. This data is collected, drawn in real time and sent via OSC. 
