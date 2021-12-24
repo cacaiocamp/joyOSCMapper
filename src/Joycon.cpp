@@ -31,7 +31,7 @@ void Joycon::defineJoyconNameOnGUI(int devicesConnectedNumber) {
 		break;
 	}
 
-	joyconOscAddress = "/" + nameOnGUI;
+	joyconOscAddress = "/" + prefix + ofToString(devicesConnectedNumber);
 }
 
 void Joycon::oscSenderSetup() {
