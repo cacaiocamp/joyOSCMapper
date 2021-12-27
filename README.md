@@ -29,6 +29,8 @@ It is being built with C++/[openFrameworks](https://openframeworks.cc/) and uses
 ## Releases
 The releases of **joyOSCMapper** can be found [here](https://github.com/cacaiocamp/joyOSCMapper/releases). The only dependency to run the application is the Visual C++ Redistributable package for Visual Studio 2017, that can be found [here](https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170).
 
+For now, the only release avaible is a Windows x64 pre-release. I'll work on that later!
+
 ## Usage for Devs
 With the openFrameworks already downloaded for your IDE, you will first need to build a .dll of JoyShockLibrary for your OS. If you are using a x64 Windows, the .dll and .lib files in the _libs/_ folder are already the right ones. If x86, you can get the [latest x86 release of JoyShockLibrary](https://github.com/JibbSmart/JoyShockLibrary/releases).
 
