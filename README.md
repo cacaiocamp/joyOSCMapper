@@ -182,12 +182,10 @@ Also, comments have been added to the code in a way similar to a "foot note". A 
 
 ## Future implementations
 Not counting the standalone app, I plan to implement two types of configurations: a general config, and a individual config for each joycon. The ideia here is to let drawing and OSC be configured accordingly to user necessities, changing things like:
-* un/toggle the use/draw raw and/or cooked graphs
 * change osc address, port and tags
 * change minStickStep
 * un/toggle the use stick as D-pad/polar coordinates
 * change minStickAsDpadDist
-* change IMUVectorsSize
 * save and load preferences
 
 ## Last words/contact
